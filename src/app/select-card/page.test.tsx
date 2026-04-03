@@ -38,6 +38,6 @@ describe("Select card flow", () => {
     const user = userEvent.setup();
 
     await user.selectOptions(screen.getByLabelText("카드 선택"), "card_002");
-    expect(screen.getByText(/알뜰 체크 카드/)).toBeInTheDocument();
+    expect(screen.getAllByText(/알뜰 체크 카드/).length).toBeGreaterThan(0);
   });
 });

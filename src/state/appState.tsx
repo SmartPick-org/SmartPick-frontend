@@ -15,20 +15,23 @@ export type CardSummary = {
 export type AppState = {
   comparisonMode: ComparisonMode;
   selectedCurrentCard: CardSummary | null;
-  selectedCategories: string[];
+  selectedCategories: string[] | Record<string, string[]>;
+  subCategoryRatios: Record<string, Record<string, number>>;
   spendingData: Record<string, number>;
 };
 
 type AppAction =
   | { type: "SET_COMPARISON_MODE"; payload: ComparisonMode }
   | { type: "SET_CURRENT_CARD"; payload: CardSummary | null }
-  | { type: "SET_CATEGORIES"; payload: string[] }
+  | { type: "SET_CATEGORIES"; payload: string[] | Record<string, string[]> }
+  | { type: "SET_SUBCATEGORY_RATIOS"; payload: Record<string, Record<string, number>> }
   | { type: "SET_SPENDING"; payload: Record<string, number> };
 
 export const initialState: AppState = {
   comparisonMode: null,
   selectedCurrentCard: null,
   selectedCategories: [],
+  subCategoryRatios: {},
   spendingData: {}
 };
 
@@ -40,6 +43,8 @@ function reducer(state: AppState, action: AppAction): AppState {
       return { ...state, selectedCurrentCard: action.payload };
     case "SET_CATEGORIES":
       return { ...state, selectedCategories: action.payload };
+    case "SET_SUBCATEGORY_RATIOS":
+      return { ...state, subCategoryRatios: action.payload };
     case "SET_SPENDING":
       return { ...state, spendingData: action.payload };
     default:
@@ -73,4 +78,11 @@ export function useAppState() {
     throw new Error("useAppState must be used within AppStateProvider");
   }
   return ctx;
+}
+
+export function getSelectTopCategories(categories: string[] | Record<string, string[]>): string[] {
+  if (Array.isArray(categories)) {
+    return categories;
+  }
+  return Object.keys(categories);
 }

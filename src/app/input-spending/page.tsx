@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAppState } from "@/state/appState";
+import { useAppState, getSelectTopCategories } from "@/state/appState";
 import { CATEGORY_KEY_TO_LABEL, type CategoryKey } from "@/state/categories";
 
 const DEFAULT_CATEGORIES = ["Food", "Traffic", "Shopping"];
@@ -10,9 +10,9 @@ const DEFAULT_CATEGORIES = ["Food", "Traffic", "Shopping"];
 export default function InputSpendingPage() {
   const router = useRouter();
   const { state, dispatch } = useAppState();
-  const categories = state.selectedCategories.length
-    ? state.selectedCategories
-    : DEFAULT_CATEGORIES;
+
+  const rawCategories = getSelectTopCategories(state.selectedCategories);
+  const categories = rawCategories.length ? rawCategories : DEFAULT_CATEGORIES;
 
   const [spending, setSpending] = useState<Record<string, number>>(() => {
     const seed: Record<string, number> = {};

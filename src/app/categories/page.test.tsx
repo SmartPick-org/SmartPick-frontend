@@ -15,10 +15,12 @@ describe("Category selection flow", () => {
     renderWithProviders(<CategoriesPage />);
     const user = userEvent.setup();
 
-    const nextButton = screen.getByRole("button", { name: /다음/ });
+    const nextButton = screen.getByRole("button", { name: /다음 카테고리/ });
     expect(nextButton).toBeDisabled();
 
-    await user.click(screen.getByRole("button", { name: /식비/ }));
+    await user.click(screen.getByRole("button", { name: /Food/ }));
+    await user.click(screen.getByRole("button", { name: "외식" }));
+
     expect(nextButton).toBeDisabled();
   });
 
@@ -26,19 +28,30 @@ describe("Category selection flow", () => {
     renderWithProviders(<CategoriesPage />);
     const user = userEvent.setup();
 
-    await user.click(screen.getByRole("button", { name: /식비/ }));
-    await user.click(screen.getByRole("button", { name: /교통/ }));
+    await user.click(screen.getByRole("button", { name: /Food/ }));
+    await user.click(screen.getByRole("button", { name: "외식" }));
 
-    expect(screen.getByRole("button", { name: /다음/ })).toBeEnabled();
+    await user.click(screen.getByRole("button", { name: /Traffic/ }));
+    await user.click(screen.getByRole("button", { name: "택시" }));
+
+    expect(screen.getByRole("button", { name: /다음 카테고리/ })).toBeEnabled();
   });
 
   it("최대 5개까지만 선택된다", async () => {
     renderWithProviders(<CategoriesPage />);
     const user = userEvent.setup();
 
-    const items = ["식비", "교통", "쇼핑", "통신", "카페", "영화"];
-    for (const name of items) {
-      await user.click(screen.getByRole("button", { name: name }));
+    const items = [
+      { name: /Food/, sub: "외식" },
+      { name: /Traffic/, sub: "택시" },
+      { name: /Shopping/, sub: "편의점" },
+      { name: /Coffee/, sub: "카페" },
+      { name: /Cultural/, sub: "영화" },
+      { name: /Travel/, sub: "항공" },
+    ];
+    for (const item of items) {
+      await user.click(screen.getByRole("button", { name: item.name }));
+      await user.click(screen.getByRole("button", { name: item.sub }));
     }
 
     expect(screen.getByText("선택 5/5")).toBeInTheDocument();
