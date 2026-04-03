@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAppState } from "@/state/appState";
-import { CATEGORY_KEY_TO_LABEL } from "@/state/categories";
+import { CATEGORY_KEY_TO_LABEL, type CategoryKey } from "@/state/categories";
 
 const DEFAULT_CATEGORIES = ["Food", "Traffic", "Shopping"];
 
@@ -76,7 +76,7 @@ export default function InputSpendingPage() {
           <div className="mt-6 space-y-6">
             {categories.map((category) => {
               const isOpen = open[category];
-              const label = CATEGORY_KEY_TO_LABEL.get(category) ?? category;
+              const label = CATEGORY_KEY_TO_LABEL.get(category as CategoryKey) ?? category;
               return (
                 <div key={category} className="rounded-2xl border border-slate-100 p-6">
                   <div className="flex items-center justify-between">
