@@ -110,11 +110,22 @@ export default function CategoriesPage() {
                       <span className="text-2xl font-bold">{category.label}</span>
                     </div>
 
-                    <div className="flex w-full flex-col gap-1">
-                      <span className={`text-sm leading-snug ${isSelected ? "text-slate-300" : "text-slate-500"}`}>
-                        {category.helper}
-                      </span>
-                      <span className={`mt-2 inline-flex items-center text-xs font-medium ${isSelected ? "text-slate-400" : "text-indigo-500"}`}>
+                    <div className="flex w-full flex-col gap-2 mt-4">
+                      {isSelected ? (
+                        <div className="flex flex-wrap gap-1.5 mt-1">
+                          {currentSubs.map((sub) => (
+                            <span key={sub} className="rounded-md bg-slate-700 px-2.5 py-1 text-xs font-medium text-slate-200 shadow-sm">
+                              {sub}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-sm leading-snug text-slate-500">
+                          {category.helper}
+                        </span>
+                      )}
+
+                      <span className={`mt-1 inline-flex items-center text-xs font-medium ${isSelected ? "text-slate-400" : "text-indigo-500"}`}>
                         상세 항목 선택하기 &rarr;
                       </span>
                     </div>
@@ -135,12 +146,21 @@ export default function CategoriesPage() {
                       <button
                         type="button"
                         onClick={() => toggleFlip(category.key)}
-                        className="rounded-full bg-slate-900 p-1.5 text-white hover:bg-slate-700 transition-colors shadow-sm"
-                        aria-label="선택 완료"
+                        className={`rounded-full p-1.5 transition-colors shadow-sm ${isSelected
+                          ? "bg-slate-900 text-white hover:bg-slate-700"
+                          : "bg-slate-200 text-slate-600 hover:bg-slate-300"
+                          }`}
+                        aria-label={isSelected ? "선택 완료" : "뒤로 가기"}
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                        </svg>
+                        {isSelected ? (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                          </svg>
+                        ) : (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+                          </svg>
+                        )}
                       </button>
                     </div>
 
