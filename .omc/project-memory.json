@@ -1,0 +1,132 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1775183023256,
+  "projectRoot": "/Users/ayeon/Documents/workspace/smartpick_re/SmartPick-frontend",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "tsconfig.json"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "next",
+        "version": "16.2.1",
+        "category": "fullstack"
+      },
+      {
+        "name": "react",
+        "version": "19.2.4",
+        "category": "frontend"
+      },
+      {
+        "name": "react-dom",
+        "version": "19.2.4",
+        "category": "frontend"
+      },
+      {
+        "name": "@playwright/test",
+        "version": "1.58.2",
+        "category": "testing"
+      },
+      {
+        "name": "vitest",
+        "version": "4.1.2",
+        "category": "testing"
+      }
+    ],
+    "packageManager": "npm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": "npm run build",
+    "testCommand": "npm test",
+    "lintCommand": "npm run lint",
+    "devCommand": "npm run dev",
+    "scripts": {
+      "dev": "next dev",
+      "build": "next build",
+      "start": "next start",
+      "lint": "eslint",
+      "test": "vitest run",
+      "test:watch": "vitest",
+      "test:ui": "vitest --ui",
+      "test:e2e": "playwright test",
+      "test:e2e:ui": "playwright test --ui"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "public",
+      "src"
+    ],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "public": {
+      "path": "public",
+      "purpose": "Public files",
+      "fileCount": 5,
+      "lastAccessed": 1775183023143,
+      "keyFiles": [
+        "file.svg",
+        "globe.svg",
+        "next.svg",
+        "vercel.svg",
+        "window.svg"
+      ]
+    },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 0,
+      "lastAccessed": 1775183023148,
+      "keyFiles": []
+    },
+    "src/app": {
+      "path": "src/app",
+      "purpose": "Application code",
+      "fileCount": 5,
+      "lastAccessed": 1775183023173,
+      "keyFiles": [
+        "favicon.ico",
+        "globals.css",
+        "layout.tsx"
+      ]
+    },
+    "src/test": {
+      "path": "src/test",
+      "purpose": "Test files",
+      "fileCount": 2,
+      "lastAccessed": 1775183023173,
+      "keyFiles": [
+        "render.tsx",
+        "setup.ts"
+      ]
+    }
+  },
+  "hotPaths": [],
+  "userDirectives": []
+}
