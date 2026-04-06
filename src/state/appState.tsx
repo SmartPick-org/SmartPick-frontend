@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useMemo, useReducer } from "react";
+import React, { createContext, useContext, useMemo, useReducer, useEffect } from "react";
 
 export type ComparisonMode = "COMPARE" | "NEW" | null;
 
@@ -27,7 +27,9 @@ type AppAction =
   | { type: "SET_CATEGORIES"; payload: string[] | Record<string, string[]> }
   | { type: "SET_SUBCATEGORY_RATIOS"; payload: Record<string, Record<string, number>> }
   | { type: "SET_SPENDING"; payload: Record<string, number> }
-  | { type: "SET_TOTAL_BUDGET"; payload: number };
+  | { type: "SET_TOTAL_BUDGET"; payload: number }
+  | { type: "HYDRATE"; payload: AppState }
+  | { type: "RESET" };
 
 export const initialState: AppState = {
   comparisonMode: null,
@@ -52,6 +54,10 @@ function reducer(state: AppState, action: AppAction): AppState {
       return { ...state, spendingData: action.payload };
     case "SET_TOTAL_BUDGET":
       return { ...state, totalBudget: action.payload };
+    case "HYDRATE":
+      return { ...state, ...action.payload };
+    case "RESET":
+      return initialState;
     default:
       return state;
   }
@@ -64,6 +70,8 @@ type AppStateContextValue = {
 
 const AppStateContext = createContext<AppStateContextValue | undefined>(undefined);
 
+const STORAGE_KEY = "smartpick_app_state";
+
 export function AppStateProvider({
   children,
   initial
@@ -72,6 +80,25 @@ export function AppStateProvider({
   initial?: Partial<AppState>;
 }) {
   const [state, dispatch] = useReducer(reducer, { ...initialState, ...initial });
+
+  // 1. Load from localStorage on mount (Hydration)
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        dispatch({ type: "HYDRATE", payload: parsed });
+      } catch (e) {
+        console.error("Failed to parse saved state", e);
+      }
+    }
+  }, []);
+
+  // 2. Save to localStorage whenever state changes
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }, [state]);
+
   const value = useMemo(() => ({ state, dispatch }), [state]);
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>;
