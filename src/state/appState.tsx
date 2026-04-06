@@ -18,6 +18,7 @@ export type AppState = {
   selectedCategories: string[] | Record<string, string[]>;
   subCategoryRatios: Record<string, Record<string, number>>;
   spendingData: Record<string, number>;
+  totalBudget: number;
 };
 
 type AppAction =
@@ -25,14 +26,16 @@ type AppAction =
   | { type: "SET_CURRENT_CARD"; payload: CardSummary | null }
   | { type: "SET_CATEGORIES"; payload: string[] | Record<string, string[]> }
   | { type: "SET_SUBCATEGORY_RATIOS"; payload: Record<string, Record<string, number>> }
-  | { type: "SET_SPENDING"; payload: Record<string, number> };
+  | { type: "SET_SPENDING"; payload: Record<string, number> }
+  | { type: "SET_TOTAL_BUDGET"; payload: number };
 
 export const initialState: AppState = {
   comparisonMode: null,
   selectedCurrentCard: null,
   selectedCategories: [],
   subCategoryRatios: {},
-  spendingData: {}
+  spendingData: {},
+  totalBudget: 1000000
 };
 
 function reducer(state: AppState, action: AppAction): AppState {
@@ -47,6 +50,8 @@ function reducer(state: AppState, action: AppAction): AppState {
       return { ...state, subCategoryRatios: action.payload };
     case "SET_SPENDING":
       return { ...state, spendingData: action.payload };
+    case "SET_TOTAL_BUDGET":
+      return { ...state, totalBudget: action.payload };
     default:
       return state;
   }
