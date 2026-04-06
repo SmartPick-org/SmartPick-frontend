@@ -1,5 +1,6 @@
 import { AppState } from "./appState";
 import { RecommendRequest, RecommendResponse, QARequest, QAResponse } from "./api";
+import { SUB_CATEGORY_KEY_MAP } from "./categories";
 
 const BASE_URL = "https://5293-211-171-73-131.ngrok-free.app";
 
@@ -11,8 +12,8 @@ export function transformStateToRecommendRequest(state: AppState): RecommendRequ
         if (subs && Object.keys(subs).length > 0) {
             const subObj: any = { total };
             Object.entries(subs).forEach(([subName, ratio]) => {
-                // API expects "percentage%" format as per examples
-                subObj[subName] = `${ratio}%`;
+                const englishKey = SUB_CATEGORY_KEY_MAP[subName] || subName;
+                subObj[englishKey] = `${ratio}%`;
             });
             category_spending[top] = subObj;
         } else {
@@ -29,6 +30,8 @@ export function transformStateToRecommendRequest(state: AppState): RecommendRequ
 export async function fetchRecommendations(state: AppState): Promise<RecommendResponse> {
     const payload = transformStateToRecommendRequest(state);
 
+    console.log("🚀 API Request Payload:", JSON.stringify(payload, null, 2));
+
     const response = await fetch(`${BASE_URL}/cards/recommend`, {
         method: "POST",
         headers: {
@@ -39,7 +42,15 @@ export async function fetchRecommendations(state: AppState): Promise<RecommendRe
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail?.[0]?.msg || "Failed to fetch recommendations");
+        console.error("❌ API Error Detail:", errorData);
+
+        // 에러 메시지를 좀 더 자세하게 가공하여 표시
+        const firstDetail = errorData.detail?.[0];
+        const errorMsg = firstDetail
+            ? `[${firstDetail.loc?.join('.') || 'Unknown'}] ${firstDetail.msg || 'Validation Error'}`
+            : "Failed to fetch recommendations";
+
+        throw new Error(errorMsg);
     }
 
     return response.json();
