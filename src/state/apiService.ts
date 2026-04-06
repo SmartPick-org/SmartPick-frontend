@@ -8,6 +8,9 @@ export function transformStateToRecommendRequest(state: AppState): RecommendRequ
     const category_spending: RecommendRequest["category_spending"] = {};
 
     Object.entries(state.spendingData).forEach(([top, total]) => {
+        // [수정] 금액이 0원 이하인 카테고리는 서버 연산 오류(Division by zero 등) 방지를 위해 제외합니다.
+        if (total <= 0) return;
+
         const subs = state.subCategoryRatios[top];
         if (subs && Object.keys(subs).length > 0) {
             const subObj: any = { total };
@@ -36,6 +39,8 @@ export async function fetchRecommendations(state: AppState): Promise<RecommendRe
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            // [추가] Ngrok의 중간 경고 페이지(Warning Page)를 건너뛰어 API 통신이 원활하게 되도록 돕는 헤더입니다.
+            "ngrok-skip-browser-warning": "69420",
         },
         body: JSON.stringify(payload),
     });
@@ -66,6 +71,7 @@ export async function askQuestion(recommendJson: string, question: string): Prom
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "69420",
         },
         body: JSON.stringify(payload),
     });
