@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useAppState } from "@/state/appState";
 import { fetchRecommendations, askQuestion } from "@/state/apiService";
 import { RecommendCard, RecommendResponse } from "@/state/api";
+import { CATEGORY_KEY_TO_LABEL, CategoryKey } from "@/state/categories";
 
 const LoadingSkeleton = () => (
   <div className="mx-auto max-w-7xl animate-pulse">
@@ -57,6 +58,13 @@ export default function ResultsPage() {
     data?.recommended_cards.find((c) => c.card_id === activeId) ?? null
     , [data, activeId]);
 
+  // Use state.spendingData to get all categories the user input, in the order they appear in metadata
+  const categories = useMemo(() => {
+    return Object.keys(state.spendingData);
+  }, [state.spendingData]);
+
+  const recommendations = data?.recommended_cards || [];
+
   const handleAsk = async (question: string) => {
     if (!data || qaLoading) return;
     try {
@@ -86,8 +94,7 @@ export default function ResultsPage() {
     );
   }
 
-  const recommendations = data?.recommended_cards || [];
-  const categories = recommendations[0]?.category_breakdown.map(b => b.category) || [];
+
 
   return (
     <main className="min-h-screen bg-[#f4f7fa] px-6 py-12 md:px-12">
@@ -95,12 +102,12 @@ export default function ResultsPage() {
         <div className="flex items-start gap-4">
           {/* [A] Category Indicators */}
           <div className="mt-[260px] flex w-32 flex-col gap-4">
-            {categories.map((cat) => (
+            {categories.map((catKey) => (
               <div
-                key={cat}
+                key={catKey}
                 className="flex h-[52px] items-center justify-center rounded-lg bg-[#eef5cf] px-3 py-2 text-center text-xs font-semibold text-[#545f26]"
               >
-                {cat}
+                {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
               </div>
             ))}
           </div>
@@ -113,11 +120,10 @@ export default function ResultsPage() {
                 <div key={card.card_id} className="relative">
                   <div className={`flex flex-col rounded-[32px] p-8 transition-all h-full ${isBest ? "bg-white shadow-xl shadow-slate-200/50 ring-1 ring-slate-100" : "bg-transparent"
                     }`}>
-                    {isBest && (
-                      <div className="absolute -top-3 left-8 rounded-full bg-[#1e69ff] px-4 py-1 text-xs font-bold text-white">
-                        1순위 추천
-                      </div>
-                    )}
+                    <div className={`absolute -top-3 left-8 rounded-full px-4 py-1 text-xs font-bold text-white ${idx === 0 ? "bg-[#1e69ff]" : "bg-slate-500"
+                      }`}>
+                      {idx + 1}순위 추천
+                    </div>
 
                     <header className="mb-6">
                       <h2 className="text-2xl font-bold text-slate-900 truncate" title={card.card_name}>{card.card_name}</h2>
@@ -138,12 +144,13 @@ export default function ResultsPage() {
                     </div>
 
                     <div className="flex flex-col gap-4">
-                      {card.category_breakdown.map((b) => {
-                        const isNot = b.monthly_discount_krw <= 0;
+                      {categories.map((catKey) => {
+                        const b = card.category_breakdown.find(item => item.category === catKey);
+                        const isNot = !b || b.monthly_discount_krw <= 0;
                         return (
-                          <div key={b.category} className={`flex h-[52px] items-center text-sm font-medium ${isNot ? "text-slate-400 font-normal" : isBest ? "text-slate-800 font-bold" : "text-slate-700"
+                          <div key={catKey} className={`flex h-[52px] items-center text-sm font-medium ${isNot ? "text-slate-400 font-normal" : isBest ? "text-slate-800 font-bold" : "text-slate-700"
                             }`}>
-                            {isNot ? "해당사항 없음" : `최대 ${(b.monthly_discount_krw / 10000).toLocaleString()}만원 혜택`}
+                            {isNot ? "0원 혜택" : `최대 ${(b.monthly_discount_krw / 10000).toLocaleString()}만원 혜택`}
                           </div>
                         );
                       })}

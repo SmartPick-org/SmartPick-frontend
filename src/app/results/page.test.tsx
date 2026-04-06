@@ -56,11 +56,24 @@ vi.mock("next/navigation", () => ({
 
 describe("Results page", () => {
   it("데이터 로딩 후 3개 추천 카드가 렌더링된다", async () => {
-    renderWithProviders(<ResultsPage />);
+    renderWithProviders(<ResultsPage />, {
+      initialState: {
+        spendingData: { "Food": 100000, "Traffic": 50000 }
+      }
+    });
 
     // Wait for the loading skeleton to disappear and cards to appear
     const cardTitle = await screen.findByText("모니모카드");
     expect(cardTitle).toBeInTheDocument();
+
+    // Check for badges
+    expect(screen.getByText("1순위 추천")).toBeInTheDocument();
+    expect(screen.getByText("2순위 추천")).toBeInTheDocument();
+    expect(screen.getByText("3순위 추천")).toBeInTheDocument();
+
+    // Check for Translated Labels (Food -> 식비)
+    expect(screen.getByText("식비")).toBeInTheDocument();
+    expect(screen.getByText("교통")).toBeInTheDocument();
 
     expect(screen.getByText("하나하나카드")).toBeInTheDocument();
     expect(screen.getByText("국민국민카드")).toBeInTheDocument();
@@ -69,7 +82,11 @@ describe("Results page", () => {
   });
 
   it("사이드 패널(QA)이 정상적으로 열리고 질문이 가능하다", async () => {
-    renderWithProviders(<ResultsPage />);
+    renderWithProviders(<ResultsPage />, {
+      initialState: {
+        spendingData: { "Food": 100000 }
+      }
+    });
     const user = userEvent.setup();
 
     const moreBtn = await screen.findAllByRole("button", { name: /더 물어보기/ });

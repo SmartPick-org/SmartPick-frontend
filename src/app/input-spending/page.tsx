@@ -159,7 +159,7 @@ export default function InputSpendingPage() {
   const rawCategories = getSelectTopCategories(state.selectedCategories);
   const categories = rawCategories.length ? rawCategories : DEFAULT_CATEGORIES;
 
-  const [totalBudget, setTotalBudget] = useState(1000000);
+  const [totalBudget, setTotalBudget] = useState(state.totalBudget);
 
   const [spending, setSpending] = useState<Record<string, number>>(() => {
     const seed: Record<string, number> = {};
@@ -173,9 +173,17 @@ export default function InputSpendingPage() {
     const initialRatios: Record<string, Record<string, number>> = {};
     if (!Array.isArray(state.selectedCategories)) {
       Object.entries(state.selectedCategories).forEach(([topCat, subs]) => {
-        if (state.subCategoryRatios[topCat]) {
-          initialRatios[topCat] = { ...state.subCategoryRatios[topCat] };
+        const saved = state.subCategoryRatios[topCat];
+        const savedKeys = saved ? Object.keys(saved) : [];
+
+        // Check if current selections match exactly with what's in global state/storage
+        const containsAll = subs.every(s => savedKeys.includes(s));
+        const matchesExactly = containsAll && subs.length === savedKeys.length;
+
+        if (matchesExactly) {
+          initialRatios[topCat] = { ...saved };
         } else {
+          // If the subset has changed (added or removed a sub-category), re-initialize the baseline ratios
           initialRatios[topCat] = initRatiosForSubs(subs);
         }
       });
