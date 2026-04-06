@@ -34,8 +34,14 @@ export default function ResultsPage() {
 
   useEffect(() => {
     async function load() {
+      // 1. 소비 데이터가 아직 없는 경우(하이드레이션 대기 중) 요청을 보내지 않습니다.
+      if (Object.keys(state.spendingData).length === 0) {
+        return;
+      }
+
       try {
         setLoading(true);
+        setError(null);
         const res = await fetchRecommendations(state);
         setData(res);
       } catch (err: any) {
