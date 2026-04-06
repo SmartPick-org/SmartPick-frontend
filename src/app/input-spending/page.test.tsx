@@ -52,17 +52,17 @@ describe("Spending input flow", () => {
     expect(screen.getByText("총액 150,000원")).toBeInTheDocument();
   });
 
-  it("상세 토글이 열리고 닫힌다", async () => {
+  it("상세 토글이 닫히고 다시 열린다", async () => {
     renderWithProviders(<InputSpendingPage />, {
       initialState: { selectedCategories: ["식비"] }
     });
     const user = userEvent.setup();
 
-    await user.click(screen.getByRole("button", { name: "식비 상세 보기" }));
-    expect(screen.getByText("식비 카테고리 상세 설명")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "식비 접기" }));
+    expect(screen.queryByLabelText("식비 슬라이더")).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "식비 상세 닫기" }));
-    expect(screen.queryByText("식비 카테고리 상세 설명")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "식비 설정" }));
+    expect(screen.getByLabelText("식비 슬라이더")).toBeInTheDocument();
   });
 
   it("다음 버튼을 누르면 /results로 이동한다", async () => {
