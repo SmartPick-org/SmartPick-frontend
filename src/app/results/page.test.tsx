@@ -17,8 +17,8 @@ vi.mock("@/state/apiService", () => ({
         annual_fee: 10000,
         minimum_performance: 500000,
         category_breakdown: [
-          { category: "외식/배달", monthly_discount_krw: 20000 },
-          { category: "교통", monthly_discount_krw: 10000 }
+          { category: "Food", monthly_discount_krw: 20000 },
+          { category: "Traffic", monthly_discount_krw: 10000 }
         ],
         explanation: "테스트용 설명입니다."
       },
@@ -30,7 +30,7 @@ vi.mock("@/state/apiService", () => ({
         annual_fee: 10000,
         minimum_performance: 500000,
         category_breakdown: [
-          { category: "외식/배달", monthly_discount_krw: 15000 }
+          { category: "Food", monthly_discount_krw: 15000 }
         ]
       },
       {
@@ -65,6 +65,13 @@ describe("Results page", () => {
     // Wait for the loading skeleton to disappear and cards to appear
     const cardTitle = await screen.findByText("모니모카드");
     expect(cardTitle).toBeInTheDocument();
+
+    // Check for 1년 예상 혜택 (30,000 * 12 = 360,000 -> 36만원)
+    expect(screen.getByText("36만원")).toBeInTheDocument();
+
+    // Check for category benefits (20,000 -> 2만원, 10,000 -> 1만원)
+    expect(screen.getByText("최대 2만원 혜택")).toBeInTheDocument();
+    expect(screen.getByText("최대 1만원 혜택")).toBeInTheDocument();
 
     // Check for badges
     expect(screen.getByText("1순위 추천")).toBeInTheDocument();

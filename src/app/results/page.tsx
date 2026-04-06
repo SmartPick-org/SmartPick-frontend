@@ -23,6 +23,20 @@ const LoadingSkeleton = () => (
   </div>
 );
 
+const formatKoreanAmount = (amount: number) => {
+  const rounded = Math.round(amount / 5000) * 5000;
+  if (rounded === 0) return "0원";
+  const man = Math.floor(rounded / 10000);
+  const chun = Math.floor((rounded % 10000) / 1000);
+  let result = "";
+  if (man > 0) result += `${man}만`;
+  if (chun > 0) {
+    if (man > 0) result += ` ${chun}천`;
+    else result += `${chun}천`;
+  }
+  return result + "원";
+};
+
 export default function ResultsPage() {
   const { state } = useAppState();
   const [loading, setLoading] = useState(true);
@@ -138,7 +152,7 @@ export default function ResultsPage() {
                       <div className="mt-1">
                         <p className="text-[10px] font-bold text-slate-900">1년 예상 혜택</p>
                         <p className={`font-bold leading-tight ${isBest ? "text-4xl text-[#1e69ff]" : "text-3xl text-slate-900"}`}>
-                          {(card.expected_monthly_benefit * 12 / 10000).toLocaleString()}만원
+                          {formatKoreanAmount(card.expected_monthly_benefit * 12)}
                         </p>
                       </div>
                     </div>
@@ -150,7 +164,7 @@ export default function ResultsPage() {
                         return (
                           <div key={catKey} className={`flex h-[52px] items-center text-sm font-medium ${isNot ? "text-slate-400 font-normal" : isBest ? "text-slate-800 font-bold" : "text-slate-700"
                             }`}>
-                            {isNot ? "0원 혜택" : `최대 ${(b.monthly_discount_krw / 10000).toLocaleString()}만원 혜택`}
+                            {isNot ? "0원 혜택" : `최대 ${formatKoreanAmount(b.monthly_discount_krw)} 혜택`}
                           </div>
                         );
                       })}
