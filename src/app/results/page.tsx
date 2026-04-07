@@ -125,7 +125,7 @@ export default function ResultsPage() {
             {categories.map((catKey) => (
               <div
                 key={catKey}
-                className="flex h-[48px] items-center justify-center rounded-lg bg-[#F2F4F7] px-3 py-2 text-center text-[13px] font-semibold text-[#2D333F]"
+                className="flex h-[64px] items-center justify-center rounded-lg bg-[#F2F4F7] px-3 py-2 text-center text-[13px] font-semibold text-[#2D333F]"
               >
                 {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
               </div>
@@ -189,7 +189,7 @@ export default function ResultsPage() {
                         const b = card.category_breakdown.find(item => item.category === catKey);
                         const isNot = !b || b.monthly_discount_krw <= 0;
                         return (
-                          <div key={catKey} className={`flex h-[48px] items-center justify-between border-b last:border-0 ${isBest ? "border-[#625BF5]/10" : "border-slate-50"}`}>
+                          <div key={catKey} className={`flex h-[64px] items-center justify-between ${isBest ? "" : "border-b last:border-0 border-slate-50"}`}>
                             <span className={`text-[15px] font-medium leading-[1.6] ${isNot ? "text-slate-400" : isBest ? "text-slate-600" : "text-slate-500"}`}>
                               {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
                             </span>

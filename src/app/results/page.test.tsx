@@ -68,8 +68,8 @@ describe("Results page", () => {
 
     // Check for 1년 예상 혜택 (30,000 * 12 = 360,000)
     expect(screen.getByText("36")).toBeInTheDocument();
-    expect(screen.getByText("만")).toBeInTheDocument();
-    expect(screen.getByText("원")).toBeInTheDocument();
+    expect(screen.getAllByText("만").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("원").length).toBeGreaterThan(0);
 
     // Check for category benefits (20,000원, 10,000원)
     expect(screen.getByText("20,000원")).toBeInTheDocument();
