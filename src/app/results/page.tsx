@@ -121,7 +121,7 @@ export default function ResultsPage() {
       <section className="mx-auto max-w-7xl">
         <div className="flex items-start gap-12">
           {/* [A] Category Indicators */}
-          <div className="mt-[296px] flex w-32 flex-col gap-4">
+          <div className="mt-[188px] flex w-32 flex-col gap-4">
             {categories.map((catKey) => (
               <div
                 key={catKey}
@@ -138,30 +138,46 @@ export default function ResultsPage() {
               const isBest = idx === 0;
               return (
                 <div key={card.card_id} className="relative">
-                  <div className={`flex flex-col rounded-[32px] p-8 transition-all h-full ${isBest ? "bg-white shadow-2xl shadow-slate-200/60 ring-1 ring-slate-100" : "bg-transparent"
+                  <div className={`flex flex-col rounded-[20px] px-[24px] py-[40px] transition-all h-full ${isBest ? "bg-[#1A2132] scale-[1.02] shadow-[0_10px_30px_rgba(98,91,245,0.15)] border-[1px] border-indigo-500/30" : "bg-white shadow-sm ring-1 ring-slate-100"
                     }`}>
-                    <div className="h-6 mb-3"> {/* Badge Placeholder for Alignment */}
-                      <div className={`inline-block rounded-full px-4 py-1 text-xs font-bold text-white ${idx === 0 ? "bg-[#1e69ff]" : "bg-slate-500"
-                        }`}>
-                        {idx + 1}순위 추천
-                      </div>
+                    <div className="h-[80px] flex flex-col justify-start"> {/* Fixed Header for Alignment (Top to Title = 80px) */}
+                      {idx === 0 || isBest ? (
+                        <div className={`inline-block rounded-full px-4 py-1 self-start text-xs font-bold text-white mb-4 bg-[#1e69ff]`}>
+                          1순위 추천
+                        </div>
+                      ) : (
+                        <div className={`inline-block rounded-full px-4 py-1 self-start text-xs font-bold text-white mb-4 bg-slate-500`}>
+                          {idx + 1}순위 추천
+                        </div>
+                      )}
+
+                      <h2 className={`text-[24px] font-bold tracking-[-0.02em] truncate ${isBest ? "text-white" : "text-slate-900"}`} title={card.card_name}>
+                        {card.card_name}
+                      </h2>
                     </div>
 
-                    <header className="mb-6">
-                      <h2 className="text-2xl font-extrabold text-slate-900 truncate" title={card.card_name}>{card.card_name}</h2>
-                      <p className="mt-1 text-sm font-medium text-slate-500">{card.card_company}</p>
+                    <header className="mb-6 mt-1">
+                      <p className={`text-[14px] font-medium ${isBest ? "text-slate-400" : "text-slate-500"}`}>{card.card_company}</p>
                     </header>
 
                     <div className="mb-10 flex flex-col gap-1">
-                      <div className="flex items-baseline gap-1 text-[12px] font-semibold text-slate-600">
+                      <div className={`flex items-baseline gap-1 text-[13px] font-normal ${isBest ? "text-slate-400" : "text-slate-600"}`}>
                         <span>예상 월별 혜택</span>
-                        <span className="text-blue-600 font-bold tabular-nums">{card.expected_monthly_benefit.toLocaleString()}원</span>
+                        <span className={`font-bold tabular-nums ${isBest ? "text-indigo-400" : "text-blue-600"}`}>{card.expected_monthly_benefit.toLocaleString()}원</span>
                       </div>
                       <div className="mt-1">
-                        <p className="text-[12px] font-bold text-slate-900">1년 예상 혜택</p>
-                        <p className={`font-black leading-tight tabular-nums ${isBest ? "text-4xl text-[#1e69ff]" : "text-3xl text-slate-900"}`}>
-                          {formatKoreanAmount(card.expected_monthly_benefit * 12)}
-                        </p>
+                        <p className={`text-[13px] font-bold ${isBest ? "text-slate-300" : "text-slate-900"}`}>1년 예상 혜택</p>
+                        <div className={`leading-tight tabular-nums font-extrabold ${isBest ? "text-white" : "text-slate-900"}`}>
+                          <span className="text-[36px]">{Math.floor((card.expected_monthly_benefit * 12) / 10000)}</span>
+                          <span className="text-[20px]">만</span>
+                          {((card.expected_monthly_benefit * 12) % 10000) > 0 && (
+                            <>
+                              <span className="ml-1 text-[36px]">{Math.floor(((card.expected_monthly_benefit * 12) % 10000) / 1000)}</span>
+                              <span className="text-[20px]">천</span>
+                            </>
+                          )}
+                          <span className="text-[20px]">원</span>
+                        </div>
                       </div>
                     </div>
 
@@ -170,16 +186,20 @@ export default function ResultsPage() {
                         const b = card.category_breakdown.find(item => item.category === catKey);
                         const isNot = !b || b.monthly_discount_krw <= 0;
                         return (
-                          <div key={catKey} className={`flex h-[52px] items-center text-sm font-medium ${isNot ? "text-slate-400 font-normal" : isBest ? "text-slate-800 font-bold" : "text-slate-700"
-                            }`}>
-                            {isNot ? "0원 혜택" : `최대 ${formatKoreanAmount(b.monthly_discount_krw)} 혜택`}
+                          <div key={catKey} className={`flex h-[52px] items-center justify-between border-b last:border-0 ${isBest ? "border-slate-800" : "border-slate-50"}`}>
+                            <span className={`text-[15px] font-medium leading-[1.6] ${isNot ? "text-slate-500" : isBest ? "text-slate-400" : "text-slate-500"}`}>
+                              {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
+                            </span>
+                            <span className={`text-[15px] font-bold tabular-nums leading-[1.6] ${isNot ? "text-slate-400" : isBest ? "text-white" : "text-slate-900"}`}>
+                              {isNot ? "0원" : `${b.monthly_discount_krw.toLocaleString()}원`}
+                            </span>
                           </div>
                         );
                       })}
                     </div>
 
-                    <footer className="mt-auto pt-8 flex flex-col gap-4">
-                      <div className="flex flex-col gap-1 text-[11px] font-medium text-slate-400">
+                    <footer className="mt-auto pt-8 flex flex-col">
+                      <div className={`flex flex-col gap-1 text-[12px] font-normal ${isBest ? "text-slate-500" : "text-slate-400"}`}>
                         <p>연회비 : <span className="tabular-nums">{card.annual_fee.toLocaleString()}원</span></p>
                         <p>전월실적 : <span className="tabular-nums">{card.minimum_performance.toLocaleString()}원</span></p>
                       </div>
@@ -189,7 +209,7 @@ export default function ResultsPage() {
                           setActiveId(card.card_id);
                           setChat([]);
                         }}
-                        className="flex w-full items-center justify-center rounded-2xl bg-[#1e69ff] py-4 text-base font-bold text-white shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                        className={`mt-[24px] flex h-[52px] w-full items-center justify-center rounded-[12px] text-[16px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] ${isBest ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30" : "bg-[#1e69ff] text-white shadow-lg shadow-blue-500/20"}`}
                       >
                         더 물어보기
                       </button>
@@ -204,13 +224,13 @@ export default function ResultsPage() {
         </div>
 
         {/* [D] Insight Card */}
-        <div className="mt-16">
-          <header className="mb-4 flex items-center gap-2 text-base font-bold text-slate-800">
+        <div className="mt-12 ml-[176px]">
+          <header className="mb-6 flex items-center gap-2 text-base font-bold text-slate-800">
             <span className="text-blue-500">✦</span>
             <span>은정님을 위한 맞춤 큐레이션</span>
           </header>
-          <div className="rounded-[32px] bg-white p-10 shadow-sm ring-1 ring-slate-100">
-            <div className="text-base leading-[1.7] text-slate-600 whitespace-pre-wrap">
+          <div className="rounded-[24px] bg-white p-[32px] shadow-sm ring-1 ring-slate-100">
+            <div className="text-[16px] font-medium leading-[1.7] text-slate-600 whitespace-pre-wrap">
               {data?.explanation || "분석 결과를 생성 중입니다..."}
             </div>
           </div>

@@ -66,12 +66,14 @@ describe("Results page", () => {
     const cardTitle = await screen.findByText("모니모카드");
     expect(cardTitle).toBeInTheDocument();
 
-    // Check for 1년 예상 혜택 (30,000 * 12 = 360,000 -> 36만원)
-    expect(screen.getByText("36만원")).toBeInTheDocument();
+    // Check for 1년 예상 혜택 (30,000 * 12 = 360,000)
+    expect(screen.getByText("36")).toBeInTheDocument();
+    expect(screen.getByText("만")).toBeInTheDocument();
+    expect(screen.getByText("원")).toBeInTheDocument();
 
-    // Check for category benefits (20,000 -> 2만원, 10,000 -> 1만원)
-    expect(screen.getByText("최대 2만원 혜택")).toBeInTheDocument();
-    expect(screen.getByText("최대 1만원 혜택")).toBeInTheDocument();
+    // Check for category benefits (20,000원, 10,000원)
+    expect(screen.getByText("20,000원")).toBeInTheDocument();
+    expect(screen.getByText("10,000원")).toBeInTheDocument();
 
     // Check for badges
     expect(screen.getByText("1순위 추천")).toBeInTheDocument();
