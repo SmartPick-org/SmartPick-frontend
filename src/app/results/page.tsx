@@ -117,15 +117,15 @@ export default function ResultsPage() {
 
 
   return (
-    <main className="min-h-screen bg-[#f4f7fa] px-6 py-12 md:px-12">
+    <main className="min-h-screen bg-white px-6 py-12 md:px-12">
       <section className="mx-auto max-w-7xl">
         <div className="flex items-start gap-12">
-          {/* [A] Category Indicators */}
-          <div className="mt-[188px] flex w-32 flex-col gap-4">
+          {/* [A] Category Indicators - Align mt with Card Content Baseline */}
+          <div className="mt-[262px] flex w-32 flex-col">
             {categories.map((catKey) => (
               <div
                 key={catKey}
-                className="flex h-[52px] items-center justify-center rounded-lg bg-[#eef5cf] px-3 py-2 text-center text-xs font-semibold text-[#545f26]"
+                className="flex h-[48px] items-center justify-center rounded-lg bg-[#F2F4F7] px-3 py-2 text-center text-[13px] font-semibold text-[#2D333F]"
               >
                 {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
               </div>
@@ -138,59 +138,62 @@ export default function ResultsPage() {
               const isBest = idx === 0;
               return (
                 <div key={card.card_id} className="relative">
-                  <div className={`flex flex-col rounded-[20px] px-[24px] py-[40px] transition-all h-full ${isBest ? "bg-[#1A2132] scale-[1.02] shadow-[0_10px_30px_rgba(98,91,245,0.15)] border-[1px] border-indigo-500/30" : "bg-white shadow-sm ring-1 ring-slate-100"
+                  <div className={`flex flex-col rounded-[20px] px-[24px] py-[40px] transition-all h-full border ${isBest ? "bg-[#EFEEFF] scale-[1.02] shadow-[0_10px_30px_rgba(98,91,245,0.15)] border-[#625BF5]/30" : "bg-white shadow-sm border-slate-100"
                     }`}>
-                    <div className="h-[80px] flex flex-col justify-start"> {/* Fixed Header for Alignment (Top to Title = 80px) */}
+                    {/* Fixed Card Header Total Height: 28 + 32 + 32 + 96 = 188px (Content only) + 40px Padding = 228px */}
+                    <div className="h-[28px] mb-0 flex flex-col justify-start"> {/* Badge Area */}
                       {idx === 0 || isBest ? (
-                        <div className={`inline-block rounded-full px-4 py-1 self-start text-xs font-bold text-white mb-4 bg-[#1e69ff]`}>
+                        <div className={`inline-block rounded-full px-4 py-1 self-start text-[11px] font-bold text-white bg-[#625BF5]`}>
                           1순위 추천
                         </div>
                       ) : (
-                        <div className={`inline-block rounded-full px-4 py-1 self-start text-xs font-bold text-white mb-4 bg-slate-500`}>
+                        <div className={`inline-block rounded-full px-4 py-1 self-start text-[11px] font-bold text-white bg-slate-400`}>
                           {idx + 1}순위 추천
                         </div>
                       )}
+                    </div>
 
-                      <h2 className={`text-[24px] font-bold tracking-[-0.02em] truncate ${isBest ? "text-white" : "text-slate-900"}`} title={card.card_name}>
+                    <div className="h-[32px] mt-[12px] flex items-center"> {/* Title Area (12px Gap from Badge) */}
+                      <h2 className={`text-[22px] font-bold tracking-[-0.02em] leading-tight truncate ${isBest ? "text-[#2D333F]" : "text-slate-900"}`} title={card.card_name}>
                         {card.card_name}
                       </h2>
                     </div>
 
-                    <header className="mb-6 mt-1">
-                      <p className={`text-[14px] font-medium ${isBest ? "text-slate-400" : "text-slate-500"}`}>{card.card_company}</p>
-                    </header>
+                    <div className="h-[32px] mt-1 mb-[18px] flex items-center"> {/* Subtitle Area */}
+                      <p className={`text-[14px] font-medium ${isBest ? "text-slate-500" : "text-slate-500"}`}>{card.card_company}</p>
+                    </div>
 
-                    <div className="mb-10 flex flex-col gap-1">
-                      <div className={`flex items-baseline gap-1 text-[13px] font-normal ${isBest ? "text-slate-400" : "text-slate-600"}`}>
+                    <div className="h-[96px] flex flex-col justify-center"> {/* Yearly Benefit Area */}
+                      <div className={`flex items-baseline gap-1 text-[13px] font-normal ${isBest ? "text-slate-500" : "text-slate-600"}`}>
                         <span>예상 월별 혜택</span>
-                        <span className={`font-bold tabular-nums ${isBest ? "text-indigo-400" : "text-blue-600"}`}>{card.expected_monthly_benefit.toLocaleString()}원</span>
+                        <span className={`font-bold tabular-nums text-[#625BF5]`}>{card.expected_monthly_benefit.toLocaleString()}원</span>
                       </div>
                       <div className="mt-1">
-                        <p className={`text-[13px] font-bold ${isBest ? "text-slate-300" : "text-slate-900"}`}>1년 예상 혜택</p>
-                        <div className={`leading-tight tabular-nums font-extrabold ${isBest ? "text-white" : "text-slate-900"}`}>
-                          <span className="text-[36px]">{Math.floor((card.expected_monthly_benefit * 12) / 10000)}</span>
-                          <span className="text-[20px]">만</span>
+                        <p className={`text-[13px] font-bold ${isBest ? "text-[#2D333F]" : "text-slate-900"}`}>1년 예상 혜택</p>
+                        <div className={`leading-tight tabular-nums font-extrabold ${isBest ? "text-[#2D333F]" : "text-slate-900"}`}>
+                          <span className={`text-[32px] ${isBest ? "text-[#625BF5]" : ""}`}>{Math.floor((card.expected_monthly_benefit * 12) / 10000)}</span>
+                          <span className="text-[18px]">만</span>
                           {((card.expected_monthly_benefit * 12) % 10000) > 0 && (
                             <>
-                              <span className="ml-1 text-[36px]">{Math.floor(((card.expected_monthly_benefit * 12) % 10000) / 1000)}</span>
-                              <span className="text-[20px]">천</span>
+                              <span className={`ml-1 text-[32px] ${isBest ? "text-[#625BF5]" : ""}`}>{Math.floor(((card.expected_monthly_benefit * 12) % 10000) / 1000)}</span>
+                              <span className="text-[18px]">천</span>
                             </>
                           )}
-                          <span className="text-[20px]">원</span>
+                          <span className="text-[18px]">원</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex flex-col gap-4">
+                    <div className="flex flex-col">
                       {categories.map((catKey) => {
                         const b = card.category_breakdown.find(item => item.category === catKey);
                         const isNot = !b || b.monthly_discount_krw <= 0;
                         return (
-                          <div key={catKey} className={`flex h-[52px] items-center justify-between border-b last:border-0 ${isBest ? "border-slate-800" : "border-slate-50"}`}>
-                            <span className={`text-[15px] font-medium leading-[1.6] ${isNot ? "text-slate-500" : isBest ? "text-slate-400" : "text-slate-500"}`}>
+                          <div key={catKey} className={`flex h-[48px] items-center justify-between border-b last:border-0 ${isBest ? "border-[#625BF5]/10" : "border-slate-50"}`}>
+                            <span className={`text-[15px] font-medium leading-[1.6] ${isNot ? "text-slate-400" : isBest ? "text-slate-600" : "text-slate-500"}`}>
                               {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
                             </span>
-                            <span className={`text-[15px] font-bold tabular-nums leading-[1.6] ${isNot ? "text-slate-400" : isBest ? "text-white" : "text-slate-900"}`}>
+                            <span className={`text-[15px] font-bold tabular-nums leading-[1.6] ${isNot ? "text-slate-300" : isBest ? "text-[#625BF5]" : "text-slate-900"}`}>
                               {isNot ? "0원" : `${b.monthly_discount_krw.toLocaleString()}원`}
                             </span>
                           </div>
@@ -198,7 +201,7 @@ export default function ResultsPage() {
                       })}
                     </div>
 
-                    <footer className="mt-auto pt-8 flex flex-col">
+                    <footer className="mt-auto pt-6 flex flex-col">
                       <div className={`flex flex-col gap-1 text-[12px] font-normal ${isBest ? "text-slate-500" : "text-slate-400"}`}>
                         <p>연회비 : <span className="tabular-nums">{card.annual_fee.toLocaleString()}원</span></p>
                         <p>전월실적 : <span className="tabular-nums">{card.minimum_performance.toLocaleString()}원</span></p>
@@ -209,7 +212,7 @@ export default function ResultsPage() {
                           setActiveId(card.card_id);
                           setChat([]);
                         }}
-                        className={`mt-[24px] flex h-[52px] w-full items-center justify-center rounded-[12px] text-[16px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] ${isBest ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30" : "bg-[#1e69ff] text-white shadow-lg shadow-blue-500/20"}`}
+                        className={`mt-[24px] flex h-[52px] w-full items-center justify-center rounded-[12px] text-[16px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] ${isBest ? "bg-[#625BF5] text-white shadow-lg shadow-[#625BF5]/30" : "bg-[#1e69ff] text-white shadow-lg shadow-blue-500/20"}`}
                       >
                         더 물어보기
                       </button>
@@ -225,11 +228,11 @@ export default function ResultsPage() {
 
         {/* [D] Insight Card */}
         <div className="mt-12 ml-[176px]">
-          <header className="mb-6 flex items-center gap-2 text-base font-bold text-slate-800">
-            <span className="text-blue-500">✦</span>
+          <header className="mb-6 flex items-center gap-2 text-base font-bold text-[#2D333F]">
+            <span className="text-[#625BF5]">✦</span>
             <span>은정님을 위한 맞춤 큐레이션</span>
           </header>
-          <div className="rounded-[24px] bg-white p-[32px] shadow-sm ring-1 ring-slate-100">
+          <div className="rounded-[24px] bg-white p-[32px] shadow-sm ring-1 ring-[#F2F4F7]">
             <div className="text-[16px] font-medium leading-[1.7] text-slate-600 whitespace-pre-wrap">
               {data?.explanation || "분석 결과를 생성 중입니다..."}
             </div>
@@ -259,7 +262,7 @@ export default function ResultsPage() {
               {chat.map((m, i) => (
                 <div key={i} className="space-y-4">
                   <div className="flex justify-end">
-                    <div className="rounded-2xl rounded-tr-sm bg-slate-900 px-4 py-2 text-sm text-white max-w-[80%]">
+                    <div className="rounded-2xl rounded-tr-sm bg-[#625BF5] px-4 py-2 text-sm text-white max-w-[80%]">
                       {m.q}
                     </div>
                   </div>
