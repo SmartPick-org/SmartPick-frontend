@@ -132,97 +132,103 @@ export default function ResultsPage() {
             ))}
           </div>
 
-          {/* [B] 3 Recommendation Cards */}
-          <div className="grid flex-1 grid-cols-3 gap-6">
-            {recommendations.map((card, idx) => {
-              const isBest = idx === 0;
-              return (
-                <div key={card.card_id} className="relative">
-                  <div className={`flex flex-col rounded-[20px] px-[24px] py-[40px] transition-all h-full border ${isBest ? "bg-[#EFEEFF] scale-[1.02] shadow-[0_10px_30px_rgba(98,91,245,0.15)] border-[#625BF5]/30" : "bg-white shadow-sm border-slate-100"
-                    }`}>
-                    {/* Fixed Card Header Total Height: 28 + 32 + 32 + 96 = 188px (Content only) + 40px Padding = 228px */}
-                    <div className="h-[28px] mb-0 flex flex-col justify-start"> {/* Badge Area */}
-                      {idx === 0 || isBest ? (
-                        <div className={`inline-block rounded-full px-4 py-1 self-start text-[11px] font-bold text-white bg-[#625BF5]`}>
-                          1순위 추천
-                        </div>
-                      ) : (
-                        <div className={`inline-block rounded-full px-4 py-1 self-start text-[11px] font-bold text-white bg-slate-400`}>
-                          {idx + 1}순위 추천
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="h-[32px] mt-[12px] flex items-center"> {/* Title Area (12px Gap from Badge) */}
-                      <h2 className={`text-[22px] font-bold tracking-[-0.02em] leading-tight truncate ${isBest ? "text-[#2D333F]" : "text-slate-900"}`} title={card.card_name}>
-                        {card.card_name}
-                      </h2>
-                    </div>
-
-                    <div className="h-[32px] mt-1 mb-[18px] flex items-center"> {/* Subtitle Area */}
-                      <p className={`text-[14px] font-medium ${isBest ? "text-slate-500" : "text-slate-500"}`}>{card.card_company}</p>
-                    </div>
-
-                    <div className="h-[96px] flex flex-col justify-center"> {/* Yearly Benefit Area */}
-                      <div className={`flex items-baseline gap-1 text-[13px] font-normal ${isBest ? "text-slate-500" : "text-slate-600"}`}>
-                        <span>예상 월별 혜택</span>
-                        <span className={`font-bold tabular-nums text-[#625BF5]`}>{card.expected_monthly_benefit.toLocaleString()}원</span>
-                      </div>
-                      <div className="mt-1">
-                        <p className={`text-[13px] font-bold ${isBest ? "text-[#2D333F]" : "text-slate-900"}`}>1년 예상 혜택</p>
-                        <div className={`leading-tight tabular-nums font-extrabold ${isBest ? "text-[#2D333F]" : "text-slate-900"}`}>
-                          <span className={`text-[32px] ${isBest ? "text-[#625BF5]" : ""}`}>{Math.floor((card.expected_monthly_benefit * 12) / 10000)}</span>
-                          <span className="text-[18px]">만</span>
-                          {((card.expected_monthly_benefit * 12) % 10000) > 0 && (
-                            <>
-                              <span className={`ml-1 text-[32px] ${isBest ? "text-[#625BF5]" : ""}`}>{Math.floor(((card.expected_monthly_benefit * 12) % 10000) / 1000)}</span>
-                              <span className="text-[18px]">천</span>
-                            </>
+          {/* [B] Horizontal Recommendation Scroll */}
+          <div className="flex-1 overflow-x-auto pb-8 scrollbar-hide scroll-smooth">
+            <div className="flex gap-6 min-w-max pr-12">
+              {recommendations
+                .filter(card => card.expected_monthly_benefit > 0)
+                .map((card, idx) => {
+                  const isBest = idx === 0;
+                  return (
+                    <div key={card.card_id} className="relative w-[380px] shrink-0">
+                      <div className={`flex flex-col rounded-[20px] px-[24px] py-[40px] transition-all h-full border ${isBest ? "bg-[#EFEEFF] scale-[1.02] shadow-[0_10px_30px_rgba(98,91,245,0.15)] border-[#625BF5]/30" : "bg-white shadow-sm border-slate-100"
+                        }`}>
+                        {/* Fixed Card Header Total Height: 28 + 32 + 32 + 96 = 188px (Content only) + 40px Padding = 228px */}
+                        <div className="h-[28px] mb-0 flex flex-col justify-start"> {/* Badge Area */}
+                          {idx === 0 || isBest ? (
+                            <div className={`inline-block rounded-full px-4 py-1 self-start text-[11px] font-bold text-white bg-[#625BF5]`}>
+                              1순위 추천
+                            </div>
+                          ) : (
+                            <div className={`inline-block rounded-full px-4 py-1 self-start text-[11px] font-bold text-white bg-slate-400`}>
+                              {idx + 1}순위 추천
+                            </div>
                           )}
-                          <span className="text-[18px]">원</span>
                         </div>
-                      </div>
-                    </div>
 
-                    <div className="flex flex-col">
-                      {categories.map((catKey) => {
-                        const b = card.category_breakdown.find(item => item.category === catKey);
-                        const isNot = !b || b.monthly_discount_krw <= 0;
-                        return (
-                          <div key={catKey} className={`flex h-[64px] items-center justify-between ${isBest ? "" : "border-b last:border-0 border-slate-50"}`}>
-                            <span className={`text-[15px] font-medium leading-[1.6] ${isNot ? "text-slate-400" : isBest ? "text-slate-600" : "text-slate-500"}`}>
-                              {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
-                            </span>
-                            <span className={`text-[15px] font-bold tabular-nums leading-[1.6] ${isNot ? "text-slate-300" : isBest ? "text-[#625BF5]" : "text-slate-900"}`}>
-                              {isNot ? "0원" : `${b.monthly_discount_krw.toLocaleString()}원`}
-                            </span>
+                        <div className="h-[32px] mt-[12px] flex items-center"> {/* Title Area (12px Gap from Badge) */}
+                          <h2 className={`text-[22px] font-bold tracking-[-0.02em] leading-tight truncate ${isBest ? "text-[#2D333F]" : "text-slate-900"}`} title={card.card_name}>
+                            {card.card_name}
+                          </h2>
+                        </div>
+
+                        <div className="h-[32px] mt-1 mb-[18px] flex items-center"> {/* Subtitle Area */}
+                          <p className={`text-[14px] font-medium ${isBest ? "text-slate-500" : "text-slate-500"}`}>{card.card_company}</p>
+                        </div>
+
+                        <div className="h-[96px] flex flex-col justify-center"> {/* Yearly Benefit Area */}
+                          <div className={`flex items-baseline gap-1 text-[13px] font-normal ${isBest ? "text-slate-500" : "text-slate-600"}`}>
+                            <span>예상 월별 혜택</span>
+                            <span className={`font-bold tabular-nums text-[#625BF5]`}>{card.expected_monthly_benefit.toLocaleString()}원</span>
                           </div>
-                        );
-                      })}
-                    </div>
+                          <div className="mt-1">
+                            <p className={`text-[13px] font-bold ${isBest ? "text-[#2D333F]" : "text-slate-900"}`}>1년 예상 혜택</p>
+                            <div className={`leading-tight tabular-nums font-extrabold ${isBest ? "text-[#2D333F]" : "text-slate-900"}`}>
+                              <span className={`text-[32px] ${isBest ? "text-[#625BF5]" : ""}`}>{Math.floor((card.expected_monthly_benefit * 12) / 10000)}</span>
+                              <span className="text-[18px]">만</span>
+                              {((card.expected_monthly_benefit * 12) % 10000) > 0 && (
+                                <>
+                                  <span className={`ml-1 text-[32px] ${isBest ? "text-[#625BF5]" : ""}`}>{Math.floor(((card.expected_monthly_benefit * 12) % 10000) / 1000)}</span>
+                                  <span className="text-[18px]">천</span>
+                                </>
+                              )}
+                              <span className="text-[18px]">원</span>
+                            </div>
+                          </div>
+                        </div>
 
-                    <footer className="mt-auto pt-6 flex flex-col">
-                      <div className={`flex flex-col gap-1 text-[12px] font-normal ${isBest ? "text-slate-500" : "text-slate-400"}`}>
-                        <p>연회비 : <span className="tabular-nums">{card.annual_fee.toLocaleString()}원</span></p>
-                        <p>전월실적 : <span className="tabular-nums">{card.minimum_performance.toLocaleString()}원</span></p>
+                        <div className="flex flex-col">
+                          {categories.map((catKey) => {
+                            const b = card.category_breakdown.find(item => item.category === catKey);
+                            const isNot = !b || b.monthly_discount_krw <= 0;
+                            return (
+                              <div key={catKey} className={`flex h-[64px] items-center justify-between ${isBest ? "" : "border-b last:border-0 border-slate-50"}`}>
+                                <span className={`text-[15px] font-medium leading-[1.6] ${isNot ? "text-slate-400" : isBest ? "text-slate-600" : "text-slate-500"}`}>
+                                  {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
+                                </span>
+                                <span className={`text-[15px] font-bold tabular-nums leading-[1.6] ${isNot ? "text-slate-300" : isBest ? "text-[#625BF5]" : "text-slate-900"}`}>
+                                  {isNot ? "0원" : `${b.monthly_discount_krw.toLocaleString()}원`}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        <footer className="mt-auto pt-6 flex flex-col">
+                          <div className={`flex flex-col gap-1 text-[12px] font-normal ${isBest ? "text-slate-500" : "text-slate-400"}`}>
+                            <p>연회비 : <span className="tabular-nums">{card.annual_fee.toLocaleString()}원</span></p>
+                            <p>전월실적 : <span className="tabular-nums">{card.minimum_performance.toLocaleString()}원</span></p>
+                          </div>
+                          {idx < 3 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setActiveId(card.card_id);
+                                setChat([]);
+                              }}
+                              className={`mt-[24px] flex h-[52px] w-full items-center justify-center rounded-[12px] text-[16px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] ${isBest ? "bg-[#625BF5] text-white shadow-lg shadow-[#625BF5]/30" : "bg-[#1e69ff] text-white shadow-lg shadow-blue-500/20"}`}
+                            >
+                              더 물어보기
+                            </button>
+                          )}
+                        </footer>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setActiveId(card.card_id);
-                          setChat([]);
-                        }}
-                        className={`mt-[24px] flex h-[52px] w-full items-center justify-center rounded-[12px] text-[16px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] ${isBest ? "bg-[#625BF5] text-white shadow-lg shadow-[#625BF5]/30" : "bg-[#1e69ff] text-white shadow-lg shadow-blue-500/20"}`}
-                      >
-                        더 물어보기
-                      </button>
-                    </footer>
-                  </div>
 
 
-                </div>
-              );
-            })}
+                    </div>
+                  );
+                })}
+            </div>
           </div>
         </div>
 
