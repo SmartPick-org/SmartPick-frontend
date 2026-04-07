@@ -72,6 +72,12 @@ export default function ResultsPage() {
     data?.recommended_cards.find((c) => c.card_id === activeId) ?? null
     , [data, activeId]);
 
+  const suggestedQuestions = [
+    "이 카드의 교통 혜택을 더 자세히 알려줘",
+    "연회비 대비 혜택이 충분한가?",
+    "전월 실적 채우기 쉬울까?"
+  ];
+
   // Use state.spendingData to get all categories the user input, in the order they appear in metadata
   const categories = useMemo(() => {
     return Object.keys(state.spendingData);
@@ -251,7 +257,7 @@ export default function ResultsPage() {
             <div className="pt-4 border-t space-y-3">
               <p className="text-xs font-semibold text-slate-400">추천 질문</p>
               <div className="flex flex-wrap gap-2">
-                {["이 카드의 교통 혜택을 더 자세히 알려줘", "연회비 대비 혜택이 충분한가?", "전월 실적 채우기 쉬울까?"].map((q) => (
+                {suggestedQuestions.map((q) => (
                   <button
                     key={q}
                     disabled={qaLoading}
