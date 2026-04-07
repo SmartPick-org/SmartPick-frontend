@@ -119,9 +119,9 @@ export default function ResultsPage() {
   return (
     <main className="min-h-screen bg-[#f4f7fa] px-6 py-12 md:px-12">
       <section className="mx-auto max-w-7xl">
-        <div className="flex items-start gap-4">
+        <div className="flex items-start gap-12">
           {/* [A] Category Indicators */}
-          <div className="mt-[260px] flex w-32 flex-col gap-4">
+          <div className="mt-[296px] flex w-32 flex-col gap-4">
             {categories.map((catKey) => (
               <div
                 key={catKey}
@@ -138,26 +138,28 @@ export default function ResultsPage() {
               const isBest = idx === 0;
               return (
                 <div key={card.card_id} className="relative">
-                  <div className={`flex flex-col rounded-[32px] p-8 transition-all h-full ${isBest ? "bg-white shadow-xl shadow-slate-200/50 ring-1 ring-slate-100" : "bg-transparent"
+                  <div className={`flex flex-col rounded-[32px] p-8 transition-all h-full ${isBest ? "bg-white shadow-2xl shadow-slate-200/60 ring-1 ring-slate-100" : "bg-transparent"
                     }`}>
-                    <div className={`absolute -top-3 left-8 rounded-full px-4 py-1 text-xs font-bold text-white ${idx === 0 ? "bg-[#1e69ff]" : "bg-slate-500"
-                      }`}>
-                      {idx + 1}순위 추천
+                    <div className="h-6 mb-3"> {/* Badge Placeholder for Alignment */}
+                      <div className={`inline-block rounded-full px-4 py-1 text-xs font-bold text-white ${idx === 0 ? "bg-[#1e69ff]" : "bg-slate-500"
+                        }`}>
+                        {idx + 1}순위 추천
+                      </div>
                     </div>
 
                     <header className="mb-6">
-                      <h2 className="text-2xl font-bold text-slate-900 truncate" title={card.card_name}>{card.card_name}</h2>
-                      <p className="mt-1 text-sm text-slate-500">{card.card_company}</p>
+                      <h2 className="text-2xl font-extrabold text-slate-900 truncate" title={card.card_name}>{card.card_name}</h2>
+                      <p className="mt-1 text-sm font-medium text-slate-500">{card.card_company}</p>
                     </header>
 
                     <div className="mb-10 flex flex-col gap-1">
-                      <div className="flex items-baseline gap-1 text-[10px] font-medium text-slate-500">
+                      <div className="flex items-baseline gap-1 text-[12px] font-semibold text-slate-600">
                         <span>예상 월별 혜택</span>
-                        <span className="text-blue-600 font-bold">{card.expected_monthly_benefit.toLocaleString()}원</span>
+                        <span className="text-blue-600 font-bold tabular-nums">{card.expected_monthly_benefit.toLocaleString()}원</span>
                       </div>
                       <div className="mt-1">
-                        <p className="text-[10px] font-bold text-slate-900">1년 예상 혜택</p>
-                        <p className={`font-bold leading-tight ${isBest ? "text-4xl text-[#1e69ff]" : "text-3xl text-slate-900"}`}>
+                        <p className="text-[12px] font-bold text-slate-900">1년 예상 혜택</p>
+                        <p className={`font-black leading-tight tabular-nums ${isBest ? "text-4xl text-[#1e69ff]" : "text-3xl text-slate-900"}`}>
                           {formatKoreanAmount(card.expected_monthly_benefit * 12)}
                         </p>
                       </div>
@@ -176,24 +178,25 @@ export default function ResultsPage() {
                       })}
                     </div>
 
-                    <footer className="mt-auto pt-8 flex flex-col gap-1 text-[11px] font-medium text-slate-400">
-                      <p>연회비 : {card.annual_fee.toLocaleString()}원</p>
-                      <p>전월실적 : {card.minimum_performance.toLocaleString()}원</p>
+                    <footer className="mt-auto pt-8 flex flex-col gap-4">
+                      <div className="flex flex-col gap-1 text-[11px] font-medium text-slate-400">
+                        <p>연회비 : <span className="tabular-nums">{card.annual_fee.toLocaleString()}원</span></p>
+                        <p>전월실적 : <span className="tabular-nums">{card.minimum_performance.toLocaleString()}원</span></p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveId(card.card_id);
+                          setChat([]);
+                        }}
+                        className="flex w-full items-center justify-center rounded-2xl bg-[#1e69ff] py-4 text-base font-bold text-white shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                      >
+                        더 물어보기
+                      </button>
                     </footer>
                   </div>
 
-                  <div className="mt-8 flex justify-center">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setActiveId(card.card_id);
-                        setChat([]);
-                      }}
-                      className="flex w-full max-w-[200px] items-center justify-center rounded-2xl bg-[#1e69ff] py-4 text-sm font-bold text-white shadow-lg shadow-blue-200 transition-transform hover:scale-[1.02]"
-                    >
-                      더 물어보기
-                    </button>
-                  </div>
+
                 </div>
               );
             })}
@@ -207,7 +210,7 @@ export default function ResultsPage() {
             <span>은정님을 위한 맞춤 큐레이션</span>
           </header>
           <div className="rounded-[32px] bg-white p-10 shadow-sm ring-1 ring-slate-100">
-            <div className="text-sm leading-relaxed text-slate-600 whitespace-pre-wrap">
+            <div className="text-base leading-[1.7] text-slate-600 whitespace-pre-wrap">
               {data?.explanation || "분석 결과를 생성 중입니다..."}
             </div>
           </div>
