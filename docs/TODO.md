@@ -27,8 +27,8 @@
 - [v] Step5: 추천 카드 상세 영역(카테고리별 혜택 리스트) 연결
 - [ ] Step5: COMPARE 모드 "연간 차액" 계산 로직 적용
 - [ ] Step5 (To-Do): 기존 카드와 새로운 카드의 좌우 3열 배치 비교 레이아웃 개선 (차액 변화량 시각화 처리)
-- [v] Side Sheet: 질문 칩 데이터 연결
-- [v] Side Sheet: QA API 연결 (/cards/qa)
+- [v] Side Sheet: 질문 칩 데이터 연결 (Advisor API 기반)
+- [v] Side Sheet: QA API 연결 (/cards/advisor)
 
 ### P3. UI 디테일 보완 (기획 대비 미적용 보완)
 - [ ] Step1: Entry 화면 마이크로 카피 정리 (CTA/보조 설명)

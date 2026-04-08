@@ -2,7 +2,17 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useAppState } from "@/state/appState";
-import { fetchRecommendations, askQuestion } from "@/state/apiService";
+import { fetchRecommendations, fetchAdvisorAnswer } from "@/state/apiService";
+import type { AdvisorQueryType } from "@/state/api";
+
+const ADVISOR_QUERIES: { type: AdvisorQueryType; label: string }[] = [
+  { type: "credit_fees", label: "연회비 및 수수료 안내" },
+  { type: "international_fees", label: "해외 이용 수수료 정보" },
+  { type: "reviews", label: "카드 실사용 유저 리뷰" },
+  { type: "how_to_apply", label: "신청 방법 및 자격 조건" },
+  { type: "late_payment", label: "연체 및 이자 유의사항" },
+  { type: "revolving", label: "리볼빙(결제이월) 정보" }
+];
 import { RecommendCard, RecommendResponse } from "@/state/api";
 import { CATEGORY_KEY_TO_LABEL, CategoryKey } from "@/state/categories";
 
@@ -72,11 +82,22 @@ export default function ResultsPage() {
     data?.recommended_cards.find((c) => c.card_id === activeId) ?? null
     , [data, activeId]);
 
-  const suggestedQuestions = [
-    "이 카드의 교통 혜택을 더 자세히 알려줘",
-    "연회비 대비 혜택이 충분한가?",
-    "전월 실적 채우기 쉬울까?"
-  ];
+  const handleAdvisorQuery = async (queryType: AdvisorQueryType, label: string) => {
+    if (!activeCard || qaLoading) return;
+    try {
+      setQaLoading(true);
+      const res = await fetchAdvisorAnswer({
+        card_name: activeCard.card_name,
+        card_company: activeCard.card_company,
+        query_type: queryType
+      });
+      setChat(prev => [...prev, { q: label, a: res.answer }]);
+    } catch (err) {
+      setChat(prev => [...prev, { q: label, a: "죄송합니다. 답변을 가져오는 중 오류가 발생했습니다." }]);
+    } finally {
+      setQaLoading(false);
+    }
+  };
 
   // Use state.spendingData to get all categories the user input, in the order they appear in metadata
   const categories = useMemo(() => {
@@ -84,19 +105,6 @@ export default function ResultsPage() {
   }, [state.spendingData]);
 
   const recommendations = data?.recommended_cards || [];
-
-  const handleAsk = async (question: string) => {
-    if (!data || qaLoading) return;
-    try {
-      setQaLoading(true);
-      const res = await askQuestion(JSON.stringify(data), question);
-      setChat(prev => [...prev, { q: question, a: res.answer }]);
-    } catch (err) {
-      setChat(prev => [...prev, { q: question, a: "죄송합니다. 답변을 가져오는 중 오류가 발생했습니다." }]);
-    } finally {
-      setQaLoading(false);
-    }
-  };
 
   if (loading) return <main className="min-h-screen bg-[#f4f7fa] px-6 py-24"><LoadingSkeleton /></main>;
 
@@ -284,17 +292,17 @@ export default function ResultsPage() {
               )}
             </div>
 
-            <div className="pt-4 border-t space-y-3">
-              <p className="text-xs font-semibold text-slate-400">추천 질문</p>
-              <div className="flex flex-wrap gap-2">
-                {suggestedQuestions.map((q) => (
+            <div className="pt-4 border-t bg-slate-50/50 -mx-8 px-8 pb-8">
+              <p className="text-[12px] font-semibold text-slate-400 mb-3 ml-1 uppercase tracking-wider">상세 정보 문의</p>
+              <div className="grid grid-cols-2 gap-2">
+                {ADVISOR_QUERIES.map((item) => (
                   <button
-                    key={q}
+                    key={item.type}
                     disabled={qaLoading}
-                    onClick={() => handleAsk(q)}
-                    className="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+                    onClick={() => handleAdvisorQuery(item.type, item.label)}
+                    className="flex items-center justify-center rounded-xl border border-slate-200 bg-white p-3 text-center text-[13px] font-bold text-slate-700 transition-all hover:border-[#625BF5] hover:bg-[#EFEEFF] hover:text-[#625BF5] disabled:opacity-50"
                   >
-                    {q}
+                    {item.label}
                   </button>
                 ))}
               </div>

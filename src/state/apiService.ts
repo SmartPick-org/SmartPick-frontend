@@ -1,5 +1,5 @@
 import { AppState } from "./appState";
-import { RecommendRequest, RecommendResponse, QARequest, QAResponse } from "./api";
+import { RecommendRequest, RecommendResponse, QARequest, QAResponse, AdvisorRequest, AdvisorResponse } from "./api";
 import { SUB_CATEGORY_KEY_MAP } from "./categories";
 
 const BASE_URL = "https://a845-211-171-73-131.ngrok-free.app";
@@ -78,6 +78,23 @@ export async function askQuestion(recommendJson: string, question: string): Prom
 
     if (!response.ok) {
         throw new Error("Failed to get answer");
+    }
+
+    return response.json();
+}
+
+export async function fetchAdvisorAnswer(req: AdvisorRequest): Promise<AdvisorResponse> {
+    const response = await fetch(`${BASE_URL}/cards/advisor`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "69420",
+        },
+        body: JSON.stringify(req),
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to get advisor answer");
     }
 
     return response.json();

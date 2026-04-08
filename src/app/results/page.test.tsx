@@ -45,7 +45,7 @@ vi.mock("@/state/apiService", () => ({
     ],
     explanation: "전반적인 추천 사유입니다."
   }),
-  askQuestion: vi.fn().mockResolvedValue({ answer: "AI 답변입니다." })
+  fetchAdvisorAnswer: vi.fn().mockResolvedValue({ answer: "AI 답변입니다." })
 }));
 
 vi.mock("next/navigation", () => ({
@@ -104,7 +104,7 @@ describe("Results page", () => {
     expect(screen.getByRole("dialog")).toBeInTheDocument();
 
     // 추천 질문 클릭
-    const qBtn = screen.getByText("연회비 대비 혜택이 충분한가?");
+    const qBtn = screen.getByText("연회비 및 수수료 안내");
     await user.click(qBtn);
 
     // AI 답변 확인 (findBy 사용)

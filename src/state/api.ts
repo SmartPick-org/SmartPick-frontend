@@ -36,3 +36,19 @@ export interface QARequest {
 export interface QAResponse {
     answer: string;
 }
+
+export type AdvisorQueryType =
+    | "credit_fees"
+    | "international_fees"
+    | "reviews"
+    | "how_to_apply"
+    | "late_payment"
+    | "revolving";
+
+export interface AdvisorRequest {
+    card_name: string;
+    card_company: string;
+    query_type: AdvisorQueryType;
+}
+
+export type AdvisorResponse = QAResponse;
