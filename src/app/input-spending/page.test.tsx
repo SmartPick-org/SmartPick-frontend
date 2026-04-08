@@ -51,18 +51,7 @@ describe("Spending input flow", () => {
     expect(screen.getByLabelText("총 예산액")).toHaveValue(300000);
   });
 
-  it("상세 토글이 닫히고 다시 열린다", async () => {
-    renderWithProviders(<InputSpendingPage />, {
-      initialState: { selectedCategories: ["식비"] }
-    });
-    const user = userEvent.setup();
 
-    await user.click(screen.getByRole("button", { name: "닫기 ↑" }));
-    expect(screen.queryByLabelText("식비 슬라이더")).not.toBeInTheDocument();
-
-    await user.click(screen.getByRole("button", { name: "펼치기 ↓" }));
-    expect(screen.getByLabelText("식비 슬라이더")).toBeInTheDocument();
-  });
 
   it("다음 버튼을 누르면 /results로 이동한다", async () => {
     renderWithProviders(<InputSpendingPage />, {

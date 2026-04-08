@@ -191,7 +191,7 @@ export default function InputSpendingPage() {
     return initialRatios;
   });
 
-  const [open, setOpen] = useState<Record<string, boolean>>({});
+
 
   const handleValueChange = (category: string, value: number) => {
     const safeValue = Number.isFinite(value) ? value : 0;
@@ -214,12 +214,9 @@ export default function InputSpendingPage() {
     }));
   };
 
-  const toggleDetail = (category: string) => {
-    setOpen((prev) => {
-      const isCurrentlyOpen = prev[category] ?? true;
-      return { ...prev, [category]: !isCurrentlyOpen };
-    });
-  };
+  const sortedCategories = useMemo(() => {
+    return [...categories].sort((a, b) => (spending[b] || 0) - (spending[a] || 0));
+  }, [categories, spending]);
 
   const handleNext = () => {
     if (totalBudget <= 0) return;
@@ -277,7 +274,7 @@ export default function InputSpendingPage() {
             <span className="rounded-full border border-slate-200 px-3 py-1">Step 4</span>
             <span>Spending</span>
           </div>
-          <h2 className="mt-6 text-lg font-semibold text-slate-900">실시간 소비 요약</h2>
+          <h2 className="mt-6 text-lg font-semibold text-slate-900">월 소비 예산 요약</h2>
           <p className="mt-2 text-sm text-slate-500">
             입력하신 예산 총액과 항목별 섭취 비율이 자동 계산됩니다.
           </p>
@@ -362,8 +359,7 @@ export default function InputSpendingPage() {
           <p className="mt-2 text-slate-500">각 영역별로 얼마를 사용할지 한도를 정하고 비중을 배분해 주세요.</p>
 
           <div className="mt-6 space-y-6">
-            {categories.map((category) => {
-              const isOpen = open[category] ?? true;
+            {sortedCategories.map((category) => {
               const label = CATEGORY_KEY_TO_LABEL.get(category as CategoryKey) ?? category;
 
               let currentSubs: string[] = [];
@@ -379,21 +375,26 @@ export default function InputSpendingPage() {
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900">{label}</h3>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => toggleDetail(category)}
-                      className="text-sm font-semibold text-slate-600 hover:text-slate-900 focus:outline-none bg-slate-100 px-3 py-1.5 rounded-full"
-                    >
-                      {isOpen ? '닫기 ↑' : '펼치기 ↓'}
-                    </button>
                   </div>
 
-                  {isOpen && (
-                    <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                      <div className="mb-6 grid gap-4 md:grid-cols-[1fr_180px]">
+                  <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div className="mb-6 grid gap-4 md:grid-cols-[1fr_180px]">
+                      <input
+                        aria-label={`${label} 슬라이더`}
+                        type="range"
+                        min={0}
+                        max={totalBudget}
+                        step={10000}
+                        value={spending[category] ?? 0}
+                        onChange={(event) =>
+                          handleValueChange(category, Number(event.target.value))
+                        }
+                        className="accent-slate-900"
+                      />
+                      <div className="relative">
                         <input
-                          aria-label={`${label} 슬라이더`}
-                          type="range"
+                          aria-label={`${label} 금액`}
+                          type="number"
                           min={0}
                           max={totalBudget}
                           step={10000}
@@ -401,38 +402,24 @@ export default function InputSpendingPage() {
                           onChange={(event) =>
                             handleValueChange(category, Number(event.target.value))
                           }
-                          className="accent-slate-900"
+                          className="w-full rounded-xl border border-slate-200 px-4 py-2 text-right pr-8 font-medium"
                         />
-                        <div className="relative">
-                          <input
-                            aria-label={`${label} 금액`}
-                            type="number"
-                            min={0}
-                            max={totalBudget}
-                            step={10000}
-                            value={spending[category] ?? 0}
-                            onChange={(event) =>
-                              handleValueChange(category, Number(event.target.value))
-                            }
-                            className="w-full rounded-xl border border-slate-200 px-4 py-2 text-right pr-8 font-medium"
-                          />
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">원</span>
-                        </div>
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">원</span>
                       </div>
-
-                      {currentSubs.length > 0 && (
-                        <div className="pt-4 border-t border-slate-100">
-                          <h4 className="text-sm font-semibold text-slate-700 mb-2">세부 항목 예산 비중 배분</h4>
-                          <SegmentedSlider
-                            subs={currentSubs}
-                            ratios={currentRatios}
-                            palette={palette}
-                            onChange={(newRatios) => handleRatiosChange(category, newRatios)}
-                          />
-                        </div>
-                      )}
                     </div>
-                  )}
+
+                    {currentSubs.length > 0 && (
+                      <div className="pt-4 border-t border-slate-100">
+                        <h4 className="text-sm font-semibold text-slate-700 mb-2">슬라이더로 예산 비율을 조정해주세요</h4>
+                        <SegmentedSlider
+                          subs={currentSubs}
+                          ratios={currentRatios}
+                          palette={palette}
+                          onChange={(newRatios) => handleRatiosChange(category, newRatios)}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               );
             })}

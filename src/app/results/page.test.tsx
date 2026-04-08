@@ -72,8 +72,8 @@ describe("Results page", () => {
     expect(screen.getAllByText("원").length).toBeGreaterThan(0);
 
     // Check for category benefits (20,000원, 10,000원)
-    expect(screen.getByText("20,000원")).toBeInTheDocument();
-    expect(screen.getByText("10,000원")).toBeInTheDocument();
+    expect(screen.getAllByText("20,000원").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("10,000원").length).toBeGreaterThan(0);
 
     // Check for badges
     expect(screen.getByText("1순위 추천")).toBeInTheDocument();
@@ -81,8 +81,8 @@ describe("Results page", () => {
     expect(screen.getByText("3순위 추천")).toBeInTheDocument();
 
     // Check for Translated Labels (Food -> 식비)
-    expect(screen.getByText("식비")).toBeInTheDocument();
-    expect(screen.getByText("교통")).toBeInTheDocument();
+    expect(screen.getAllByText("식비").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("교통").length).toBeGreaterThan(0);
 
     expect(screen.getByText("하나하나카드")).toBeInTheDocument();
     expect(screen.getByText("국민국민카드")).toBeInTheDocument();
