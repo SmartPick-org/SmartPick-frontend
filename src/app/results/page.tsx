@@ -129,13 +129,14 @@ export default function ResultsPage() {
       <section className="mx-auto max-w-7xl">
         <div className="flex items-start gap-12">
           {/* [A] Category Indicators - Align mt with Card Content Baseline */}
-          <div className="mt-[246px] flex w-[88px] flex-col">
+          {/* Card Header (40+28+12+32+4+32+18+80=246) + Card Track pt-10 (40) = 286px */}
+          <div className="mt-[286px] hidden w-[88px] flex-col lg:flex">
             {categories.map((catKey) => (
               <div
                 key={catKey}
                 className="flex h-[64px] items-center justify-center p-1"
               >
-                <div className="flex h-[40px] w-full items-center justify-center rounded-lg bg-[#F2F4F7] px-2 text-center text-[13px] font-semibold text-[#2D333F]">
+                <div className="flex h-[40px] w-full items-center justify-center rounded-lg bg-[#F2F4F7] px-2 text-center text-[10px] font-bold uppercase tracking-tight text-[#2D333F] leading-tight">
                   {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
                 </div>
               </div>
@@ -143,15 +144,15 @@ export default function ResultsPage() {
           </div>
 
           {/* [B] Horizontal Recommendation Scroll */}
-          <div className="flex-1 overflow-x-auto pb-12 scrollbar-hide scroll-smooth">
-            <div className="flex gap-10 min-w-max pr-12 pt-4">
+          <div className="flex-1 overflow-x-auto pb-24 scrollbar-hide scroll-smooth -mx-6 px-6 lg:mx-0 lg:px-0">
+            <div className="flex gap-10 min-w-max pr-12 pt-10">
               {recommendations
                 .filter(card => card.expected_monthly_benefit > 0)
                 .map((card, idx) => {
                   const isBest = idx === 0;
                   return (
                     <div key={card.card_id} className="relative w-[320px] shrink-0">
-                      <div className={`flex flex-col rounded-[24px] px-[24px] py-[40px] transition-all h-full border ${isBest ? "bg-[#EFEEFF] scale-[1.01] shadow-[0_20px_40px_rgba(98,91,245,0.12)] border-[#625BF5]/30 ring-1 ring-[#625BF5]/10" : "bg-white shadow-sm border-slate-100"
+                      <div className={`flex flex-col rounded-[32px] px-[24px] py-[40px] transition-all h-full border box-border ${isBest ? "bg-[#EFEEFF] scale-[1.01] shadow-[0_30px_60px_rgba(98,91,245,0.2)] border-[#625BF5]/50 ring-[1px] ring-[#625BF5]/20 z-10" : "bg-white shadow-sm border-slate-100 z-0"
                         }`}>
                         {/* Fixed Card Header Total Height: 28 + 32 + 32 + 96 = 188px (Content only) + 40px Padding = 228px */}
                         <div className="h-[28px] mb-0 flex flex-col justify-start"> {/* Badge Area */}
@@ -202,9 +203,14 @@ export default function ResultsPage() {
                             const b = card.category_breakdown.find(item => item.category === catKey);
                             const isNot = !b || b.monthly_discount_krw <= 0;
                             return (
-                              <div key={catKey} className={`flex h-[64px] items-center justify-between ${isBest ? "" : "border-b last:border-0 border-slate-50"}`}>
-                                <span className={`text-[15px] font-medium leading-[1.6] ${isNot ? "text-slate-400" : isBest ? "text-slate-600" : "text-slate-500"}`}>
-                                  {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
+                              <div key={catKey} className={`flex h-[64px] items-center justify-between box-border ${isBest ? "" : "border-b last:border-0 border-slate-50"}`}>
+                                <span className={`text-[15px] font-medium leading-[1.6] lg:block ${isNot ? "text-slate-400" : isBest ? "text-slate-600" : "text-slate-500"}`}>
+                                  <span className="lg:hidden mr-2 text-[12px] text-slate-400 font-normal">
+                                    {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
+                                  </span>
+                                  <span className="hidden lg:inline">
+                                    {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
+                                  </span>
                                 </span>
                                 <span className={`text-[15px] font-bold tabular-nums leading-[1.6] ${isNot ? "text-slate-300" : isBest ? "text-[#625BF5]" : "text-slate-900"}`}>
                                   {isNot ? "0원" : `${b.monthly_discount_krw.toLocaleString()}원`}
@@ -241,10 +247,10 @@ export default function ResultsPage() {
         </div>
 
         {/* [D] Insight Card */}
-        <div className="mt-12 ml-[176px]">
+        <div className="mt-12 lg:ml-[136px]">
           <header className="mb-6 flex items-center gap-2 text-base font-bold text-[#2D333F]">
             <span className="text-[#625BF5]">✦</span>
-            <span>은정님을 위한 맞춤 큐레이션</span>
+            <span>{state.userName || "은정"}님을 위한 맞춤 큐레이션</span>
           </header>
           <div className="rounded-[24px] bg-white p-[32px] shadow-sm ring-1 ring-[#F2F4F7]">
             <div className="text-[16px] font-medium leading-[1.7] text-slate-600 whitespace-pre-wrap">

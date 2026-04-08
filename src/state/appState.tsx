@@ -19,6 +19,7 @@ export type AppState = {
   subCategoryRatios: Record<string, Record<string, number>>;
   spendingData: Record<string, number>;
   totalBudget: number;
+  userName?: string;
 };
 
 type AppAction =
@@ -28,6 +29,7 @@ type AppAction =
   | { type: "SET_SUBCATEGORY_RATIOS"; payload: Record<string, Record<string, number>> }
   | { type: "SET_SPENDING"; payload: Record<string, number> }
   | { type: "SET_TOTAL_BUDGET"; payload: number }
+  | { type: "SET_USER_NAME"; payload: string }
   | { type: "HYDRATE"; payload: AppState }
   | { type: "RESET" };
 
@@ -37,7 +39,8 @@ export const initialState: AppState = {
   selectedCategories: [],
   subCategoryRatios: {},
   spendingData: {},
-  totalBudget: 1000000
+  totalBudget: 1000000,
+  userName: "은정"
 };
 
 function reducer(state: AppState, action: AppAction): AppState {
@@ -54,6 +57,8 @@ function reducer(state: AppState, action: AppAction): AppState {
       return { ...state, spendingData: action.payload };
     case "SET_TOTAL_BUDGET":
       return { ...state, totalBudget: action.payload };
+    case "SET_USER_NAME":
+      return { ...state, userName: action.payload };
     case "HYDRATE":
       return { ...state, ...action.payload };
     case "RESET":
