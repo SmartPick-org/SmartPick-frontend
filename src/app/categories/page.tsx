@@ -92,7 +92,7 @@ export default function CategoriesPage() {
                     onClick={() => toggleFlip(category.key)}
                     style={{ backfaceVisibility: "hidden" }}
                     className={`absolute inset-0 flex w-full flex-col items-start justify-between rounded-3xl border p-6 text-left transition-all ${isSelected
-                      ? "border-slate-900 bg-slate-900 text-white shadow-lg shadow-slate-900/20"
+                      ? "border-[#625BF5] bg-[#EFEEFF] text-[#625BF5] shadow-lg shadow-[#625BF5]/10"
                       : "border-slate-200 bg-white text-slate-900 hover:border-slate-400 hover:shadow-md"
                       }`}
                   >
@@ -102,7 +102,7 @@ export default function CategoriesPage() {
                           {category.key}
                         </span>
                         {isSelected && (
-                          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-500 text-xs font-bold text-white">
+                          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#625BF5] text-xs font-bold text-white">
                             {currentSubs.length}
                           </span>
                         )}
@@ -114,7 +114,7 @@ export default function CategoriesPage() {
                       {isSelected ? (
                         <div className="flex flex-wrap gap-1.5 mt-1">
                           {currentSubs.map((sub) => (
-                            <span key={sub} className="rounded-md bg-slate-700 px-2.5 py-1 text-xs font-medium text-slate-200 shadow-sm">
+                            <span key={sub} className="rounded-md bg-[#625BF5] px-2.5 py-1 text-xs font-medium text-white shadow-sm">
                               {sub}
                             </span>
                           ))}
@@ -147,7 +147,7 @@ export default function CategoriesPage() {
                         type="button"
                         onClick={() => toggleFlip(category.key)}
                         className={`rounded-full p-1.5 transition-colors shadow-sm ${isSelected
-                          ? "bg-slate-900 text-white hover:bg-slate-700"
+                          ? "bg-[#625BF5] text-white hover:bg-[#625BF5]/80"
                           : "bg-slate-200 text-slate-600 hover:bg-slate-300"
                           }`}
                         aria-label={isSelected ? "선택 완료" : "뒤로 가기"}
@@ -178,7 +178,7 @@ export default function CategoriesPage() {
                                 toggleSubCategory(category.key, sub);
                               }}
                               className={`rounded-xl px-3 py-1.5 text-sm transition-all focus:outline-none ${isSubSelected
-                                ? "bg-slate-900 font-semibold text-white shadow-sm"
+                                ? "bg-[#625BF5] font-semibold text-white shadow-sm"
                                 : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
                                 }`}
                             >

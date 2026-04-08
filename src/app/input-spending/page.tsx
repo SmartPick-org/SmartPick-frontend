@@ -231,7 +231,8 @@ export default function InputSpendingPage() {
     let utilized = 0;
     const items: { name: string; amount: number; color: string }[] = [];
 
-    Object.entries(spending).forEach(([cat, topAmount]) => {
+    sortedCategories.forEach((cat) => {
+      const topAmount = spending[cat] || 0;
       if (topAmount <= 0) return;
       const topRatios = ratios[cat] || {};
       const subs = Object.keys(topRatios);
