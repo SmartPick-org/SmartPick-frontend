@@ -258,8 +258,9 @@ export default function InputSpendingPage() {
       items.push({ name: "기타 (미배분)", amount: remaining, color: "#e2e8f0" }); // slate-200
     }
 
-    return items;
-  }, [spending, ratios, totalBudget]);
+    // Sort chart items by amount descending for the left sidebar summary
+    return items.sort((a, b) => b.amount - a.amount);
+  }, [spending, ratios, totalBudget, sortedCategories]);
 
   const SVG_SIZE = 160;
   const CX = SVG_SIZE / 2, CY = SVG_SIZE / 2;
@@ -360,7 +361,7 @@ export default function InputSpendingPage() {
           <p className="mt-2 text-slate-500">각 영역별로 얼마를 사용할지 한도를 정하고 비중을 배분해 주세요.</p>
 
           <div className="mt-6 space-y-6">
-            {sortedCategories.map((category) => {
+            {categories.map((category) => {
               const label = CATEGORY_KEY_TO_LABEL.get(category as CategoryKey) ?? category;
 
               let currentSubs: string[] = [];

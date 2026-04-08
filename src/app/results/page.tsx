@@ -129,27 +129,29 @@ export default function ResultsPage() {
       <section className="mx-auto max-w-7xl">
         <div className="flex items-start gap-12">
           {/* [A] Category Indicators - Align mt with Card Content Baseline */}
-          <div className="mt-[262px] flex w-32 flex-col">
+          <div className="mt-[246px] flex w-[88px] flex-col">
             {categories.map((catKey) => (
               <div
                 key={catKey}
-                className="flex h-[64px] items-center justify-center rounded-lg bg-[#F2F4F7] px-3 py-2 text-center text-[13px] font-semibold text-[#2D333F]"
+                className="flex h-[64px] items-center justify-center p-1"
               >
-                {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
+                <div className="flex h-[40px] w-full items-center justify-center rounded-lg bg-[#F2F4F7] px-2 text-center text-[13px] font-semibold text-[#2D333F]">
+                  {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
+                </div>
               </div>
             ))}
           </div>
 
           {/* [B] Horizontal Recommendation Scroll */}
-          <div className="flex-1 overflow-x-auto pb-8 scrollbar-hide scroll-smooth">
-            <div className="flex gap-6 min-w-max pr-12">
+          <div className="flex-1 overflow-x-auto pb-12 scrollbar-hide scroll-smooth">
+            <div className="flex gap-10 min-w-max pr-12 pt-4">
               {recommendations
                 .filter(card => card.expected_monthly_benefit > 0)
                 .map((card, idx) => {
                   const isBest = idx === 0;
                   return (
                     <div key={card.card_id} className="relative w-[320px] shrink-0">
-                      <div className={`flex flex-col rounded-[20px] px-[24px] py-[40px] transition-all h-full border ${isBest ? "bg-[#EFEEFF] scale-[1.02] shadow-[0_10px_30px_rgba(98,91,245,0.15)] border-[#625BF5]/30" : "bg-white shadow-sm border-slate-100"
+                      <div className={`flex flex-col rounded-[24px] px-[24px] py-[40px] transition-all h-full border ${isBest ? "bg-[#EFEEFF] scale-[1.01] shadow-[0_20px_40px_rgba(98,91,245,0.12)] border-[#625BF5]/30 ring-1 ring-[#625BF5]/10" : "bg-white shadow-sm border-slate-100"
                         }`}>
                         {/* Fixed Card Header Total Height: 28 + 32 + 32 + 96 = 188px (Content only) + 40px Padding = 228px */}
                         <div className="h-[28px] mb-0 flex flex-col justify-start"> {/* Badge Area */}
@@ -174,7 +176,7 @@ export default function ResultsPage() {
                           <p className={`text-[14px] font-medium ${isBest ? "text-slate-500" : "text-slate-500"}`}>{card.card_company}</p>
                         </div>
 
-                        <div className="h-[96px] flex flex-col justify-center"> {/* Yearly Benefit Area */}
+                        <div className="h-[80px] flex flex-col justify-center"> {/* Yearly Benefit Area */}
                           <div className={`flex items-baseline gap-1 text-[13px] font-normal ${isBest ? "text-slate-500" : "text-slate-600"}`}>
                             <span>예상 월별 혜택</span>
                             <span className={`font-bold tabular-nums text-[#625BF5]`}>{card.expected_monthly_benefit.toLocaleString()}원</span>
@@ -224,7 +226,7 @@ export default function ResultsPage() {
                                 setActiveId(card.card_id);
                                 setChat([]);
                               }}
-                              className={`mt-[24px] flex h-[52px] w-full items-center justify-center rounded-[12px] text-[16px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] ${isBest ? "bg-[#625BF5] text-white shadow-lg shadow-[#625BF5]/30" : "bg-[#1e69ff] text-white shadow-lg shadow-blue-500/20"}`}
+                              className={`mt-[24px] flex h-[52px] w-full items-center justify-center rounded-[12px] text-[16px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] ${isBest ? "bg-[#625BF5] text-white shadow-md shadow-[#625BF5]/20" : "bg-[#1e69ff] text-white shadow-md shadow-blue-500/10"}`}
                             >
                               더 물어보기
                             </button>
