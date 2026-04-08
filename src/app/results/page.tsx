@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useAppState } from "@/state/appState";
 import { fetchRecommendations, fetchAdvisorAnswer } from "@/state/apiService";
 import type { AdvisorQueryType } from "@/state/api";
+import { UI_CONSTANTS } from "@/constants/ui";
 
 const ADVISOR_QUERIES: { type: AdvisorQueryType; label: string }[] = [
   { type: "credit_fees", label: "연회비 및 수수료 안내" },
@@ -128,14 +129,27 @@ export default function ResultsPage() {
     <main className="min-h-screen bg-white px-6 py-12 md:px-12">
       <section className="mx-auto max-w-7xl">
         <div className="flex items-start gap-12">
-          {/* [A] Category Indicators - Align mt with Card Content Baseline */}
-          <div className="mt-[286px] flex w-[100px] flex-col shrink-0">
+          {/* [A] Category Indicators - Aligned with Card Header Offset */}
+          <div
+            className="flex flex-col shrink-0"
+            style={{
+              marginTop: UI_CONSTANTS.RESULTS.HEADER_OFFSET,
+              width: UI_CONSTANTS.RESULTS.SIDEBAR_WIDTH
+            }}
+          >
             {categories.map((catKey) => (
               <div
                 key={catKey}
-                className="flex h-[64px] items-center justify-center"
+                className="flex items-center justify-center"
+                style={{ height: UI_CONSTANTS.RESULTS.ROW_HEIGHT }}
               >
-                <div className="flex h-[40px] w-full items-center justify-center rounded-lg bg-[#F2F4F7] px-2 text-center text-[13px] font-semibold text-[#2D333F]">
+                <div
+                  className="flex w-full items-center justify-center rounded-lg bg-[#F2F4F7] px-2 text-center font-semibold text-[#2D333F]"
+                  style={{
+                    height: UI_CONSTANTS.RESULTS.SIDEBAR_INDICATOR_HEIGHT,
+                    fontSize: UI_CONSTANTS.RESULTS.FONT.SIDEBAR_LABEL
+                  }}
+                >
                   {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
                 </div>
               </div>
@@ -202,11 +216,21 @@ export default function ResultsPage() {
                             const b = card.category_breakdown.find(item => item.category === catKey);
                             const isNot = !b || b.monthly_discount_krw <= 0;
                             return (
-                              <div key={catKey} className={`flex h-[64px] items-center justify-between box-border ${isBest ? "" : "border-b last:border-0 border-slate-50"}`}>
-                                <span className={`text-[15px] font-medium leading-[1.6] ${isNot ? "text-slate-400" : isBest ? "text-slate-600" : "text-slate-500"}`}>
+                              <div
+                                key={catKey}
+                                className={`flex items-center justify-between box-border ${isBest ? "" : "border-b last:border-0 border-slate-50"}`}
+                                style={{ height: UI_CONSTANTS.RESULTS.ROW_HEIGHT }}
+                              >
+                                <span
+                                  className={`font-medium leading-[1.6] ${isNot ? "text-slate-400" : isBest ? "text-slate-600" : "text-slate-500"}`}
+                                  style={{ fontSize: UI_CONSTANTS.RESULTS.FONT.CARD_CATEGORY_LABEL }}
+                                >
                                   {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
                                 </span>
-                                <span className={`text-[15px] font-bold tabular-nums leading-[1.6] ${isNot ? "text-slate-300" : isBest ? "text-[#625BF5]" : "text-slate-900"}`}>
+                                <span
+                                  className={`font-bold tabular-nums leading-[1.6] ${isNot ? "text-slate-300" : isBest ? "text-[#625BF5]" : "text-slate-900"}`}
+                                  style={{ fontSize: UI_CONSTANTS.RESULTS.FONT.CARD_CATEGORY_LABEL }}
+                                >
                                   {isNot ? "0원" : `${b.monthly_discount_krw.toLocaleString()}원`}
                                 </span>
                               </div>

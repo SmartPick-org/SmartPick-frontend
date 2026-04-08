@@ -84,7 +84,11 @@ export async function askQuestion(recommendJson: string, question: string): Prom
 }
 
 export async function fetchAdvisorAnswer(req: AdvisorRequest): Promise<AdvisorResponse> {
-    const response = await fetch(`${BASE_URL}/cards/advisor`, {
+    const url = `${BASE_URL}/cards/advisor`;
+    console.log("🚀 Advisor Request URL:", url);
+    console.log("🚀 Advisor Request Payload:", JSON.stringify(req, null, 2));
+
+    const response = await fetch(url, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
