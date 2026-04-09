@@ -2,7 +2,7 @@ import { AppState } from "./appState";
 import { RecommendRequest, RecommendResponse, QARequest, QAResponse, AdvisorRequest, AdvisorResponse } from "./api";
 import { SUB_CATEGORY_KEY_MAP } from "./categories";
 
-const BASE_URL = "https://a845-211-171-73-131.ngrok-free.app";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://unharsh-marita-sympathizingly.ngrok-free.dev";
 
 export function transformStateToRecommendRequest(state: AppState): RecommendRequest {
     const category_spending: RecommendRequest["category_spending"] = {};
