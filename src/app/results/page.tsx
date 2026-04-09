@@ -1,10 +1,37 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, Fragment } from "react";
 import { useAppState } from "@/state/appState";
 import { fetchRecommendations, fetchAdvisorAnswer } from "@/state/apiService";
 import type { AdvisorQueryType } from "@/state/api";
 import { UI_CONSTANTS } from "@/constants/ui";
+
+// 마크다운 렌더러 (외부 라이브러리 불필요)
+function MarkdownText({ children, className }: { children?: string; className?: string }) {
+  if (!children) return null;
+  const lines = children.split("\n");
+  return (
+    <span className={className}>
+      {lines.map((line, li) => {
+        // **bold** and *italic* parsing
+        const parts = line.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
+        return (
+          <Fragment key={li}>
+            {parts.map((part, pi) => {
+              if (part.startsWith("**") && part.endsWith("**")) {
+                return <strong key={pi}>{part.slice(2, -2)}</strong>;
+              } else if (part.startsWith("*") && part.endsWith("*")) {
+                return <em key={pi}>{part.slice(1, -1)}</em>;
+              }
+              return <Fragment key={pi}>{part}</Fragment>;
+            })}
+            {li < lines.length - 1 && <br />}
+          </Fragment>
+        );
+      })}
+    </span>
+  );
+}
 
 const ADVISOR_QUERIES: { type: AdvisorQueryType; label: string }[] = [
   { type: "credit_fees", label: "연회비 및 수수료 안내" },
@@ -271,8 +298,8 @@ export default function ResultsPage() {
             <span>{state.userName || "은정"}님을 위한 맞춤 큐레이션</span>
           </header>
           <div className="rounded-[24px] bg-white p-[32px] shadow-sm ring-1 ring-[#F2F4F7]">
-            <div className="text-[16px] font-medium leading-[1.7] text-slate-600 whitespace-pre-wrap">
-              {data?.explanation || "분석 결과를 생성 중입니다..."}
+            <div className="text-[16px] font-medium leading-[1.7] text-slate-600">
+              <MarkdownText>{data?.explanation || "분석 결과를 생성 중입니다..."}</MarkdownText>
             </div>
           </div>
         </div>
@@ -294,7 +321,7 @@ export default function ResultsPage() {
             <div className="flex-1 overflow-y-auto py-6 space-y-6">
               {chat.length === 0 && (
                 <div className="rounded-2xl bg-indigo-50 p-4 text-sm text-indigo-700">
-                  {activeCard.explanation || "이 카드에 대해 궁금한 점을 물어보세요!"}
+                  <MarkdownText>{activeCard.explanation || "이 카드에 대해 궁금한 점을 물어보세요!"}</MarkdownText>
                 </div>
               )}
               {chat.map((m, i) => (
@@ -306,7 +333,7 @@ export default function ResultsPage() {
                   </div>
                   <div className="flex justify-start">
                     <div className="rounded-2xl rounded-tl-sm bg-slate-100 px-4 py-2 text-sm text-slate-800 max-w-[80%]">
-                      {m.a}
+                      <MarkdownText>{m.a}</MarkdownText>
                     </div>
                   </div>
                 </div>
