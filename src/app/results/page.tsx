@@ -116,7 +116,6 @@ export default function ResultsPage() {
       setQaLoading(true);
       const res = await fetchAdvisorAnswer({
         card_name: activeCard.card_name,
-        card_company: activeCard.card_company,
         query_type: queryType
       });
       setChat(prev => [...prev, { q: label, a: res.answer }]);

@@ -47,7 +47,6 @@ export type AdvisorQueryType =
 
 export interface AdvisorRequest {
     card_name: string;
-    card_company: string;
     query_type: AdvisorQueryType;
 }
 

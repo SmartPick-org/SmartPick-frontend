@@ -84,7 +84,7 @@ export async function askQuestion(recommendJson: string, question: string): Prom
 }
 
 export async function fetchAdvisorAnswer(req: AdvisorRequest): Promise<AdvisorResponse> {
-    const url = `${BASE_URL}/cards/advisor`;
+    const url = `${BASE_URL}/advisor/ask`;
     console.log("🚀 Advisor Request URL:", url);
     console.log("🚀 Advisor Request Payload:", JSON.stringify(req, null, 2));
 
