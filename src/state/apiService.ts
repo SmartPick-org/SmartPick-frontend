@@ -35,7 +35,7 @@ export async function fetchRecommendations(state: AppState): Promise<RecommendRe
 
     console.log("🚀 API Request Payload:", JSON.stringify(payload, null, 2));
 
-    const response = await fetch(`${BASE_URL}/cards/recommend`, {
+    const response = await fetch(`${BASE_URL}/api/v1/cards/recommend`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -67,7 +67,7 @@ export async function askQuestion(recommendJson: string, question: string): Prom
         question,
     };
 
-    const response = await fetch(`${BASE_URL}/cards/qa`, {
+    const response = await fetch(`${BASE_URL}/api/v1/cards/qa`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -84,7 +84,7 @@ export async function askQuestion(recommendJson: string, question: string): Prom
 }
 
 export async function fetchAdvisorAnswer(req: AdvisorRequest): Promise<AdvisorResponse> {
-    const url = `${BASE_URL}/advisor/ask`;
+    const url = `${BASE_URL}/api/v1/advisor/ask`;
     console.log("🚀 Advisor Request URL:", url);
     console.log("🚀 Advisor Request Payload:", JSON.stringify(req, null, 2));
 
