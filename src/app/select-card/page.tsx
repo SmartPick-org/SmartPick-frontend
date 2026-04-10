@@ -66,9 +66,9 @@ export default function SelectCardPage() {
     const loadCards = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`${API_BASE_URL}/cards`, {
-          signal: controller.signal,
-          headers: buildDefaultHeaders(API_BASE_URL)
+        const apiBase = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:8000";
+        const response = await fetch(`${apiBase}/api/v1/cards`, {
+          signal: controller.signal
         });
         if (!response.ok) {
           setIsLoading(false);
