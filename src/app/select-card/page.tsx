@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAppState } from "@/state/appState";
+import { API_BASE_URL, buildDefaultHeaders } from "@/state/config";
 
 type CardOption = {
   card_id: string;
@@ -13,6 +14,18 @@ type CardOption = {
   categories: string[];
   digest_summary?: string;
 };
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function extractCardsResponse(data: unknown): CardOption[] | null {
+  if (Array.isArray(data)) return data as CardOption[];
+  if (!isRecord(data)) return null;
+  const cards = data["cards"];
+  if (Array.isArray(cards)) return cards as CardOption[];
+  return null;
+}
 
 const FALLBACK_CARDS: CardOption[] = [
   {
@@ -61,9 +74,10 @@ export default function SelectCardPage() {
           setIsLoading(false);
           return;
         }
-        const data = (await response.json()) as { cards?: CardOption[] };
-        if (data.cards && data.cards.length > 0) {
-          setCards(data.cards);
+        const data = (await response.json()) as unknown;
+        const normalized = extractCardsResponse(data);
+        if (normalized && normalized.length > 0) {
+          setCards(normalized);
         }
       } catch {
         // keep fallback cards on error
@@ -89,7 +103,11 @@ export default function SelectCardPage() {
       payload: {
         id: selected.card_id,
         name: selected.card_name,
-        company: selected.card_company
+        company: selected.card_company,
+        annualFee: selected.annual_fee,
+        minimumPerformance: selected.minimum_performance,
+        categories: selected.categories,
+        digestSummary: selected.digest_summary
       }
     });
     router.push("/categories");

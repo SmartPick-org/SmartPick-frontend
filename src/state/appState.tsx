@@ -10,6 +10,10 @@ export type CardSummary = {
   company: string;
   imageUrl?: string;
   type?: "CREDIT" | "CHECK";
+  annualFee?: number;
+  minimumPerformance?: number;
+  categories?: string[];
+  digestSummary?: string;
 };
 
 export type AppState = {

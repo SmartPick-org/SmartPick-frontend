@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1775183023256,
+  "lastScanned": 1775788891832,
   "projectRoot": "/Users/ayeon/Documents/workspace/smartpick_re/SmartPick-frontend",
   "techStack": {
     "languages": [
@@ -78,18 +78,35 @@
     "isMonorepo": false,
     "workspaces": [],
     "mainDirectories": [
+      "docs",
       "public",
       "src"
     ],
-    "gitBranches": null
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
   },
   "customNotes": [],
   "directoryMap": {
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 5,
+      "lastAccessed": 1775788891774,
+      "keyFiles": [
+        "FRONTEND_DATA_IO_SPEC.md",
+        "FRONTEND_PRD.md",
+        "FRONTEND_TDD_GUIDE.md",
+        "PLAN.md",
+        "TODO.md"
+      ]
+    },
     "public": {
       "path": "public",
       "purpose": "Public files",
       "fileCount": 5,
-      "lastAccessed": 1775183023143,
+      "lastAccessed": 1775788891776,
       "keyFiles": [
         "file.svg",
         "globe.svg",
@@ -102,14 +119,27 @@
       "path": "src",
       "purpose": "Source code",
       "fileCount": 0,
-      "lastAccessed": 1775183023148,
+      "lastAccessed": 1775788891784,
       "keyFiles": []
+    },
+    "worklog": {
+      "path": "worklog",
+      "purpose": null,
+      "fileCount": 16,
+      "lastAccessed": 1775788891787,
+      "keyFiles": [
+        "001-entry-screen-visual-polish.md",
+        "002-select-card-ui-polish.md",
+        "003-categories-mapping-and-ui.md",
+        "004-add-card-list-api.md",
+        "005-connect-select-card-to-api.md"
+      ]
     },
     "src/app": {
       "path": "src/app",
       "purpose": "Application code",
       "fileCount": 5,
-      "lastAccessed": 1775183023173,
+      "lastAccessed": 1775788891788,
       "keyFiles": [
         "favicon.ico",
         "globals.css",
@@ -120,7 +150,7 @@
       "path": "src/test",
       "purpose": "Test files",
       "fileCount": 2,
-      "lastAccessed": 1775183023173,
+      "lastAccessed": 1775788891789,
       "keyFiles": [
         "render.tsx",
         "setup.ts"
