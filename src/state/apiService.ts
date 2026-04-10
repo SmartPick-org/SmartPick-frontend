@@ -2,7 +2,7 @@ import { AppState } from "./appState";
 import { RecommendRequest, RecommendResponse, QARequest, QAResponse, AdvisorRequest, AdvisorResponse } from "./api";
 import { SUB_CATEGORY_KEY_MAP } from "./categories";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://unharsh-marita-sympathizingly.ngrok-free.dev";
+import { API_BASE_URL, buildDefaultHeaders } from "./config";
 
 export function transformStateToRecommendRequest(state: AppState): RecommendRequest {
     const category_spending: RecommendRequest["category_spending"] = {};
@@ -13,7 +13,7 @@ export function transformStateToRecommendRequest(state: AppState): RecommendRequ
 
         const subs = state.subCategoryRatios[top];
         if (subs && Object.keys(subs).length > 0) {
-            const subObj: any = { total };
+            const subObj: { total: number } & Record<string, number | string> = { total };
             Object.entries(subs).forEach(([subName, ratio]) => {
                 const englishKey = SUB_CATEGORY_KEY_MAP[subName] || subName;
                 subObj[englishKey] = `${ratio}%`;
@@ -35,12 +35,11 @@ export async function fetchRecommendations(state: AppState): Promise<RecommendRe
 
     console.log("🚀 API Request Payload:", JSON.stringify(payload, null, 2));
 
-    const response = await fetch(`${BASE_URL}/cards/recommend`, {
+    const response = await fetch(`${API_BASE_URL}/cards/recommend`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            // [추가] Ngrok의 중간 경고 페이지(Warning Page)를 건너뛰어 API 통신이 원활하게 되도록 돕는 헤더입니다.
-            "ngrok-skip-browser-warning": "69420",
+            ...buildDefaultHeaders(API_BASE_URL)
         },
         body: JSON.stringify(payload),
     });
@@ -67,11 +66,11 @@ export async function askQuestion(recommendJson: string, question: string): Prom
         question,
     };
 
-    const response = await fetch(`${BASE_URL}/cards/qa`, {
+    const response = await fetch(`${API_BASE_URL}/cards/qa`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "69420",
+            ...buildDefaultHeaders(API_BASE_URL)
         },
         body: JSON.stringify(payload),
     });
@@ -84,7 +83,7 @@ export async function askQuestion(recommendJson: string, question: string): Prom
 }
 
 export async function fetchAdvisorAnswer(req: AdvisorRequest): Promise<AdvisorResponse> {
-    const url = `${BASE_URL}/advisor/ask`;
+    const url = `${API_BASE_URL}/advisor/ask`;
     console.log("🚀 Advisor Request URL:", url);
     console.log("🚀 Advisor Request Payload:", JSON.stringify(req, null, 2));
 
@@ -92,7 +91,7 @@ export async function fetchAdvisorAnswer(req: AdvisorRequest): Promise<AdvisorRe
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "69420",
+            ...buildDefaultHeaders(API_BASE_URL)
         },
         body: JSON.stringify(req),
     });

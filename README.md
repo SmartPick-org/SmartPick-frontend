@@ -5,6 +5,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 First, run the development server:
 
 ```bash
+npm install
 npm run dev
 # or
 yarn dev
@@ -12,6 +13,14 @@ yarn dev
 pnpm dev
 # or
 bun dev
+```
+
+### Backend 연결 (로컬)
+
+프론트에서 카드 목록(`/cards`)과 추천(`/cards/recommend`)을 호출합니다. 로컬 백엔드를 쓰려면 루트에 `.env.local`을 만들고 아래처럼 설정하세요.
+
+```txt
+NEXT_PUBLIC_BASE_URL=http://localhost:8000
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
