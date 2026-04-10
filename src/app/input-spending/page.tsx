@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useRef } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAppState, getSelectTopCategories } from "@/state/appState";
 import { CATEGORY_KEY_TO_LABEL, type CategoryKey } from "@/state/categories";
@@ -192,6 +192,30 @@ export default function InputSpendingPage() {
   });
 
 
+
+  // ratios가 state.selectedCategories와 맞지 않을 때 (router cache 재사용 등) 동기화
+  useEffect(() => {
+    if (Array.isArray(state.selectedCategories)) return;
+
+    setRatios((prev) => {
+      let changed = false;
+      const updated = { ...prev };
+
+      Object.entries(state.selectedCategories as Record<string, string[]>).forEach(([topCat, subs]) => {
+        const existing = updated[topCat];
+        const hasValidRatios = existing && subs.length > 0 && subs.every((s) => existing[s] !== undefined);
+        if (!hasValidRatios) {
+          const saved = state.subCategoryRatios[topCat];
+          const savedKeys = saved ? Object.keys(saved) : [];
+          const matchesExactly = subs.length > 0 && subs.every((s) => savedKeys.includes(s)) && subs.length === savedKeys.length;
+          updated[topCat] = matchesExactly ? { ...saved } : initRatiosForSubs(subs);
+          changed = true;
+        }
+      });
+
+      return changed ? updated : prev;
+    });
+  }, [state.selectedCategories, state.subCategoryRatios]);
 
   const handleValueChange = (category: string, value: number) => {
     const safeValue = Number.isFinite(value) ? value : 0;
