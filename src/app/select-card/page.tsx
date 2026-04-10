@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAppState } from "@/state/appState";
-import { API_BASE_URL, buildDefaultHeaders } from "@/state/config";
+import { API_V1, buildDefaultHeaders } from "@/state/config";
 
 type CardOption = {
   card_id: string;
@@ -66,9 +66,9 @@ export default function SelectCardPage() {
     const loadCards = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`${API_BASE_URL}/cards`, {
+        const response = await fetch(`${API_V1}/cards`, {
           signal: controller.signal,
-          headers: buildDefaultHeaders(API_BASE_URL)
+          headers: buildDefaultHeaders(API_V1)
         });
         if (!response.ok) {
           setIsLoading(false);

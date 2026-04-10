@@ -2,7 +2,7 @@ import { AppState } from "./appState";
 import { RecommendRequest, RecommendResponse, QARequest, QAResponse, AdvisorRequest, AdvisorResponse } from "./api";
 import { SUB_CATEGORY_KEY_MAP } from "./categories";
 
-import { API_BASE_URL, buildDefaultHeaders } from "./config";
+import { API_V1, buildDefaultHeaders } from "./config";
 
 export function transformStateToRecommendRequest(state: AppState): RecommendRequest {
     const category_spending: RecommendRequest["category_spending"] = {};
@@ -35,11 +35,11 @@ export async function fetchRecommendations(state: AppState): Promise<RecommendRe
 
     console.log("🚀 API Request Payload:", JSON.stringify(payload, null, 2));
 
-    const response = await fetch(`${API_BASE_URL}/cards/recommend`, {
+    const response = await fetch(`${API_V1}/cards/recommend`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            ...buildDefaultHeaders(API_BASE_URL)
+            ...buildDefaultHeaders(API_V1)
         },
         body: JSON.stringify(payload),
     });
@@ -66,11 +66,11 @@ export async function askQuestion(recommendJson: string, question: string): Prom
         question,
     };
 
-    const response = await fetch(`${API_BASE_URL}/cards/qa`, {
+    const response = await fetch(`${API_V1}/cards/qa`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            ...buildDefaultHeaders(API_BASE_URL)
+            ...buildDefaultHeaders(API_V1)
         },
         body: JSON.stringify(payload),
     });
@@ -83,7 +83,7 @@ export async function askQuestion(recommendJson: string, question: string): Prom
 }
 
 export async function fetchAdvisorAnswer(req: AdvisorRequest): Promise<AdvisorResponse> {
-    const url = `${API_BASE_URL}/advisor/ask`;
+    const url = `${API_V1}/advisor/ask`;
     console.log("🚀 Advisor Request URL:", url);
     console.log("🚀 Advisor Request Payload:", JSON.stringify(req, null, 2));
 
@@ -91,7 +91,7 @@ export async function fetchAdvisorAnswer(req: AdvisorRequest): Promise<AdvisorRe
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            ...buildDefaultHeaders(API_BASE_URL)
+            ...buildDefaultHeaders(API_V1)
         },
         body: JSON.stringify(req),
     });
