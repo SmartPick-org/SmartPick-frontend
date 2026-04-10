@@ -1,5 +1,5 @@
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_BASE_URL || "https://unharsh-marita-sympathizingly.ngrok-free.dev";
+  process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000";
 
 export const API_V1 = `${API_BASE_URL}/api/v1`;
 
