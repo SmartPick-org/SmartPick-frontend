@@ -17,6 +17,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /home/ubuntu/SmartPick-frontend
+            git checkout -- package-lock.json
             git pull origin ${{ github.ref_name }}
             git checkout ${{ github.ref_name }}
             npm install
