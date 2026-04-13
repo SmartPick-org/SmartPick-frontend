@@ -222,224 +222,232 @@ function CompareView({
       <section className="mx-auto max-w-7xl">
 
         {/* ── 3단 비교 레이아웃 ── */}
-        <div className="flex justify-center items-start gap-4 lg:gap-8 pb-12 overflow-x-auto min-w-max">
+        <div className="flex justify-center items-start gap-4 lg:gap-10 pb-12 overflow-x-auto min-w-max">
 
-          {/* 현재 카드 */}
-          <div className="relative w-[320px] shrink-0">
-            <div className="flex flex-col rounded-[32px] px-[24px] py-[40px] transition-all h-full border box-border bg-white shadow-sm border-slate-100 z-0">
-              <div className="h-[250px] flex flex-col justify-start">
-                <div className="h-[28px] mb-0 flex flex-col justify-start">
-                  <div className="inline-block rounded-full px-4 py-1 self-start text-[11px] font-bold text-white bg-slate-400">
-                    기존 카드
+          {/* 현재 카드 Column */}
+          <div className="flex flex-col">
+            <div className="h-10 mb-2" /> {/* alignment spacer */}
+            <div className="relative w-[320px] shrink-0">
+              <div className="flex flex-col rounded-[32px] px-[24px] py-[40px] transition-all h-full border box-border bg-white shadow-sm border-slate-100 z-0">
+                <div className="h-[250px] flex flex-col justify-start">
+                  <div className="h-[28px] mb-0 flex flex-col justify-start">
+                    <div className="inline-block rounded-full px-4 py-1 self-start text-[11px] font-bold text-white bg-slate-400">
+                      기존 카드
+                    </div>
                   </div>
-                </div>
-                <div className="h-[32px] mt-[12px] flex items-center">
-                  <h2 className="text-[22px] font-bold tracking-[-0.02em] leading-tight truncate text-slate-900" title={current_card.card_name}>
-                    {current_card.card_name}
-                  </h2>
-                </div>
-                <div className="h-[32px] mt-1 mb-[18px] flex items-center">
-                  <p className="text-[14px] font-medium text-slate-500">{current_card.card_company}</p>
-                </div>
-                <div className="h-[80px] flex flex-col justify-center">
-                  <div className="flex items-baseline gap-1 text-[13px] font-normal text-slate-600">
-                    <span>예상 월별 혜택</span>
-                    <span className="font-bold tabular-nums text-[#625BF5]">{current_card.expected_monthly_benefit.toLocaleString()}원</span>
+                  <div className="h-[32px] mt-[12px] flex items-center">
+                    <h2 className="text-[22px] font-bold tracking-[-0.02em] leading-tight truncate text-slate-900" title={current_card.card_name}>
+                      {current_card.card_name}
+                    </h2>
                   </div>
-                  <div className="mt-1">
-                    <p className="text-[13px] font-bold text-slate-900">1년 예상 혜택</p>
-                    <div className="leading-tight tabular-nums font-extrabold text-slate-900">
-                      <span className="text-[32px]">{Math.floor(calcYearlyNetBenefit(current_card) / 10000)}</span>
-                      <span className="text-[18px]">만</span>
-                      {(calcYearlyNetBenefit(current_card) % 10000) > 0 && (
-                        <>
-                          <span className="ml-1 text-[32px]">{Math.floor((calcYearlyNetBenefit(current_card) % 10000) / 1000)}</span>
-                          <span className="text-[18px]">천</span>
-                        </>
-                      )}
-                      <span className="text-[18px]">원</span>
+                  <div className="h-[32px] mt-1 mb-[18px] flex items-center">
+                    <p className="text-[14px] font-medium text-slate-500">{current_card.card_company}</p>
+                  </div>
+                  <div className="h-[80px] flex flex-col justify-center">
+                    <div className="flex items-baseline gap-1 text-[13px] font-normal text-slate-600">
+                      <span>예상 월별 혜택</span>
+                      <span className="font-bold tabular-nums text-[#625BF5]">{current_card.expected_monthly_benefit.toLocaleString()}원</span>
+                    </div>
+                    <div className="mt-1">
+                      <p className="text-[13px] font-bold text-slate-900">1년 예상 혜택</p>
+                      <div className="leading-tight tabular-nums font-extrabold text-slate-900">
+                        <span className="text-[32px]">{Math.floor(calcYearlyNetBenefit(current_card) / 10000)}</span>
+                        <span className="text-[18px]">만</span>
+                        {(calcYearlyNetBenefit(current_card) % 10000) > 0 && (
+                          <>
+                            <span className="ml-1 text-[32px]">{Math.floor((calcYearlyNetBenefit(current_card) % 10000) / 1000)}</span>
+                            <span className="text-[18px]">천</span>
+                          </>
+                        )}
+                        <span className="text-[18px]">원</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-                {current_card.expected_monthly_benefit === 0 && current_card.explanation && (
-                  <div className="mt-2 text-[11px] leading-relaxed text-rose-500 bg-rose-50 px-3 py-2 rounded-lg font-medium">
-                    {current_card.explanation}
-                  </div>
-                )}
-              </div>
 
-              <div className="flex flex-col w-full">
-                {allCategories.map((catKey) => {
-                  const b = current_card.category_breakdown.find(item => item.category === catKey);
-                  const isNot = !b || b.monthly_discount_krw <= 0;
-                  return (
-                    <div key={catKey} className="flex items-center justify-between box-border border-b last:border-0 border-slate-50" style={{ height: UI_CONSTANTS.RESULTS.ROW_HEIGHT }}>
-                      <span className={`font-medium leading-[1.6] ${isNot ? "text-slate-400" : "text-slate-500"}`} style={{ fontSize: UI_CONSTANTS.RESULTS.FONT.CARD_CATEGORY_LABEL }}>
-                        {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
-                      </span>
-                      <span className={`font-bold tabular-nums leading-[1.6] ${isNot ? "text-slate-300" : "text-slate-900"}`} style={{ fontSize: UI_CONSTANTS.RESULTS.FONT.CARD_CATEGORY_LABEL }}>
-                        {isNot ? "0원" : `${b.monthly_discount_krw.toLocaleString()}원`}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <footer className="mt-auto pt-6 flex flex-col">
-                <div className="flex flex-col gap-1 text-[12px] font-normal text-slate-400">
-                  <p>연회비 : <span className="tabular-nums">{current_card.annual_fee.toLocaleString()}원</span></p>
-                  <p>전월실적 : <span className="tabular-nums">{current_card.minimum_performance.toLocaleString()}원</span></p>
+                <div className="flex flex-col w-full">
+                  {allCategories.map((catKey) => {
+                    const b = activeCategoryComparison.find(item => item.category === catKey);
+                    const val = b?.current_discount ?? 0;
+                    const isNot = val <= 0;
+                    return (
+                      <div key={catKey} className="flex items-center justify-between box-border border-b last:border-0 border-slate-50" style={{ height: UI_CONSTANTS.RESULTS.ROW_HEIGHT }}>
+                        <span className={`font-medium leading-[1.6] ${isNot ? "text-slate-400" : "text-slate-500"}`} style={{ fontSize: UI_CONSTANTS.RESULTS.FONT.CARD_CATEGORY_LABEL }}>
+                          {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
+                        </span>
+                        <span className={`font-bold tabular-nums leading-[1.6] ${isNot ? "text-slate-300" : "text-slate-900"}`} style={{ fontSize: UI_CONSTANTS.RESULTS.FONT.CARD_CATEGORY_LABEL }}>
+                          {isNot ? "0원" : `${val.toLocaleString()}원`}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
-                <button
-                  type="button"
-                  onClick={() => onAskCard(current_card)}
-                  className="mt-[24px] flex h-[52px] w-full items-center justify-center rounded-[12px] text-[16px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] bg-[#1e69ff] text-white shadow-md shadow-blue-500/10"
-                >
-                  더 물어보기
-                </button>
-              </footer>
+
+                <footer className="mt-auto pt-6 flex flex-col">
+                  <div className="flex flex-col gap-1 text-[12px] font-normal text-slate-400">
+                    <p>연회비 : <span className="tabular-nums">{current_card.annual_fee.toLocaleString()}원</span></p>
+                    <p>전월실적 : <span className="tabular-nums">{current_card.minimum_performance.toLocaleString()}원</span></p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onAskCard(current_card)}
+                    className="mt-[24px] flex h-[52px] w-full items-center justify-center rounded-[12px] text-[16px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] bg-[#1e69ff] text-white shadow-md shadow-blue-500/10"
+                  >
+                    더 물어보기
+                  </button>
+                </footer>
+              </div>
             </div>
           </div>
 
           {/* diff 열 */}
-          <div className="flex w-[180px] shrink-0 flex-col items-center">
-            <div className="h-[250px] flex flex-col items-center justify-end pb-4 text-center mt-[40px]">
-              <p className="text-sm text-slate-500 leading-snug">새로운 카드로 바꾸시면</p>
-              <p className="mt-1 text-xl font-extrabold leading-tight text-[#2D333F]">
-                연간 최대{" "}
-                <span className={isGain ? "text-[#625BF5]" : "text-rose-500"}>
-                  {yearlyMan}만원
-                </span>{" "}
-                정도
-              </p>
-              <p className="text-xl font-extrabold text-[#2D333F]">혜택을 더 받을 수 있어요!</p>
-            </div>
-
-            <div className="w-full flex flex-col">
-              {allCategories.map((catKey) => {
-                const item = activeCategoryComparison.find((c) => c.category === catKey);
-                const { text, cls } = diffText(item?.diff ?? 0);
-                return (
-                  <div
-                    key={catKey}
-                    className={`flex items-center justify-center border-t border-transparent text-[13px] font-bold tabular-nums ${cls}`}
-                    style={{ height: UI_CONSTANTS.RESULTS.ROW_HEIGHT }}
-                  >
-                    {text}
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="mt-6 text-center">
-              <span className={`text-[13px] font-bold ${isGain ? "text-[#625BF5]" : "text-rose-500"}`}>
-                {isGain ? "+" : "-"} 월 최대 {monthlyMan}만원 이득
-              </span>
-            </div>
-          </div>
-
-          {/* 추천 카드 영역 (스와이프 네비게이션) */}
-          <div className="relative w-[320px] shrink-0">
-            {allRecommended.length > 1 && (
-              <div className="absolute -top-12 left-0 right-0 flex items-center justify-between px-2">
-                <button
-                  type="button"
-                  onClick={() => setSelectedIdx((i) => Math.max(0, i - 1))}
-                  disabled={selectedIdx === 0}
-                  className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-all hover:border-slate-400 disabled:opacity-30"
-                  aria-label="이전 카드"
-                >
-                  ←
-                </button>
-                <div className="flex gap-1.5">
-                  {allRecommended.map((_, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => setSelectedIdx(i)}
-                      className={`h-2 rounded-full transition-all ${i === selectedIdx ? "w-6 bg-[#625BF5]" : "w-2 bg-slate-200"}`}
-                      aria-label={`${i + 1}번 카드`}
-                    />
-                  ))}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedIdx((i) => Math.min(allRecommended.length - 1, i + 1))}
-                  disabled={selectedIdx === allRecommended.length - 1}
-                  className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-all hover:border-slate-400 disabled:opacity-30"
-                  aria-label="다음 카드"
-                >
-                  →
-                </button>
-              </div>
-            )}
-            <div className="flex flex-col rounded-[32px] px-[24px] py-[40px] transition-all h-full border-2 box-border bg-[#EFEEFF] shadow-[0_20px_50px_rgba(98,91,245,0.15)] border-[#625BF5] z-10">
-              <div className="h-[250px] flex flex-col justify-start">
-                <div className="h-[28px] mb-0 flex flex-col justify-start">
-                  <div className="inline-block rounded-full px-4 py-1 self-start text-[11px] font-bold text-white bg-[#625BF5]">
-                    {selectedIdx + 1}순위 추천
-                  </div>
-                </div>
-                <div className="h-[32px] mt-[12px] flex items-center">
-                  <h2 className="text-[22px] font-bold tracking-[-0.02em] leading-tight truncate text-[#2D333F]" title={selectedCard.card_name}>
-                    {selectedCard.card_name}
-                  </h2>
-                </div>
-                <div className="h-[32px] mt-1 mb-[18px] flex items-center">
-                  <p className="text-[14px] font-medium text-slate-500">{selectedCard.card_company}</p>
-                </div>
-                <div className="h-[80px] flex flex-col justify-center">
-                  <div className="flex items-baseline gap-1 text-[13px] font-normal text-slate-500">
-                    <span>예상 월별 혜택</span>
-                    <span className="font-bold tabular-nums text-[#625BF5]">{selectedCard.expected_monthly_benefit.toLocaleString()}원</span>
-                  </div>
-                  <div className="mt-1">
-                    <p className="text-[13px] font-bold text-[#2D333F]">1년 예상 혜택</p>
-                    <div className="leading-tight tabular-nums font-extrabold text-[#2D333F]">
-                      <span className="text-[32px] text-[#625BF5]">{Math.floor(calcYearlyNetBenefit(selectedCard) / 10000)}</span>
-                      <span className="text-[18px]">만</span>
-                      {(calcYearlyNetBenefit(selectedCard) % 10000) > 0 && (
-                        <>
-                          <span className="ml-1 text-[32px] text-[#625BF5]">{Math.floor((calcYearlyNetBenefit(selectedCard) % 10000) / 1000)}</span>
-                          <span className="text-[18px]">천</span>
-                        </>
-                      )}
-                      <span className="text-[18px]">원</span>
-                    </div>
-                  </div>
-                </div>
+          <div className="flex flex-col">
+            <div className="h-10 mb-2" /> {/* alignment spacer */}
+            <div className="flex w-[260px] shrink-0 flex-col items-center">
+              <div className="h-[250px] flex flex-col items-center justify-end pb-4 text-center mt-[40px]">
+                <p className="text-sm text-slate-500 leading-snug">새로운 카드로 바꾸시면</p>
+                <p className="mt-1 text-xl font-extrabold leading-tight text-[#2D333F]">
+                  연간 최대{" "}
+                  <span className={isGain ? "text-[#625BF5]" : "text-rose-500"}>
+                    {yearlyMan}만원
+                  </span>{" "}
+                  정도
+                </p>
+                <p className="text-xl font-extrabold text-[#2D333F]">혜택을 더 받을 수 있어요!</p>
               </div>
 
-              <div className="flex flex-col w-full">
+              <div className="w-full flex flex-col">
                 {allCategories.map((catKey) => {
-                  const b = selectedCard.category_breakdown.find(item => item.category === catKey);
-                  const isNot = !b || b.monthly_discount_krw <= 0;
+                  const item = activeCategoryComparison.find((c) => c.category === catKey);
+                  const { text, cls } = diffText(item?.diff ?? 0);
                   return (
-                    <div key={catKey} className="flex items-center justify-between box-border border-b last:border-0 border-indigo-100/50" style={{ height: UI_CONSTANTS.RESULTS.ROW_HEIGHT }}>
-                      <span className={`font-medium leading-[1.6] ${isNot ? "text-slate-400" : "text-slate-600"}`} style={{ fontSize: UI_CONSTANTS.RESULTS.FONT.CARD_CATEGORY_LABEL }}>
-                        {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
-                      </span>
-                      <span className={`font-bold tabular-nums leading-[1.6] ${isNot ? "text-slate-300" : "text-[#625BF5]"}`} style={{ fontSize: UI_CONSTANTS.RESULTS.FONT.CARD_CATEGORY_LABEL }}>
-                        {isNot ? "0원" : `${b.monthly_discount_krw.toLocaleString()}원`}
-                      </span>
+                    <div
+                      key={catKey}
+                      className={`flex items-center justify-center border-t border-transparent text-[14px] font-bold tabular-nums ${cls}`}
+                      style={{ height: UI_CONSTANTS.RESULTS.ROW_HEIGHT }}
+                    >
+                      {text}
                     </div>
                   );
                 })}
               </div>
 
-              <footer className="mt-auto pt-6 flex flex-col">
-                <div className="flex flex-col gap-1 text-[12px] font-normal text-slate-500">
-                  <p>연회비 : <span className="tabular-nums">{selectedCard.annual_fee.toLocaleString()}원</span></p>
-                  <p>전월실적 : <span className="tabular-nums">{selectedCard.minimum_performance.toLocaleString()}원</span></p>
+              <div className="mt-6 text-center">
+                <span className={`text-[14px] font-bold ${isGain ? "text-[#625BF5]" : "text-rose-500"}`}>
+                  {isGain ? "+" : "-"} 월 최대 {monthlyMan}만원 이득
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* 추천 카드 영역 (스와이프 네비게이션) */}
+          <div className="flex flex-col">
+            <div className="h-10 mb-2 flex items-center justify-between px-4">
+              {allRecommended.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedIdx((i) => Math.max(0, i - 1))}
+                    disabled={selectedIdx === 0}
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-all hover:border-slate-400 disabled:opacity-30"
+                    aria-label="이전 카드"
+                  >
+                    ←
+                  </button>
+                  <div className="flex gap-1.5">
+                    {allRecommended.map((_, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setSelectedIdx(i)}
+                        className={`h-2 rounded-full transition-all ${i === selectedIdx ? "w-6 bg-[#625BF5]" : "w-2 bg-slate-200"}`}
+                        aria-label={`${i + 1}번 카드`}
+                      />
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedIdx((i) => Math.min(allRecommended.length - 1, i + 1))}
+                    disabled={selectedIdx === allRecommended.length - 1}
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-all hover:border-slate-400 disabled:opacity-30"
+                    aria-label="다음 카드"
+                  >
+                    →
+                  </button>
+                </>
+              )}
+            </div>
+
+            <div className="relative w-[320px] shrink-0">
+              <div className="flex flex-col rounded-[32px] px-[24px] py-[40px] transition-all h-full border-2 box-border bg-[#EFEEFF] shadow-[0_20px_50px_rgba(98,91,245,0.15)] border-[#625BF5] z-10">
+                <div className="h-[250px] flex flex-col justify-start">
+                  <div className="h-[28px] mb-0 flex flex-col justify-start">
+                    <div className="inline-block rounded-full px-4 py-1 self-start text-[11px] font-bold text-white bg-[#625BF5]">
+                      {selectedIdx + 1}순위 추천
+                    </div>
+                  </div>
+                  <div className="h-[32px] mt-[12px] flex items-center">
+                    <h2 className="text-[22px] font-bold tracking-[-0.02em] leading-tight truncate text-[#2D333F]" title={selectedCard.card_name}>
+                      {selectedCard.card_name}
+                    </h2>
+                  </div>
+                  <div className="h-[32px] mt-1 mb-[18px] flex items-center">
+                    <p className="text-[14px] font-medium text-slate-500">{selectedCard.card_company}</p>
+                  </div>
+                  <div className="h-[80px] flex flex-col justify-center">
+                    <div className="flex items-baseline gap-1 text-[13px] font-normal text-slate-500">
+                      <span>예상 월별 혜택</span>
+                      <span className="font-bold tabular-nums text-[#625BF5]">{selectedCard.expected_monthly_benefit.toLocaleString()}원</span>
+                    </div>
+                    <div className="mt-1">
+                      <p className="text-[13px] font-bold text-[#2D333F]">1년 예상 혜택</p>
+                      <div className="leading-tight tabular-nums font-extrabold text-[#2D333F]">
+                        <span className="text-[32px] text-[#625BF5]">{Math.floor(calcYearlyNetBenefit(selectedCard) / 10000)}</span>
+                        <span className="text-[18px]">만</span>
+                        {(calcYearlyNetBenefit(selectedCard) % 10000) > 0 && (
+                          <>
+                            <span className="ml-1 text-[32px] text-[#625BF5]">{Math.floor((calcYearlyNetBenefit(selectedCard) % 10000) / 1000)}</span>
+                            <span className="text-[18px]">천</span>
+                          </>
+                        )}
+                        <span className="text-[18px]">원</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => onAskCard(selectedCard)}
-                  className="mt-[24px] flex h-[52px] w-full items-center justify-center rounded-[12px] text-[16px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] bg-[#625BF5] text-white shadow-md shadow-[#625BF5]/20"
-                >
-                  더 물어보기
-                </button>
-              </footer>
+
+                <div className="flex flex-col w-full">
+                  {allCategories.map((catKey) => {
+                    const b = activeCategoryComparison.find(item => item.category === catKey);
+                    const val = b?.recommended_discount ?? 0;
+                    const isNot = val <= 0;
+                    return (
+                      <div key={catKey} className="flex items-center justify-between box-border border-b last:border-0 border-indigo-100/50" style={{ height: UI_CONSTANTS.RESULTS.ROW_HEIGHT }}>
+                        <span className={`font-medium leading-[1.6] ${isNot ? "text-slate-400" : "text-slate-600"}`} style={{ fontSize: UI_CONSTANTS.RESULTS.FONT.CARD_CATEGORY_LABEL }}>
+                          {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
+                        </span>
+                        <span className={`font-bold tabular-nums leading-[1.6] ${isNot ? "text-slate-300" : "text-[#625BF5]"}`} style={{ fontSize: UI_CONSTANTS.RESULTS.FONT.CARD_CATEGORY_LABEL }}>
+                          {isNot ? "0원" : `${val.toLocaleString()}원`}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <footer className="mt-auto pt-6 flex flex-col">
+                  <div className="flex flex-col gap-1 text-[12px] font-normal text-slate-500">
+                    <p>연회비 : <span className="tabular-nums">{selectedCard.annual_fee.toLocaleString()}원</span></p>
+                    <p>전월실적 : <span className="tabular-nums">{selectedCard.minimum_performance.toLocaleString()}원</span></p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onAskCard(selectedCard)}
+                    className="mt-[24px] flex h-[52px] w-full items-center justify-center rounded-[12px] text-[16px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] bg-[#625BF5] text-white shadow-md shadow-[#625BF5]/20"
+                  >
+                    더 물어보기
+                  </button>
+                </footer>
+              </div>
             </div>
           </div>
         </div>
