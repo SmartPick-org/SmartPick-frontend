@@ -226,7 +226,7 @@ function CompareView({
       <section className="mx-auto max-w-7xl">
 
         {/* ── 4단 비교 레이아웃 ── */}
-        <div className="flex justify-center items-start gap-3 lg:gap-5 pb-12 overflow-x-auto min-w-[max-content]">
+        <div className="flex justify-start items-start gap-3 lg:gap-5 pb-12 overflow-x-auto min-w-[max-content]">
 
           {/* 카테고리 라벨 컬럼 */}
           <div className="flex flex-col w-[110px] shrink-0">
