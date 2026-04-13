@@ -90,9 +90,9 @@ export function AppStateProvider({
 }) {
   const [state, dispatch] = useReducer(reducer, { ...initialState, ...initial });
 
-  // 1. Load from localStorage on mount (Hydration)
+  // 1. Load from sessionStorage on mount (Hydration)
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = sessionStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -103,9 +103,9 @@ export function AppStateProvider({
     }
   }, []);
 
-  // 2. Save to localStorage whenever state changes
+  // 2. Save to sessionStorage whenever state changes
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }, [state]);
 
   const value = useMemo(() => ({ state, dispatch }), [state]);
