@@ -8,8 +8,8 @@ import { UI_CONSTANTS } from "@/constants/ui";
 
 // 마크다운 렌더러 (외부 라이브러리 불필요)
 function renderInline(text: string): React.ReactNode[] {
-  // Split on **bold**, *italic*, and [link](url)
-  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\]\([^)]+\))/g);
+  // Split on **bold**, *italic*, [link](url), and bare URLs
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\]\([^)]+\)|https?:\/\/[^\s]+)/g);
   return parts.map((part, i) => {
     if (part.startsWith("**") && part.endsWith("**")) {
       return <strong key={i}>{part.slice(2, -2)}</strong>;
@@ -23,6 +23,14 @@ function renderInline(text: string): React.ReactNode[] {
         <a key={i} href={linkMatch[2]} target="_blank" rel="noopener noreferrer"
           className="text-blue-600 underline break-all">
           {linkMatch[1]}
+        </a>
+      );
+    }
+    if (/^https?:\/\//.test(part)) {
+      return (
+        <a key={i} href={part} target="_blank" rel="noopener noreferrer"
+          className="text-blue-600 underline break-all">
+          {part}
         </a>
       );
     }
