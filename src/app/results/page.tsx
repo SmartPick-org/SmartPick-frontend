@@ -125,8 +125,12 @@ const formatKoreanAmount = (amount: number) => {
   return result + "원";
 };
 
+const roundTo500 = (val: number) => Math.round(val / 500) * 500;
+
 const calcYearlyNetBenefit = (card: RecommendCard) => {
-  return Math.max(0, card.expected_monthly_benefit * 12 - card.annual_fee);
+  const monthly = roundTo500(card.expected_monthly_benefit);
+  const annual = monthly * 12 - card.annual_fee;
+  return roundTo500(Math.max(0, annual));
 };
 
 // ─── Compare View ──────────────────────────────────────────────────────────────
@@ -135,16 +139,19 @@ const COMPARE_HEADER_H = 220;
 
 function benefitText(amount: number): string {
   if (amount <= 0) return "해당사항 없음";
-  const man = Math.floor(amount / 10000);
-  return man > 0 ? `최대 ${man}만원 할인` : `최대 ${amount.toLocaleString()}원 할인`;
+  const rounded = roundTo500(amount);
+  const man = Math.floor(rounded / 10000);
+  return man > 0 ? `최대 ${man}만원 할인` : `최대 ${rounded.toLocaleString()}원 할인`;
 }
 
 function diffText(diff: number): { text: string; cls: string } {
-  if (diff === 0) return { text: "해당없음", cls: "text-slate-300" };
-  const man = Math.floor(Math.abs(diff) / 10000);
-  const sign = diff > 0 ? "+" : "-";
-  const label = man > 0 ? `${sign} 최대 ${man}만원` : `${sign} ${Math.abs(diff).toLocaleString()}원`;
-  return { text: label, cls: diff > 0 ? "text-[#625BF5]" : "text-rose-400" };
+  const rounded = roundTo500(diff);
+  if (rounded === 0) return { text: "해당없음", cls: "text-slate-300" };
+  const sign = rounded > 0 ? "+" : "-";
+  const abs = Math.abs(rounded);
+  // 모든 카테고리 동일하게 "± X,XXX원" 형식으로 통일
+  const label = `${sign} ${abs.toLocaleString()}원`;
+  return { text: label, cls: rounded > 0 ? "text-[#625BF5]" : "text-rose-400" };
 }
 
 /** current_card와 선택된 추천 카드의 category_breakdown으로 diff 동적 계산 */
@@ -157,8 +164,10 @@ function calcCategoryComparison(
     ...recommended.category_breakdown.map((c) => c.category),
   ]);
   return Array.from(allCats).map((cat) => {
-    const curr = current.category_breakdown.find((c) => c.category === cat)?.monthly_discount_krw ?? 0;
-    const rec = recommended.category_breakdown.find((c) => c.category === cat)?.monthly_discount_krw ?? 0;
+    const currRaw = current.category_breakdown.find((c) => c.category === cat)?.monthly_discount_krw ?? 0;
+    const recRaw = recommended.category_breakdown.find((c) => c.category === cat)?.monthly_discount_krw ?? 0;
+    const curr = roundTo500(currRaw);
+    const rec = roundTo500(recRaw);
     return { category: cat, current_discount: curr, recommended_discount: rec, diff: rec - curr };
   });
 }
@@ -214,8 +223,16 @@ function CompareView({
   // allCategories는 유저가 입력한(선택한) 카테고리를 그대로 사용합니다.
   const allCategories = userCategories;
 
-  const yearlyMan = Math.floor(Math.abs(activeYearlyDiff) / 10000);
-  const monthlyMan = Math.floor(Math.abs(activeMonthlyDiff) / 10000);
+  const formatRoundedDiff = (val: number) => {
+    const rounded = roundTo500(Math.abs(val));
+    const man = Math.floor(rounded / 10000);
+    const cheon = Math.floor((rounded % 10000) / 1000);
+    if (man > 0) return cheon > 0 ? `${man}만 ${cheon}천` : `${man}만`;
+    return `${cheon}천`;
+  };
+
+  const yearlyDiffStr = formatRoundedDiff(activeYearlyDiff);
+  const monthlyDiffStr = formatRoundedDiff(activeMonthlyDiff);
   const isGain = activeYearlyDiff >= 0;
 
   if (!selectedCard) {
@@ -287,18 +304,21 @@ function CompareView({
                   <div className="h-[80px] flex flex-col justify-center">
                     <div className="flex items-baseline gap-1 text-[13px] font-normal text-slate-600">
                       <span>예상 월별 혜택</span>
-                      <span className="font-bold tabular-nums text-[#625BF5]">{current_card.expected_monthly_benefit.toLocaleString()}원</span>
+                      <span className="font-bold tabular-nums text-[#625BF5]">{roundTo500(current_card.expected_monthly_benefit).toLocaleString()}원</span>
                     </div>
                     <div className="mt-1">
                       <p className="text-[13px] font-bold text-slate-900">1년 예상 혜택</p>
                       <div className="leading-tight tabular-nums font-extrabold text-slate-900">
                         <span className="text-[32px]">{Math.floor(calcYearlyNetBenefit(current_card) / 10000)}</span>
                         <span className="text-[18px]">만</span>
-                        {(calcYearlyNetBenefit(current_card) % 10000) > 0 && (
+                        {(calcYearlyNetBenefit(current_card) % 10000) >= 1000 && (
                           <>
                             <span className="ml-1 text-[32px]">{Math.floor((calcYearlyNetBenefit(current_card) % 10000) / 1000)}</span>
                             <span className="text-[18px]">천</span>
                           </>
+                        )}
+                        {(calcYearlyNetBenefit(current_card) % 1000) > 0 && (
+                          <span className="ml-1 text-[24px]">{calcYearlyNetBenefit(current_card) % 1000}</span>
                         )}
                         <span className="text-[18px]">원</span>
                       </div>
@@ -317,7 +337,7 @@ function CompareView({
                           {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
                         </span>
                         <span className={`font-bold tabular-nums leading-[1.6] ${isNot ? "text-slate-300" : "text-slate-900"}`} style={{ fontSize: UI_CONSTANTS.RESULTS.FONT.CARD_CATEGORY_LABEL }}>
-                          {isNot ? "0원" : `${val.toLocaleString()}원`}
+                          {isNot ? "0원" : `${roundTo500(val).toLocaleString()}원`}
                         </span>
                       </div>
                     );
@@ -350,7 +370,7 @@ function CompareView({
                 <p className="mt-1 text-[22px] font-extrabold leading-tight text-[#2D333F]">
                   연간 최대{" "}
                   <span className={isGain ? "text-[#625BF5]" : "text-rose-500"}>
-                    {yearlyMan}만원
+                    {yearlyDiffStr}원
                   </span>{" "}
                   정도
                 </p>
@@ -375,7 +395,7 @@ function CompareView({
 
               <div className="mt-6 text-center">
                 <span className={`text-[14px] font-bold ${isGain ? "text-[#625BF5]" : "text-rose-500"}`}>
-                  {isGain ? "+" : "-"} 월 최대 {monthlyMan}만원 이득
+                  {isGain ? "+" : "-"} 월 최대 {monthlyDiffStr}원 이득
                 </span>
               </div>
             </div>
@@ -438,18 +458,21 @@ function CompareView({
                   <div className="h-[80px] flex flex-col justify-center">
                     <div className="flex items-baseline gap-1 text-[13px] font-normal text-slate-500">
                       <span>예상 월별 혜택</span>
-                      <span className="font-bold tabular-nums text-[#625BF5]">{selectedCard.expected_monthly_benefit.toLocaleString()}원</span>
+                      <span className="font-bold tabular-nums text-[#625BF5]">{roundTo500(selectedCard.expected_monthly_benefit).toLocaleString()}원</span>
                     </div>
                     <div className="mt-1">
                       <p className="text-[13px] font-bold text-[#2D333F]">1년 예상 혜택</p>
                       <div className="leading-tight tabular-nums font-extrabold text-[#2D333F]">
                         <span className="text-[32px] text-[#625BF5]">{Math.floor(calcYearlyNetBenefit(selectedCard) / 10000)}</span>
                         <span className="text-[18px]">만</span>
-                        {(calcYearlyNetBenefit(selectedCard) % 10000) > 0 && (
+                        {(calcYearlyNetBenefit(selectedCard) % 10000) >= 1000 && (
                           <>
                             <span className="ml-1 text-[32px] text-[#625BF5]">{Math.floor((calcYearlyNetBenefit(selectedCard) % 10000) / 1000)}</span>
                             <span className="text-[18px]">천</span>
                           </>
+                        )}
+                        {(calcYearlyNetBenefit(selectedCard) % 1000) > 0 && (
+                          <span className="ml-1 text-[24px] text-[#625BF5]">{calcYearlyNetBenefit(selectedCard) % 1000}</span>
                         )}
                         <span className="text-[18px]">원</span>
                       </div>
