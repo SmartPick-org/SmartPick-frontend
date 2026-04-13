@@ -729,18 +729,21 @@ export default function ResultsPage() {
                         <div className="h-[80px] flex flex-col justify-center">
                           <div className={`flex items-baseline gap-1 text-[13px] font-normal ${isBest ? "text-slate-500" : "text-slate-600"}`}>
                             <span>예상 월별 혜택</span>
-                            <span className="font-bold tabular-nums text-[#625BF5]">{card.expected_monthly_benefit.toLocaleString()}원</span>
+                            <span className="font-bold tabular-nums text-[#625BF5]">{roundTo500(card.expected_monthly_benefit).toLocaleString()}원</span>
                           </div>
                           <div className="mt-1">
                             <p className={`text-[13px] font-bold ${isBest ? "text-[#2D333F]" : "text-slate-900"}`}>1년 예상 혜택</p>
                             <div className={`leading-tight tabular-nums font-extrabold ${isBest ? "text-[#2D333F]" : "text-slate-900"}`}>
                               <span className={`text-[32px] ${isBest ? "text-[#625BF5]" : ""}`}>{Math.floor(calcYearlyNetBenefit(card) / 10000)}</span>
                               <span className="text-[18px]">만</span>
-                              {(calcYearlyNetBenefit(card) % 10000) > 0 && (
+                              {(calcYearlyNetBenefit(card) % 10000) >= 1000 && (
                                 <>
                                   <span className={`ml-1 text-[32px] ${isBest ? "text-[#625BF5]" : ""}`}>{Math.floor((calcYearlyNetBenefit(card) % 10000) / 1000)}</span>
                                   <span className="text-[18px]">천</span>
                                 </>
+                              )}
+                              {(calcYearlyNetBenefit(card) % 1000) > 0 && (
+                                <span className={`ml-1 text-[24px] ${isBest ? "text-[#625BF5]" : ""}`}>{calcYearlyNetBenefit(card) % 1000}</span>
                               )}
                               <span className="text-[18px]">원</span>
                             </div>
@@ -760,7 +763,7 @@ export default function ResultsPage() {
                                   {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
                                 </span>
                                 <span className={`font-bold tabular-nums leading-[1.6] ${isNot ? "text-slate-300" : isBest ? "text-[#625BF5]" : "text-slate-900"}`} style={{ fontSize: UI_CONSTANTS.RESULTS.FONT.CARD_CATEGORY_LABEL }}>
-                                  {isNot ? "0원" : `${b.monthly_discount_krw.toLocaleString()}원`}
+                                  {isNot ? "0원" : `${roundTo500(b.monthly_discount_krw).toLocaleString()}원`}
                                 </span>
                               </div>
                             );
@@ -813,12 +816,8 @@ export default function ResultsPage() {
               </div>
               <button onClick={() => setActiveCard(null)} className="rounded-full bg-slate-100 p-2 text-slate-500">✕</button>
             </div>
+            <p className="mt-4 text-xs text-slate-400">아래 버튼을 눌러 원하시는 정보를 확인해보세요.</p>
             <div className="flex-1 overflow-y-auto py-6 space-y-6">
-              {chat.length === 0 && (
-                <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4 text-sm text-slate-500 text-center leading-relaxed">
-                  아래 버튼을 눌러 이 카드에 대해<br />궁금한 점을 바로 확인해보세요 :)
-                </div>
-              )}
               {chat.map((m, i) => (
                 <div key={i} className="space-y-4">
                   <div className="flex justify-end">
