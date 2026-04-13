@@ -40,7 +40,7 @@ const ADVISOR_QUERIES: { type: AdvisorQueryType; label: string }[] = [
   { type: "late_payment", label: "연체 및 이자 유의사항" },
   { type: "revolving", label: "리볼빙(결제이월) 정보" }
 ];
-import { RecommendCard, RecommendResponse, CompareResponse } from "@/state/api";
+import { RecommendCard, RecommendResponse, CompareResponse, CategoryComparison } from "@/state/api";
 import { CATEGORY_KEY_TO_LABEL, CategoryKey } from "@/state/categories";
 
 const LoadingSkeleton = () => (
@@ -92,6 +92,22 @@ function diffText(diff: number): { text: string; cls: string } {
   return { text: label, cls: diff > 0 ? "text-[#625BF5]" : "text-rose-400" };
 }
 
+/** current_card와 선택된 추천 카드의 category_breakdown으로 diff 동적 계산 */
+function calcCategoryComparison(
+  current: RecommendCard,
+  recommended: RecommendCard
+): CategoryComparison[] {
+  const allCats = new Set([
+    ...current.category_breakdown.map((c) => c.category),
+    ...recommended.category_breakdown.map((c) => c.category),
+  ]);
+  return Array.from(allCats).map((cat) => {
+    const curr = current.category_breakdown.find((c) => c.category === cat)?.monthly_discount_krw ?? 0;
+    const rec = recommended.category_breakdown.find((c) => c.category === cat)?.monthly_discount_krw ?? 0;
+    return { category: cat, current_discount: curr, recommended_discount: rec, diff: rec - curr };
+  });
+}
+
 function CompareView({
   data,
   userName,
@@ -101,16 +117,37 @@ function CompareView({
   userName?: string;
   onAskCard: (card: RecommendCard) => void;
 }) {
-  const { current_card, recommended_card, monthly_diff, yearly_diff, category_comparison, explanation } = data;
+  const { current_card, explanation } = data;
 
-  const allCategories = useMemo(
-    () => category_comparison.map((c) => c.category),
-    [category_comparison]
+  // 백엔드 신규 형태(recommended_cards 배열) 우선, 없으면 단일 카드로 폴백
+  const allRecommended = useMemo(() => {
+    const list = data.recommended_cards ?? [data.recommended_card];
+    return list
+      .filter((c) => c.expected_monthly_benefit > 0)
+      .sort((a, b) => b.expected_monthly_benefit - a.expected_monthly_benefit);
+  }, [data]);
+
+  const [selectedIdx, setSelectedIdx] = useState(0);
+
+  const selectedCard = allRecommended[selectedIdx] ?? allRecommended[0];
+
+  // 선택된 추천 카드 기준으로 diff 동적 계산
+  const activeCategoryComparison = useMemo(
+    () => (selectedCard ? calcCategoryComparison(current_card, selectedCard) : data.category_comparison),
+    [selectedCard, current_card, data.category_comparison]
   );
 
-  const yearlyMan = Math.floor(Math.abs(yearly_diff) / 10000);
-  const monthlyMan = Math.floor(Math.abs(monthly_diff) / 10000);
-  const isGain = yearly_diff >= 0;
+  const activeMonthlyDiff = selectedCard
+    ? selectedCard.expected_monthly_benefit - current_card.expected_monthly_benefit
+    : data.monthly_diff;
+  const activeYearlyDiff = activeMonthlyDiff * 12;
+
+  const allCategories = activeCategoryComparison.map((c) => c.category);
+  const yearlyMan = Math.floor(Math.abs(activeYearlyDiff) / 10000);
+  const monthlyMan = Math.floor(Math.abs(activeMonthlyDiff) / 10000);
+  const isGain = activeYearlyDiff >= 0;
+
+  if (!selectedCard) return null;
 
   return (
     <main className="min-h-screen bg-white px-6 py-12 md:px-12">
@@ -139,14 +176,13 @@ function CompareView({
 
           {/* 현재 카드 */}
           <div className="flex flex-1 flex-col rounded-[28px] border border-slate-200 bg-white px-6 py-7 shadow-sm">
-            {/* 헤더 */}
             <div style={{ minHeight: COMPARE_HEADER_H }} className="flex flex-col justify-between pb-4">
               <div>
                 <p className="text-xs font-bold uppercase tracking-widest text-slate-400">기존카드</p>
                 <h2 className="mt-1 text-xl font-bold text-[#2D333F] leading-tight truncate" title={current_card.card_name}>
                   {current_card.card_name}
                 </h2>
-                <p className="mt-0.5 text-sm text-slate-400">{current_card.card_company} | 기타정보</p>
+                <p className="mt-0.5 text-sm text-slate-400">{current_card.card_company}</p>
               </div>
               <div>
                 <p className="text-xs text-slate-400">
@@ -164,9 +200,8 @@ function CompareView({
               </div>
             </div>
 
-            {/* 카테고리 행 */}
             {allCategories.map((cat) => {
-              const item = category_comparison.find((c) => c.category === cat);
+              const item = activeCategoryComparison.find((c) => c.category === cat);
               const val = item?.current_discount ?? 0;
               return (
                 <div
@@ -181,7 +216,6 @@ function CompareView({
               );
             })}
 
-            {/* 푸터 */}
             <div className="mt-5 border-t border-slate-100 pt-4 space-y-0.5 text-xs text-slate-400">
               <p>연회비 : {formatKoreanAmount(current_card.annual_fee)}</p>
               <p>전월실적 : {formatKoreanAmount(current_card.minimum_performance)}</p>
@@ -197,7 +231,6 @@ function CompareView({
 
           {/* diff 열 */}
           <div className="flex w-[180px] shrink-0 flex-col items-center">
-            {/* 헤더: 연간 혜택 차이 */}
             <div
               className="flex flex-col items-center justify-end pb-4 text-center"
               style={{ minHeight: COMPARE_HEADER_H }}
@@ -213,9 +246,8 @@ function CompareView({
               <p className="text-xl font-extrabold text-[#2D333F]">혜택을 더 받을 수 있어요!</p>
             </div>
 
-            {/* 카테고리별 diff */}
             {allCategories.map((cat) => {
-              const item = category_comparison.find((c) => c.category === cat);
+              const item = activeCategoryComparison.find((c) => c.category === cat);
               const { text, cls } = diffText(item?.diff ?? 0);
               return (
                 <div
@@ -228,7 +260,6 @@ function CompareView({
               );
             })}
 
-            {/* 월간 요약 */}
             <div className="mt-5 text-center">
               <span className={`text-sm font-bold ${isGain ? "text-[#625BF5]" : "text-rose-500"}`}>
                 {isGain ? "+" : "-"} 월간 최대 {monthlyMan}만원 혜택
@@ -236,65 +267,100 @@ function CompareView({
             </div>
           </div>
 
-          {/* 추천 카드 */}
-          <div className="flex flex-1 flex-col rounded-[28px] border-2 border-[#625BF5] bg-[#EFEEFF] px-6 py-7 shadow-[0_20px_50px_rgba(98,91,245,0.12)]">
-            {/* 헤더 */}
-            <div style={{ minHeight: COMPARE_HEADER_H }} className="flex flex-col justify-between pb-4">
-              <div>
-                <span className="inline-block rounded-full bg-[#625BF5] px-3 py-0.5 text-[11px] font-bold text-white">
-                  1순위
-                </span>
-                <p className="mt-2 text-xs font-bold uppercase tracking-widest text-slate-400">새로운 추천 카드</p>
-                <h2 className="mt-1 text-xl font-bold text-[#2D333F] leading-tight truncate" title={recommended_card.card_name}>
-                  {recommended_card.card_name}
-                </h2>
-                <p className="mt-0.5 text-sm text-slate-400">{recommended_card.card_company} | 기타정보</p>
-              </div>
-              <div>
-                <p className="text-xs text-slate-400">
-                  예상 최대 월별 혜택금액{" "}
-                  <span className="font-semibold text-[#625BF5]">
-                    {Math.floor(recommended_card.expected_monthly_benefit / 10000)}만원
-                  </span>
-                </p>
-                <p className="mt-1 text-sm text-slate-500">
-                  1년간 사용했을 때 예상 혜택금액{" "}
-                  <span className="text-lg font-extrabold text-[#625BF5] tabular-nums">
-                    {formatKoreanAmount(recommended_card.expected_monthly_benefit * 12)}
-                  </span>
-                </p>
-              </div>
-            </div>
-
-            {/* 카테고리 행 */}
-            {allCategories.map((cat) => {
-              const item = category_comparison.find((c) => c.category === cat);
-              const val = item?.recommended_discount ?? 0;
-              return (
-                <div
-                  key={cat}
-                  className="flex items-center border-t border-indigo-100 text-sm"
-                  style={{ height: COMPARE_ROW_H }}
+          {/* 추천 카드 영역 (스와이프 네비게이션) */}
+          <div className="flex flex-1 flex-col">
+            {/* 네비게이션 헤더 */}
+            {allRecommended.length > 1 && (
+              <div className="mb-3 flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => setSelectedIdx((i) => Math.max(0, i - 1))}
+                  disabled={selectedIdx === 0}
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-all hover:border-slate-400 disabled:opacity-30"
+                  aria-label="이전 카드"
                 >
-                  <span className={val > 0 ? "font-medium text-[#2D333F]" : "text-slate-300"}>
-                    {benefitText(val)}
-                  </span>
+                  ←
+                </button>
+                <div className="flex gap-1.5">
+                  {allRecommended.map((_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setSelectedIdx(i)}
+                      className={`h-2 rounded-full transition-all ${i === selectedIdx ? "w-6 bg-[#625BF5]" : "w-2 bg-slate-200"}`}
+                      aria-label={`${i + 1}번 카드`}
+                    />
+                  ))}
                 </div>
-              );
-            })}
+                <button
+                  type="button"
+                  onClick={() => setSelectedIdx((i) => Math.min(allRecommended.length - 1, i + 1))}
+                  disabled={selectedIdx === allRecommended.length - 1}
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-all hover:border-slate-400 disabled:opacity-30"
+                  aria-label="다음 카드"
+                >
+                  →
+                </button>
+              </div>
+            )}
 
-            {/* 푸터 */}
-            <div className="mt-5 border-t border-indigo-100 pt-4 space-y-0.5 text-xs text-slate-400">
-              <p>연회비 : {formatKoreanAmount(recommended_card.annual_fee)}</p>
-              <p>전월실적 : {formatKoreanAmount(recommended_card.minimum_performance)}</p>
+            {/* 추천 카드 카드 */}
+            <div className="flex flex-1 flex-col rounded-[28px] border-2 border-[#625BF5] bg-[#EFEEFF] px-6 py-7 shadow-[0_20px_50px_rgba(98,91,245,0.12)]">
+              <div style={{ minHeight: allRecommended.length > 1 ? COMPARE_HEADER_H - 36 : COMPARE_HEADER_H }} className="flex flex-col justify-between pb-4">
+                <div>
+                  <span className="inline-block rounded-full bg-[#625BF5] px-3 py-0.5 text-[11px] font-bold text-white">
+                    {selectedIdx + 1}순위
+                  </span>
+                  <p className="mt-2 text-xs font-bold uppercase tracking-widest text-slate-400">새로운 추천 카드</p>
+                  <h2 className="mt-1 text-xl font-bold text-[#2D333F] leading-tight truncate" title={selectedCard.card_name}>
+                    {selectedCard.card_name}
+                  </h2>
+                  <p className="mt-0.5 text-sm text-slate-400">{selectedCard.card_company}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-400">
+                    예상 최대 월별 혜택금액{" "}
+                    <span className="font-semibold text-[#625BF5]">
+                      {Math.floor(selectedCard.expected_monthly_benefit / 10000)}만원
+                    </span>
+                  </p>
+                  <p className="mt-1 text-sm text-slate-500">
+                    1년간 사용했을 때 예상 혜택금액{" "}
+                    <span className="text-lg font-extrabold text-[#625BF5] tabular-nums">
+                      {formatKoreanAmount(selectedCard.expected_monthly_benefit * 12)}
+                    </span>
+                  </p>
+                </div>
+              </div>
+
+              {allCategories.map((cat) => {
+                const item = activeCategoryComparison.find((c) => c.category === cat);
+                const val = item?.recommended_discount ?? 0;
+                return (
+                  <div
+                    key={cat}
+                    className="flex items-center border-t border-indigo-100 text-sm"
+                    style={{ height: COMPARE_ROW_H }}
+                  >
+                    <span className={val > 0 ? "font-medium text-[#2D333F]" : "text-slate-300"}>
+                      {benefitText(val)}
+                    </span>
+                  </div>
+                );
+              })}
+
+              <div className="mt-5 border-t border-indigo-100 pt-4 space-y-0.5 text-xs text-slate-400">
+                <p>연회비 : {formatKoreanAmount(selectedCard.annual_fee)}</p>
+                <p>전월실적 : {formatKoreanAmount(selectedCard.minimum_performance)}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => onAskCard(selectedCard)}
+                className="mt-4 w-full rounded-xl bg-[#625BF5] py-3 text-sm font-bold text-white hover:bg-[#5148e0] transition-colors shadow-md shadow-[#625BF5]/20"
+              >
+                더 물어보기
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => onAskCard(recommended_card)}
-              className="mt-4 w-full rounded-xl bg-[#625BF5] py-3 text-sm font-bold text-white hover:bg-[#5148e0] transition-colors shadow-md shadow-[#625BF5]/20"
-            >
-              더 물어보기
-            </button>
           </div>
         </div>
 

@@ -67,6 +67,9 @@ export interface CategoryComparison {
 
 export interface CompareResponse {
   current_card: RecommendCard;
+  /** 백엔드 신규 형태: 여러 추천 카드 (혜택 내림차순) */
+  recommended_cards?: RecommendCard[];
+  /** 백엔드 구 형태: 단일 추천 카드 (하위호환) */
   recommended_card: RecommendCard;
   monthly_diff: number;
   yearly_diff: number;
