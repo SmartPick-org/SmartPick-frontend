@@ -602,6 +602,7 @@ export default function ResultsPage() {
                 </div>
                 <button onClick={() => setActiveCard(null)} className="rounded-full bg-slate-100 p-2 text-slate-500">✕</button>
               </div>
+              <p className="mt-4 text-xs text-slate-400">아래 버튼을 눌러 원하시는 정보를 확인해보세요.</p>
               <div className="flex-1 overflow-y-auto py-6 space-y-6">
                 {chat.map((m, i) => (
                   <div key={i} className="space-y-4">
