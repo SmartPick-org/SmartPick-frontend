@@ -166,9 +166,9 @@ function CompareView({
   const allRecommended = useMemo(() => {
     const list = data.recommended_cards ?? [data.recommended_card];
     return list
-      .filter((c) => c.expected_monthly_benefit > 0)
+      .filter((c) => c.expected_monthly_benefit > 0 && c.expected_monthly_benefit > current_card.expected_monthly_benefit)
       .sort((a, b) => b.expected_monthly_benefit - a.expected_monthly_benefit);
-  }, [data]);
+  }, [data, current_card.expected_monthly_benefit]);
 
   const [selectedIdx, setSelectedIdx] = useState(0);
 
@@ -190,7 +190,26 @@ function CompareView({
   const monthlyMan = Math.floor(Math.abs(activeMonthlyDiff) / 10000);
   const isGain = activeYearlyDiff >= 0;
 
-  if (!selectedCard) return null;
+  if (!selectedCard) {
+    return (
+      <main className="min-h-screen bg-white px-6 py-12 md:px-12 flex flex-col items-center justify-center">
+        <div className="text-center bg-slate-50 p-12 rounded-[32px] max-w-2xl mx-auto shadow-sm border border-slate-100">
+          <span className="text-5xl block mb-6">🏆</span>
+          <h2 className="text-2xl font-bold text-slate-900 leading-snug">현재 카드가 최상의 효율입니다!</h2>
+          <p className="mt-4 text-slate-500 leading-relaxed">
+            분석 결과, 현재 사용 중인 <span className="font-semibold text-slate-700">{current_card.card_name}</span>의 <br />
+            예상 혜택(<span className="font-semibold text-[#625BF5]">{formatKoreanAmount(current_card.expected_monthly_benefit * 12)}</span>/연)보다 더 좋은 대안을 찾지 못했습니다. <br />
+            지금처럼 슬기로운 소비 생활을 계속 유지해 주세요!
+          </p>
+          <div className="mt-8">
+            <button onClick={() => window.location.href = "/"} className="rounded-xl bg-[#625BF5] px-8 py-3 font-bold text-white transition-all hover:bg-[#5148e0] shadow-md shadow-[#625BF5]/20">
+              홈으로 가기
+            </button>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-white px-6 py-12 md:px-12">
@@ -601,6 +620,7 @@ export default function ResultsPage() {
             <div className="flex gap-10 min-w-max pr-12 pt-10">
               {recommendations
                 .filter(card => card.expected_monthly_benefit > 0)
+                .sort((a, b) => b.expected_monthly_benefit - a.expected_monthly_benefit)
                 .map((card, idx) => {
                   const isBest = idx === 0;
                   return (
@@ -664,15 +684,13 @@ export default function ResultsPage() {
                             <p>연회비 : <span className="tabular-nums">{card.annual_fee.toLocaleString()}원</span></p>
                             <p>전월실적 : <span className="tabular-nums">{card.minimum_performance.toLocaleString()}원</span></p>
                           </div>
-                          {idx < 3 && (
-                            <button
-                              type="button"
-                              onClick={() => { setActiveCard(card); setChat([]); }}
-                              className={`mt-[24px] flex h-[52px] w-full items-center justify-center rounded-[12px] text-[16px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] ${isBest ? "bg-[#625BF5] text-white shadow-md shadow-[#625BF5]/20" : "bg-[#1e69ff] text-white shadow-md shadow-blue-500/10"}`}
-                            >
-                              더 물어보기
-                            </button>
-                          )}
+                          <button
+                            type="button"
+                            onClick={() => { setActiveCard(card); setChat([]); }}
+                            className={`mt-[24px] flex h-[52px] w-full items-center justify-center rounded-[12px] text-[16px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] ${isBest ? "bg-[#625BF5] text-white shadow-md shadow-[#625BF5]/20" : "bg-[#1e69ff] text-white shadow-md shadow-blue-500/10"}`}
+                          >
+                            더 물어보기
+                          </button>
                         </footer>
                       </div>
                     </div>
