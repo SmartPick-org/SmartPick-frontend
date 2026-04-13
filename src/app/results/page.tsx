@@ -568,9 +568,9 @@ export default function ResultsPage() {
   const recommendations = useMemo(
     () =>
       (data?.recommended_cards || [])
-        .filter((c) => c.expected_monthly_benefit > 0)
+        .filter((c) => calcYearlyNetBenefit(c) > 0)
         .slice()
-        .sort((a, b) => b.expected_monthly_benefit - a.expected_monthly_benefit),
+        .sort((a, b) => calcYearlyNetBenefit(b) - calcYearlyNetBenefit(a)),
     [data]
   );
 
