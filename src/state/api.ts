@@ -51,3 +51,25 @@ export interface AdvisorRequest {
 }
 
 export type AdvisorResponse = QAResponse;
+
+export interface CompareRequest {
+  total_budget: number;
+  category_spending: Record<string, number | { total: number; [key: string]: number | string }>;
+  current_card_id: string;
+}
+
+export interface CategoryComparison {
+  category: string;
+  current_discount: number;
+  recommended_discount: number;
+  diff: number;
+}
+
+export interface CompareResponse {
+  current_card: RecommendCard;
+  recommended_card: RecommendCard;
+  monthly_diff: number;
+  yearly_diff: number;
+  category_comparison: CategoryComparison[];
+  explanation: string;
+}

@@ -1,5 +1,5 @@
 import { AppState } from "./appState";
-import { RecommendRequest, RecommendResponse, QARequest, QAResponse, AdvisorRequest, AdvisorResponse } from "./api";
+import { RecommendRequest, RecommendResponse, QARequest, QAResponse, AdvisorRequest, AdvisorResponse, CompareRequest, CompareResponse } from "./api";
 import { SUB_CATEGORY_KEY_MAP } from "./categories";
 
 import { API_V1, buildDefaultHeaders } from "./config";
@@ -77,6 +77,36 @@ export async function askQuestion(recommendJson: string, question: string): Prom
 
     if (!response.ok) {
         throw new Error("Failed to get answer");
+    }
+
+    return response.json();
+}
+
+export async function fetchComparison(state: AppState): Promise<CompareResponse> {
+    if (!state.selectedCurrentCard?.id) {
+        throw new Error("선택된 카드가 없습니다.");
+    }
+    const base = transformStateToRecommendRequest(state);
+    const payload: CompareRequest = {
+        ...base,
+        current_card_id: state.selectedCurrentCard.id,
+    };
+
+    console.log("🚀 Compare Request Payload:", JSON.stringify(payload, null, 2));
+
+    const response = await fetch(`${API_V1}/cards/compare`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            ...buildDefaultHeaders(API_V1)
+        },
+        body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("❌ Compare API Error:", errorData);
+        throw new Error(errorData.detail?.[0]?.msg || "비교 정보를 가져오는 데 실패했습니다.");
     }
 
     return response.json();
