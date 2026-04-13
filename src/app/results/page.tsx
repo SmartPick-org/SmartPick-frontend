@@ -565,7 +565,14 @@ export default function ResultsPage() {
   };
 
   const categories = useMemo(() => Object.keys(state.spendingData), [state.spendingData]);
-  const recommendations = data?.recommended_cards || [];
+  const recommendations = useMemo(
+    () =>
+      (data?.recommended_cards || [])
+        .filter((c) => c.expected_monthly_benefit > 0)
+        .slice()
+        .sort((a, b) => b.expected_monthly_benefit - a.expected_monthly_benefit),
+    [data]
+  );
 
   if (loading) return <main className="min-h-screen bg-[#f4f7fa] px-6 py-24"><LoadingSkeleton /></main>;
 
@@ -670,8 +677,6 @@ export default function ResultsPage() {
           <div className="flex-1 overflow-x-auto pb-24 scrollbar-hide scroll-smooth -mx-6 px-6 lg:mx-0 lg:px-0">
             <div className="flex gap-10 min-w-max pr-12 pt-10">
               {recommendations
-                .filter(card => card.expected_monthly_benefit > 0)
-                .sort((a, b) => b.expected_monthly_benefit - a.expected_monthly_benefit)
                 .map((card, idx) => {
                   const isBest = idx === 0;
                   return (
