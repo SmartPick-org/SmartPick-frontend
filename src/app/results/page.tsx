@@ -231,7 +231,7 @@ function CompareView({
                 <p className="text-xs text-slate-400">
                   예상 최대 월별 혜택금액{" "}
                   <span className="font-semibold text-slate-600">
-                    {Math.floor(current_card.expected_monthly_benefit / 10000)}만원
+                    {current_card.expected_monthly_benefit === 0 ? "0원" : `${Math.floor(current_card.expected_monthly_benefit / 10000)}만원`}
                   </span>
                 </p>
                 <p className="mt-1 text-sm text-slate-500">
@@ -240,6 +240,11 @@ function CompareView({
                     {formatKoreanAmount(current_card.expected_monthly_benefit * 12)}
                   </span>
                 </p>
+                {current_card.expected_monthly_benefit === 0 && current_card.explanation && (
+                  <p className="mt-2 text-xs leading-relaxed text-rose-500 bg-rose-50 p-2.5 rounded-lg font-medium">
+                    {current_card.explanation}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -364,7 +369,7 @@ function CompareView({
                   <p className="text-xs text-slate-400">
                     예상 최대 월별 혜택금액{" "}
                     <span className="font-semibold text-[#625BF5]">
-                      {Math.floor(selectedCard.expected_monthly_benefit / 10000)}만원
+                      {selectedCard.expected_monthly_benefit === 0 ? "0원" : `${Math.floor(selectedCard.expected_monthly_benefit / 10000)}만원`}
                     </span>
                   </p>
                   <p className="mt-1 text-sm text-slate-500">
@@ -470,7 +475,7 @@ export default function ResultsPage() {
 
     load();
     return () => controller.abort();
-  // 실제로 결과에 영향을 주는 값만 의존성으로 지정 (state 전체 X)
+    // 실제로 결과에 영향을 주는 값만 의존성으로 지정 (state 전체 X)
   }, [state.spendingData, state.subCategoryRatios, state.totalBudget, state.comparisonMode, state.selectedCurrentCard]);
 
   const handleAdvisorQuery = async (queryType: AdvisorQueryType, label: string) => {
