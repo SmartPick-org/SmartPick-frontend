@@ -117,6 +117,10 @@ const formatKoreanAmount = (amount: number) => {
   return result + "원";
 };
 
+const calcYearlyNetBenefit = (card: RecommendCard) => {
+  return Math.max(0, card.expected_monthly_benefit * 12 - card.annual_fee);
+};
+
 // ─── Compare View ──────────────────────────────────────────────────────────────
 const COMPARE_ROW_H = 56;
 const COMPARE_HEADER_H = 220;
@@ -183,7 +187,9 @@ function CompareView({
   const activeMonthlyDiff = selectedCard
     ? selectedCard.expected_monthly_benefit - current_card.expected_monthly_benefit
     : data.monthly_diff;
-  const activeYearlyDiff = activeMonthlyDiff * 12;
+  const activeYearlyDiff = selectedCard
+    ? calcYearlyNetBenefit(selectedCard) - calcYearlyNetBenefit(current_card)
+    : data.yearly_diff;
 
   const allCategories = activeCategoryComparison.map((c) => c.category);
   const yearlyMan = Math.floor(Math.abs(activeYearlyDiff) / 10000);
@@ -198,7 +204,7 @@ function CompareView({
           <h2 className="text-2xl font-bold text-slate-900 leading-snug">현재 카드가 최상의 효율입니다!</h2>
           <p className="mt-4 text-slate-500 leading-relaxed">
             분석 결과, 현재 사용 중인 <span className="font-semibold text-slate-700">{current_card.card_name}</span>의 <br />
-            예상 혜택(<span className="font-semibold text-[#625BF5]">{formatKoreanAmount(current_card.expected_monthly_benefit * 12)}</span>/연)보다 더 좋은 대안을 찾지 못했습니다. <br />
+            예상 혜택(<span className="font-semibold text-[#625BF5]">{formatKoreanAmount(calcYearlyNetBenefit(current_card))}</span>/연)보다 더 좋은 대안을 찾지 못했습니다. <br />
             지금처럼 슬기로운 소비 생활을 계속 유지해 주세요!
           </p>
           <div className="mt-8">
@@ -256,7 +262,7 @@ function CompareView({
                 <p className="mt-1 text-sm text-slate-500">
                   1년간 사용했을 때 예상 혜택금액{" "}
                   <span className="text-lg font-extrabold text-[#2D333F] tabular-nums">
-                    {formatKoreanAmount(current_card.expected_monthly_benefit * 12)}
+                    {formatKoreanAmount(calcYearlyNetBenefit(current_card))}
                   </span>
                 </p>
                 {current_card.expected_monthly_benefit === 0 && current_card.explanation && (
@@ -394,7 +400,7 @@ function CompareView({
                   <p className="mt-1 text-sm text-slate-500">
                     1년간 사용했을 때 예상 혜택금액{" "}
                     <span className="text-lg font-extrabold text-[#625BF5] tabular-nums">
-                      {formatKoreanAmount(selectedCard.expected_monthly_benefit * 12)}
+                      {formatKoreanAmount(calcYearlyNetBenefit(selectedCard))}
                     </span>
                   </p>
                 </div>
@@ -647,11 +653,11 @@ export default function ResultsPage() {
                           <div className="mt-1">
                             <p className={`text-[13px] font-bold ${isBest ? "text-[#2D333F]" : "text-slate-900"}`}>1년 예상 혜택</p>
                             <div className={`leading-tight tabular-nums font-extrabold ${isBest ? "text-[#2D333F]" : "text-slate-900"}`}>
-                              <span className={`text-[32px] ${isBest ? "text-[#625BF5]" : ""}`}>{Math.floor((card.expected_monthly_benefit * 12) / 10000)}</span>
+                              <span className={`text-[32px] ${isBest ? "text-[#625BF5]" : ""}`}>{Math.floor(calcYearlyNetBenefit(card) / 10000)}</span>
                               <span className="text-[18px]">만</span>
-                              {((card.expected_monthly_benefit * 12) % 10000) > 0 && (
+                              {(calcYearlyNetBenefit(card) % 10000) > 0 && (
                                 <>
-                                  <span className={`ml-1 text-[32px] ${isBest ? "text-[#625BF5]" : ""}`}>{Math.floor(((card.expected_monthly_benefit * 12) % 10000) / 1000)}</span>
+                                  <span className={`ml-1 text-[32px] ${isBest ? "text-[#625BF5]" : ""}`}>{Math.floor((calcYearlyNetBenefit(card) % 10000) / 1000)}</span>
                                   <span className="text-[18px]">천</span>
                                 </>
                               )}
