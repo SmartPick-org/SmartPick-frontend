@@ -172,9 +172,9 @@ function CompareView({
   const allRecommended = useMemo(() => {
     const list = data.recommended_cards ?? [data.recommended_card];
     return list
-      .filter((c) => c.expected_monthly_benefit > 0 && c.expected_monthly_benefit > current_card.expected_monthly_benefit)
-      .sort((a, b) => b.expected_monthly_benefit - a.expected_monthly_benefit);
-  }, [data, current_card.expected_monthly_benefit]);
+      .filter((c) => calcYearlyNetBenefit(c) > 0 && calcYearlyNetBenefit(c) >= calcYearlyNetBenefit(current_card))
+      .sort((a, b) => calcYearlyNetBenefit(b) - calcYearlyNetBenefit(a));
+  }, [data, current_card]);
 
   const [selectedIdx, setSelectedIdx] = useState(0);
 
@@ -225,8 +225,27 @@ function CompareView({
     <main className="min-h-screen bg-white px-6 py-12 md:px-12">
       <section className="mx-auto max-w-7xl">
 
-        {/* ── 3단 비교 레이아웃 ── */}
-        <div className="flex justify-center items-start gap-4 lg:gap-10 pb-12 overflow-x-auto min-w-max">
+        {/* ── 4단 비교 레이아웃 ── */}
+        <div className="flex justify-center items-start gap-4 lg:gap-8 pb-12 overflow-x-auto min-w-max">
+
+          {/* 카테고리 라벨 컬럼 */}
+          <div className="flex flex-col w-[110px] shrink-0">
+            <div className="h-10 mb-2" /> {/* alignment spacer for top */}
+            <div className="h-[292px] w-full" /> {/* card border(2px)+padding(40px)+header(250px) */}
+            <div className="flex flex-col w-full">
+              {allCategories.map((catKey) => (
+                <div
+                  key={catKey}
+                  className="flex items-center justify-center border-b last:border-0 border-transparent box-border"
+                  style={{ height: UI_CONSTANTS.RESULTS.ROW_HEIGHT }}
+                >
+                  <div className="flex w-[100px] h-[34px] items-center justify-center rounded-lg bg-[#F2F4F7] text-center text-[13px] font-semibold text-[#515767]">
+                    {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
           {/* 현재 카드 Column */}
           <div className="flex flex-col">
@@ -308,16 +327,16 @@ function CompareView({
           <div className="flex flex-col">
             <div className="h-10 mb-2" /> {/* alignment spacer */}
             <div className="flex w-[260px] shrink-0 flex-col items-center">
-              <div className="h-[250px] flex flex-col items-center justify-end pb-4 text-center mt-[40px]">
+              <div className="h-[250px] flex flex-col items-center justify-center text-center mt-[40px]">
                 <p className="text-sm text-slate-500 leading-snug">새로운 카드로 바꾸시면</p>
-                <p className="mt-1 text-xl font-extrabold leading-tight text-[#2D333F]">
+                <p className="mt-1 text-[22px] font-extrabold leading-tight text-[#2D333F]">
                   연간 최대{" "}
                   <span className={isGain ? "text-[#625BF5]" : "text-rose-500"}>
                     {yearlyMan}만원
                   </span>{" "}
                   정도
                 </p>
-                <p className="text-xl font-extrabold text-[#2D333F]">혜택을 더 받을 수 있어요!</p>
+                <p className="text-[22px] font-extrabold text-[#2D333F]">혜택을 더 받을 수 있어요!</p>
               </div>
 
               <div className="w-full flex flex-col">
