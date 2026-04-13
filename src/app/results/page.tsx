@@ -75,6 +75,23 @@ const formatKoreanAmount = (amount: number) => {
 };
 
 // ─── Compare View ──────────────────────────────────────────────────────────────
+const COMPARE_ROW_H = 56;
+const COMPARE_HEADER_H = 220;
+
+function benefitText(amount: number): string {
+  if (amount <= 0) return "해당사항 없음";
+  const man = Math.floor(amount / 10000);
+  return man > 0 ? `최대 ${man}만원 할인` : `최대 ${amount.toLocaleString()}원 할인`;
+}
+
+function diffText(diff: number): { text: string; cls: string } {
+  if (diff === 0) return { text: "해당없음", cls: "text-slate-300" };
+  const man = Math.floor(Math.abs(diff) / 10000);
+  const sign = diff > 0 ? "+" : "-";
+  const label = man > 0 ? `${sign} 최대 ${man}만원` : `${sign} ${Math.abs(diff).toLocaleString()}원`;
+  return { text: label, cls: diff > 0 ? "text-[#625BF5]" : "text-rose-400" };
+}
+
 function CompareView({
   data,
   userName,
@@ -86,155 +103,195 @@ function CompareView({
 }) {
   const { current_card, recommended_card, monthly_diff, yearly_diff, category_comparison, explanation } = data;
 
-  const isGain = yearly_diff >= 0;
+  const allCategories = useMemo(
+    () => category_comparison.map((c) => c.category),
+    [category_comparison]
+  );
 
-  const allCategories = useMemo(() => {
-    const keys = new Set<string>();
-    category_comparison.forEach((c) => keys.add(c.category));
-    return Array.from(keys);
-  }, [category_comparison]);
+  const yearlyMan = Math.floor(Math.abs(yearly_diff) / 10000);
+  const monthlyMan = Math.floor(Math.abs(monthly_diff) / 10000);
+  const isGain = yearly_diff >= 0;
 
   return (
     <main className="min-h-screen bg-white px-6 py-12 md:px-12">
-      <section className="mx-auto max-w-6xl">
-        {/* 헤더 */}
-        <div className="mb-10 text-center">
-          <span className="inline-block rounded-full bg-indigo-50 px-4 py-1 text-xs font-bold uppercase tracking-widest text-indigo-500 mb-3">
-            카드 비교 결과
-          </span>
-          <h1 className="text-3xl font-extrabold text-slate-900">
-            {userName || "고객"}님의 최적 대안 카드
-          </h1>
-          <p className="mt-2 text-slate-500 text-sm">현재 카드와 추천 카드의 혜택을 비교했습니다.</p>
-        </div>
+      <section className="mx-auto max-w-7xl">
 
-        {/* 연간 혜택 차이 강조 배너 */}
-        <div className={`mb-10 rounded-3xl p-8 text-center ${isGain ? "bg-[#EFEEFF]" : "bg-slate-50"}`}>
-          <p className="text-sm font-semibold text-slate-500 mb-1">연간 예상 혜택 차이</p>
-          <div className={`text-5xl font-extrabold tabular-nums ${isGain ? "text-[#625BF5]" : "text-rose-500"}`}>
-            {isGain ? "+" : ""}{formatKoreanAmount(yearly_diff)}
+        {/* ── 4단 비교 레이아웃 ── */}
+        <div className="flex items-start gap-4">
+
+          {/* 사이드바: 카테고리 라벨 */}
+          <div
+            className="flex shrink-0 flex-col"
+            style={{ paddingTop: COMPARE_HEADER_H, width: 108 }}
+          >
+            {allCategories.map((cat) => (
+              <div
+                key={cat}
+                className="flex items-center justify-center"
+                style={{ height: COMPARE_ROW_H }}
+              >
+                <div className="flex w-full items-center justify-center rounded-lg bg-[#F2F4F7] px-2 py-1 text-center text-xs font-semibold text-[#2D333F]">
+                  {CATEGORY_KEY_TO_LABEL.get(cat as CategoryKey) || cat}
+                </div>
+              </div>
+            ))}
           </div>
-          <p className="mt-2 text-sm text-slate-400">
-            월 기준 {isGain ? "+" : ""}<span className="font-bold text-slate-700">{monthly_diff.toLocaleString()}원</span> 더 {isGain ? "유리" : "불리"}합니다
-          </p>
-        </div>
 
-        {/* 3단 비교 레이아웃 */}
-        <div className="grid grid-cols-[1fr_160px_1fr] gap-4 items-start">
-          {/* 왼쪽: 현재 카드 */}
-          <div className="rounded-[28px] border border-slate-200 bg-white p-7 shadow-sm">
-            <div className="mb-1 text-xs font-bold uppercase tracking-widest text-slate-400">현재 카드</div>
-            <h2 className="text-xl font-bold text-slate-900 truncate" title={current_card.card_name}>{current_card.card_name}</h2>
-            <p className="text-sm text-slate-500 mt-0.5 mb-5">{current_card.card_company}</p>
-
-            <div className="mb-5">
-              <p className="text-xs text-slate-400 font-semibold">예상 월 혜택</p>
-              <p className="text-2xl font-extrabold tabular-nums text-slate-800 mt-0.5">
-                {current_card.expected_monthly_benefit.toLocaleString()}원
-              </p>
-              <p className="text-xs text-slate-400 mt-1">
-                연간 {formatKoreanAmount(current_card.expected_monthly_benefit * 12)}
-              </p>
+          {/* 현재 카드 */}
+          <div className="flex flex-1 flex-col rounded-[28px] border border-slate-200 bg-white px-6 py-7 shadow-sm">
+            {/* 헤더 */}
+            <div style={{ minHeight: COMPARE_HEADER_H }} className="flex flex-col justify-between pb-4">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-widest text-slate-400">기존카드</p>
+                <h2 className="mt-1 text-xl font-bold text-[#2D333F] leading-tight truncate" title={current_card.card_name}>
+                  {current_card.card_name}
+                </h2>
+                <p className="mt-0.5 text-sm text-slate-400">{current_card.card_company} | 기타정보</p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-400">
+                  예상 최대 월별 혜택금액{" "}
+                  <span className="font-semibold text-slate-600">
+                    {Math.floor(current_card.expected_monthly_benefit / 10000)}만원
+                  </span>
+                </p>
+                <p className="mt-1 text-sm text-slate-500">
+                  1년간 사용했을 때 예상 혜택금액{" "}
+                  <span className="text-lg font-extrabold text-[#2D333F] tabular-nums">
+                    {formatKoreanAmount(current_card.expected_monthly_benefit * 12)}
+                  </span>
+                </p>
+              </div>
             </div>
 
-            <div className="space-y-2">
-              {allCategories.map((cat) => {
-                const item = category_comparison.find((c) => c.category === cat);
-                const val = item?.current_discount ?? 0;
-                return (
-                  <div key={cat} className="flex justify-between items-center text-sm">
-                    <span className="text-slate-500">{CATEGORY_KEY_TO_LABEL.get(cat as CategoryKey) || cat}</span>
-                    <span className={`font-semibold tabular-nums ${val > 0 ? "text-slate-800" : "text-slate-300"}`}>
-                      {val > 0 ? `${val.toLocaleString()}원` : "0원"}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
+            {/* 카테고리 행 */}
+            {allCategories.map((cat) => {
+              const item = category_comparison.find((c) => c.category === cat);
+              const val = item?.current_discount ?? 0;
+              return (
+                <div
+                  key={cat}
+                  className="flex items-center border-t border-slate-50 text-sm"
+                  style={{ height: COMPARE_ROW_H }}
+                >
+                  <span className={val > 0 ? "text-slate-700 font-medium" : "text-slate-300"}>
+                    {benefitText(val)}
+                  </span>
+                </div>
+              );
+            })}
 
-            <div className="mt-5 pt-4 border-t border-slate-100 space-y-1 text-xs text-slate-400">
-              <p>연회비: {current_card.annual_fee.toLocaleString()}원</p>
-              <p>전월실적: {current_card.minimum_performance.toLocaleString()}원</p>
+            {/* 푸터 */}
+            <div className="mt-5 border-t border-slate-100 pt-4 space-y-0.5 text-xs text-slate-400">
+              <p>연회비 : {formatKoreanAmount(current_card.annual_fee)}</p>
+              <p>전월실적 : {formatKoreanAmount(current_card.minimum_performance)}</p>
             </div>
-
             <button
               type="button"
               onClick={() => onAskCard(current_card)}
-              className="mt-5 w-full rounded-xl border border-slate-200 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors"
+              className="mt-4 w-full rounded-xl bg-[#1e69ff] py-3 text-sm font-bold text-white hover:bg-blue-600 transition-colors"
             >
               더 물어보기
             </button>
           </div>
 
-          {/* 가운데: 카테고리별 diff */}
-          <div className="flex flex-col items-center pt-[88px] gap-0">
-            <div className="mb-3 text-center">
-              <span className={`text-xs font-bold rounded-full px-3 py-1 ${isGain ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-500"}`}>
-                {isGain ? "▲ 절약" : "▼ 손실"}
-              </span>
+          {/* diff 열 */}
+          <div className="flex w-[180px] shrink-0 flex-col items-center">
+            {/* 헤더: 연간 혜택 차이 */}
+            <div
+              className="flex flex-col items-center justify-end pb-4 text-center"
+              style={{ minHeight: COMPARE_HEADER_H }}
+            >
+              <p className="text-sm text-slate-500 leading-snug">새로운 카드로 바꾸시면 지금보다</p>
+              <p className="mt-1 text-xl font-extrabold leading-tight text-[#2D333F]">
+                연간 최대{" "}
+                <span className={isGain ? "text-[#625BF5]" : "text-rose-500"}>
+                  {yearlyMan}만원
+                </span>{" "}
+                정도
+              </p>
+              <p className="text-xl font-extrabold text-[#2D333F]">혜택을 더 받을 수 있어요!</p>
             </div>
+
+            {/* 카테고리별 diff */}
             {allCategories.map((cat) => {
               const item = category_comparison.find((c) => c.category === cat);
-              const diff = item?.diff ?? 0;
+              const { text, cls } = diffText(item?.diff ?? 0);
               return (
                 <div
                   key={cat}
-                  className="flex h-[36px] w-full items-center justify-center text-xs font-bold tabular-nums"
+                  className={`flex w-full items-center justify-center border-t border-slate-50 text-sm font-bold tabular-nums ${cls}`}
+                  style={{ height: COMPARE_ROW_H }}
                 >
-                  {diff === 0 ? (
-                    <span className="text-slate-300">—</span>
-                  ) : (
-                    <span className={diff > 0 ? "text-emerald-500" : "text-rose-400"}>
-                      {diff > 0 ? "+" : ""}{diff.toLocaleString()}원
-                    </span>
-                  )}
+                  {text}
                 </div>
               );
             })}
+
+            {/* 월간 요약 */}
+            <div className="mt-5 text-center">
+              <span className={`text-sm font-bold ${isGain ? "text-[#625BF5]" : "text-rose-500"}`}>
+                {isGain ? "+" : "-"} 월간 최대 {monthlyMan}만원 혜택
+              </span>
+            </div>
           </div>
 
-          {/* 오른쪽: 추천 카드 */}
-          <div className="rounded-[28px] border-2 border-[#625BF5] bg-[#EFEEFF] p-7 shadow-[0_20px_50px_rgba(98,91,245,0.15)]">
-            <div className="mb-1 flex items-center gap-2">
-              <span className="rounded-full bg-[#625BF5] px-3 py-0.5 text-[11px] font-bold text-white">추천 카드</span>
-            </div>
-            <h2 className="text-xl font-bold text-slate-900 truncate" title={recommended_card.card_name}>{recommended_card.card_name}</h2>
-            <p className="text-sm text-slate-500 mt-0.5 mb-5">{recommended_card.card_company}</p>
-
-            <div className="mb-5">
-              <p className="text-xs text-slate-400 font-semibold">예상 월 혜택</p>
-              <p className="text-2xl font-extrabold tabular-nums text-[#625BF5] mt-0.5">
-                {recommended_card.expected_monthly_benefit.toLocaleString()}원
-              </p>
-              <p className="text-xs text-slate-400 mt-1">
-                연간 {formatKoreanAmount(recommended_card.expected_monthly_benefit * 12)}
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              {allCategories.map((cat) => {
-                const item = category_comparison.find((c) => c.category === cat);
-                const val = item?.recommended_discount ?? 0;
-                return (
-                  <div key={cat} className="flex justify-between items-center text-sm">
-                    <span className="text-slate-600">{CATEGORY_KEY_TO_LABEL.get(cat as CategoryKey) || cat}</span>
-                    <span className={`font-bold tabular-nums ${val > 0 ? "text-[#625BF5]" : "text-slate-300"}`}>
-                      {val > 0 ? `${val.toLocaleString()}원` : "0원"}
-                    </span>
-                  </div>
-                );
-              })}
+          {/* 추천 카드 */}
+          <div className="flex flex-1 flex-col rounded-[28px] border-2 border-[#625BF5] bg-[#EFEEFF] px-6 py-7 shadow-[0_20px_50px_rgba(98,91,245,0.12)]">
+            {/* 헤더 */}
+            <div style={{ minHeight: COMPARE_HEADER_H }} className="flex flex-col justify-between pb-4">
+              <div>
+                <span className="inline-block rounded-full bg-[#625BF5] px-3 py-0.5 text-[11px] font-bold text-white">
+                  1순위
+                </span>
+                <p className="mt-2 text-xs font-bold uppercase tracking-widest text-slate-400">새로운 추천 카드</p>
+                <h2 className="mt-1 text-xl font-bold text-[#2D333F] leading-tight truncate" title={recommended_card.card_name}>
+                  {recommended_card.card_name}
+                </h2>
+                <p className="mt-0.5 text-sm text-slate-400">{recommended_card.card_company} | 기타정보</p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-400">
+                  예상 최대 월별 혜택금액{" "}
+                  <span className="font-semibold text-[#625BF5]">
+                    {Math.floor(recommended_card.expected_monthly_benefit / 10000)}만원
+                  </span>
+                </p>
+                <p className="mt-1 text-sm text-slate-500">
+                  1년간 사용했을 때 예상 혜택금액{" "}
+                  <span className="text-lg font-extrabold text-[#625BF5] tabular-nums">
+                    {formatKoreanAmount(recommended_card.expected_monthly_benefit * 12)}
+                  </span>
+                </p>
+              </div>
             </div>
 
-            <div className="mt-5 pt-4 border-t border-indigo-100 space-y-1 text-xs text-slate-400">
-              <p>연회비: {recommended_card.annual_fee.toLocaleString()}원</p>
-              <p>전월실적: {recommended_card.minimum_performance.toLocaleString()}원</p>
-            </div>
+            {/* 카테고리 행 */}
+            {allCategories.map((cat) => {
+              const item = category_comparison.find((c) => c.category === cat);
+              const val = item?.recommended_discount ?? 0;
+              return (
+                <div
+                  key={cat}
+                  className="flex items-center border-t border-indigo-100 text-sm"
+                  style={{ height: COMPARE_ROW_H }}
+                >
+                  <span className={val > 0 ? "font-medium text-[#2D333F]" : "text-slate-300"}>
+                    {benefitText(val)}
+                  </span>
+                </div>
+              );
+            })}
 
+            {/* 푸터 */}
+            <div className="mt-5 border-t border-indigo-100 pt-4 space-y-0.5 text-xs text-slate-400">
+              <p>연회비 : {formatKoreanAmount(recommended_card.annual_fee)}</p>
+              <p>전월실적 : {formatKoreanAmount(recommended_card.minimum_performance)}</p>
+            </div>
             <button
               type="button"
               onClick={() => onAskCard(recommended_card)}
-              className="mt-5 w-full rounded-xl bg-[#625BF5] py-2.5 text-sm font-bold text-white hover:bg-[#5148e0] transition-colors shadow-md shadow-[#625BF5]/20"
+              className="mt-4 w-full rounded-xl bg-[#625BF5] py-3 text-sm font-bold text-white hover:bg-[#5148e0] transition-colors shadow-md shadow-[#625BF5]/20"
             >
               더 물어보기
             </button>
@@ -242,7 +299,7 @@ function CompareView({
         </div>
 
         {/* 큐레이션 */}
-        <div className="mt-10">
+        <div className="mt-10 ml-[124px]">
           <header className="mb-4 flex items-center gap-2 text-base font-bold text-[#2D333F]">
             <span className="text-[#625BF5]">✦</span>
             <span>{userName || "고객"}님을 위한 맞춤 큐레이션</span>
