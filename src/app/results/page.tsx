@@ -182,7 +182,7 @@ function CompareView({
   const allRecommended = useMemo(() => {
     const list = data.recommended_cards ?? [data.recommended_card];
     return list
-      .filter((c) => calcYearlyNetBenefit(c) > 0 && calcYearlyNetBenefit(c) >= calcYearlyNetBenefit(current_card))
+      .filter((c) => c.expected_monthly_benefit > 0 && calcYearlyNetBenefit(c) >= calcYearlyNetBenefit(current_card))
       .sort((a, b) => calcYearlyNetBenefit(b) - calcYearlyNetBenefit(a));
   }, [data, current_card]);
 
@@ -568,7 +568,7 @@ export default function ResultsPage() {
   const recommendations = useMemo(
     () =>
       (data?.recommended_cards || [])
-        .filter((c) => calcYearlyNetBenefit(c) > 0)
+        .filter((c) => c.expected_monthly_benefit > 0)
         .slice()
         .sort((a, b) => calcYearlyNetBenefit(b) - calcYearlyNetBenefit(a)),
     [data]
