@@ -783,6 +783,11 @@ export default function ResultsPage() {
               <button onClick={() => setActiveCard(null)} className="rounded-full bg-slate-100 p-2 text-slate-500">✕</button>
             </div>
             <div className="flex-1 overflow-y-auto py-6 space-y-6">
+              {chat.length === 0 && (
+                <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4 text-sm text-slate-500 text-center leading-relaxed">
+                  아래 버튼을 눌러 이 카드에 대해<br />궁금한 점을 바로 확인해보세요 :)
+                </div>
+              )}
               {chat.map((m, i) => (
                 <div key={i} className="space-y-4">
                   <div className="flex justify-end">
