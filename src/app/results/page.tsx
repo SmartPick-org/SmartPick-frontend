@@ -1,34 +1,77 @@
 "use client";
 
-import { useEffect, useState, useMemo, Fragment } from "react";
+import React, { useEffect, useState, useMemo, Fragment } from "react";
 import { useAppState } from "@/state/appState";
 import { fetchRecommendations, fetchComparison, fetchAdvisorAnswer } from "@/state/apiService";
 import type { AdvisorQueryType } from "@/state/api";
 import { UI_CONSTANTS } from "@/constants/ui";
 
 // 마크다운 렌더러 (외부 라이브러리 불필요)
+function renderInline(text: string): React.ReactNode[] {
+  // Split on **bold**, *italic*, and [link](url)
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\]\([^)]+\))/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={i}>{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith("*") && part.endsWith("*")) {
+      return <em key={i}>{part.slice(1, -1)}</em>;
+    }
+    const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (linkMatch) {
+      return (
+        <a key={i} href={linkMatch[2]} target="_blank" rel="noopener noreferrer"
+          className="text-blue-600 underline break-all">
+          {linkMatch[1]}
+        </a>
+      );
+    }
+    return <Fragment key={i}>{part}</Fragment>;
+  });
+}
+
 function MarkdownText({ children, className }: { children?: string; className?: string }) {
   if (!children) return null;
   const lines = children.split("\n");
   return (
-    <span className={className}>
+    <div className={className}>
       {lines.map((line, li) => {
-        const parts = line.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
-        return (
-          <Fragment key={li}>
-            {parts.map((part, pi) => {
-              if (part.startsWith("**") && part.endsWith("**")) {
-                return <strong key={pi}>{part.slice(2, -2)}</strong>;
-              } else if (part.startsWith("*") && part.endsWith("*")) {
-                return <em key={pi}>{part.slice(1, -1)}</em>;
-              }
-              return <Fragment key={pi}>{part}</Fragment>;
-            })}
-            {li < lines.length - 1 && <br />}
-          </Fragment>
-        );
+        const trimmed = line.trim();
+        if (trimmed === "") return <div key={li} className="h-2" />;
+
+        // Numbered section header: starts with digit(s) followed by . or ..
+        if (/^\d+\.\.?\s/.test(trimmed)) {
+          const text = trimmed.replace(/^\d+\.\.?\s*/, "");
+          return (
+            <p key={li} className="font-semibold mt-3 mb-1">
+              {renderInline(text)}
+            </p>
+          );
+        }
+
+        // Bullet point: • or - at start
+        if (trimmed.startsWith("•") || trimmed.startsWith("- ")) {
+          const text = trimmed.replace(/^[•-]\s*/, "");
+          return (
+            <div key={li} className="flex gap-1.5 ml-2 my-0.5">
+              <span className="shrink-0 mt-0.5 text-slate-500">•</span>
+              <span>{renderInline(text)}</span>
+            </div>
+          );
+        }
+
+        // Note lines starting with ※
+        if (trimmed.startsWith("※")) {
+          return (
+            <p key={li} className="text-xs text-slate-500 mt-1">
+              {renderInline(trimmed)}
+            </p>
+          );
+        }
+
+        return <p key={li} className="my-0.5">{renderInline(trimmed)}</p>;
       })}
-    </span>
+    </div>
   );
 }
 
