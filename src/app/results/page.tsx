@@ -166,6 +166,16 @@ function CompareView({
   userCategories: string[];
   onAskCard: (card: RecommendCard) => void;
 }) {
+  // [디버깅용 로그] 현재 카드 및 전체 데이터 계산 내역을 브라우저 콘솔에 먼저 출력합니다.
+  useEffect(() => {
+    console.log("=== [DEBUG] COMPARE VIEW 백엔드 응답 데이터 ===");
+    console.log("1. 프론트에 전달받은 유저의 전체 데이터 (CompareResponse):", data);
+    console.log("2. 현재 사용자의 기존 카드 (current_card) 객체 상태:", data.current_card);
+    console.log("3. 유저가 최초에 선택한 상위 카테고리 목록:", userCategories);
+    console.log("4. 백엔드가 계산해서 준 양쪽 카드 비교 결과 (category_comparison):", data.category_comparison);
+    console.log("=============================================");
+  }, [data, userCategories]);
+
   const { current_card, explanation } = data;
 
   // 백엔드 신규 형태(recommended_cards 배열) 우선, 없으면 단일 카드로 폴백
