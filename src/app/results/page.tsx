@@ -491,7 +491,7 @@ function CompareView({
             <span className="text-[#625BF5]">✦</span>
             <span>{userName || "고객"}님을 위한 맞춤 큐레이션</span>
           </header>
-          <div className="rounded-[24px] bg-white p-8 shadow-sm ring-1 ring-[#F2F4F7]">
+          <div className="rounded-[24px] bg-white p-8 shadow-sm ring-1 ring-slate-200">
             <div className="text-[16px] font-medium leading-[1.7] text-slate-600">
               <MarkdownText>{explanation}</MarkdownText>
             </div>
@@ -761,7 +761,7 @@ export default function ResultsPage() {
             <span className="text-[#625BF5]">✦</span>
             <span>{state.userName || "은정"}님을 위한 맞춤 큐레이션</span>
           </header>
-          <div className="rounded-[24px] bg-white p-[32px] shadow-sm ring-1 ring-[#F2F4F7]">
+          <div className="rounded-[24px] bg-white p-[32px] shadow-sm ring-1 ring-slate-200">
             <div className="text-[16px] font-medium leading-[1.7] text-slate-600">
               <MarkdownText>{data?.explanation || "분석 결과를 생성 중입니다..."}</MarkdownText>
             </div>
