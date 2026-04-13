@@ -330,14 +330,21 @@ export default function ResultsPage() {
   const isCompareMode = state.comparisonMode === "COMPARE";
 
   useEffect(() => {
-    async function load() {
-      if (Object.keys(state.spendingData).length === 0) return;
+    // spendingData가 아직 없으면 hydration 대기
+    if (Object.keys(state.spendingData).length === 0) return;
 
+    const controller = new AbortController();
+
+    async function load() {
       try {
         setLoading(true);
         setError(null);
 
-        if (isCompareMode && state.selectedCurrentCard?.id) {
+        if (isCompareMode) {
+          if (!state.selectedCurrentCard?.id) {
+            setError("선택된 카드 정보가 없습니다. 카드를 다시 선택해주세요.");
+            return;
+          }
           const res = await fetchComparison(state);
           setCompareData(res);
         } else {
@@ -345,13 +352,17 @@ export default function ResultsPage() {
           setData(res);
         }
       } catch (err: any) {
+        if (err.name === "AbortError") return;
         setError(err.message || "정보를 가져오는 데 실패했습니다.");
       } finally {
         setLoading(false);
       }
     }
+
     load();
-  }, [state]);
+    return () => controller.abort();
+  // 실제로 결과에 영향을 주는 값만 의존성으로 지정 (state 전체 X)
+  }, [state.spendingData, state.subCategoryRatios, state.totalBudget, state.comparisonMode, state.selectedCurrentCard]);
 
   const handleAdvisorQuery = async (queryType: AdvisorQueryType, label: string) => {
     if (!activeCard || qaLoading) return;
