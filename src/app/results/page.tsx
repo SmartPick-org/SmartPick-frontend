@@ -158,10 +158,12 @@ function calcCategoryComparison(
 function CompareView({
   data,
   userName,
+  userCategories,
   onAskCard,
 }: {
   data: CompareResponse;
   userName?: string;
+  userCategories: string[];
   onAskCard: (card: RecommendCard) => void;
 }) {
   const { current_card, explanation } = data;
@@ -191,7 +193,9 @@ function CompareView({
     ? calcYearlyNetBenefit(selectedCard) - calcYearlyNetBenefit(current_card)
     : data.yearly_diff;
 
-  const allCategories = activeCategoryComparison.map((c) => c.category);
+  // allCategories는 유저가 입력한(선택한) 카테고리를 그대로 사용합니다.
+  const allCategories = userCategories;
+
   const yearlyMan = Math.floor(Math.abs(activeYearlyDiff) / 10000);
   const monthlyMan = Math.floor(Math.abs(activeMonthlyDiff) / 10000);
   const isGain = activeYearlyDiff >= 0;
@@ -554,6 +558,7 @@ export default function ResultsPage() {
         <CompareView
           data={compareData}
           userName={state.userName}
+          userCategories={categories}
           onAskCard={(card) => { setActiveCard(card); setChat([]); }}
         />
         {/* Side Sheet (공용) */}
