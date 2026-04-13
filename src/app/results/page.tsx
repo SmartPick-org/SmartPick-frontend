@@ -603,11 +603,6 @@ export default function ResultsPage() {
                 <button onClick={() => setActiveCard(null)} className="rounded-full bg-slate-100 p-2 text-slate-500">✕</button>
               </div>
               <div className="flex-1 overflow-y-auto py-6 space-y-6">
-                {chat.length === 0 && (
-                  <div className="rounded-2xl bg-indigo-50 p-4 text-sm text-indigo-700">
-                    <MarkdownText>{activeCard.explanation || "이 카드에 대해 궁금한 점을 물어보세요!"}</MarkdownText>
-                  </div>
-                )}
                 {chat.map((m, i) => (
                   <div key={i} className="space-y-4">
                     <div className="flex justify-end">
