@@ -226,7 +226,7 @@ function CompareView({
       <section className="mx-auto max-w-7xl">
 
         {/* ── 4단 비교 레이아웃 ── */}
-        <div className="flex justify-center items-start gap-4 lg:gap-8 pb-12 overflow-x-auto min-w-max">
+        <div className="flex justify-center items-start gap-3 lg:gap-5 pb-12 overflow-x-auto min-w-[max-content]">
 
           {/* 카테고리 라벨 컬럼 */}
           <div className="flex flex-col w-[110px] shrink-0">
@@ -236,10 +236,10 @@ function CompareView({
               {allCategories.map((catKey) => (
                 <div
                   key={catKey}
-                  className="flex items-center justify-center border-b last:border-0 border-transparent box-border"
+                  className="flex items-center justify-end pr-2 border-b last:border-0 border-transparent box-border"
                   style={{ height: UI_CONSTANTS.RESULTS.ROW_HEIGHT }}
                 >
-                  <div className="flex w-[100px] h-[34px] items-center justify-center rounded-lg bg-[#F2F4F7] text-center text-[13px] font-semibold text-[#515767]">
+                  <div className="flex w-[90px] h-[34px] items-center justify-center rounded-lg bg-[#F2F4F7] text-center text-[13px] font-semibold text-[#515767]">
                     {CATEGORY_KEY_TO_LABEL.get(catKey as any) || catKey}
                   </div>
                 </div>
