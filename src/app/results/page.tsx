@@ -182,7 +182,7 @@ function CompareView({
   const allRecommended = useMemo(() => {
     const list = data.recommended_cards ?? [data.recommended_card];
     return list
-      .filter((c) => c.expected_monthly_benefit > 0 && calcYearlyNetBenefit(c) >= calcYearlyNetBenefit(current_card))
+      .filter((c) => c.expected_monthly_benefit > 0 && c.expected_monthly_benefit > current_card.expected_monthly_benefit)
       .sort((a, b) => calcYearlyNetBenefit(b) - calcYearlyNetBenefit(a));
   }, [data, current_card]);
 
