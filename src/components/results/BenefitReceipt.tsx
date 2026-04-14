@@ -98,7 +98,7 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                                                 {item.content}
                                             </p>
                                             {checkedIds.has(item.benefit_id) && item.warnings.map((w, idx) => (
-                                                <p key={idx} className="text-[11px] text-rose-400 font-medium leading-tight">※ {w}</p>
+                                                <p key={idx} className="text-[11px] text-amber-500 font-medium leading-tight">※ {w}</p>
                                             ))}
                                         </div>
                                     </div>
