@@ -27,60 +27,38 @@ function extractCardsResponse(data: unknown): CardOption[] | null {
   return null;
 }
 
-const FALLBACK_CARDS: CardOption[] = [
-  {
-    card_id: "card_001",
-    card_name: "스마트 프라임 카드",
-    card_company: "SmartPick",
-    annual_fee: 0,
-    minimum_performance: 0,
-    categories: ["Food", "Traffic"]
-  },
-  {
-    card_id: "card_002",
-    card_name: "알뜰 체크 카드",
-    card_company: "SmartPick",
-    annual_fee: 0,
-    minimum_performance: 0,
-    categories: ["Shopping", "Life"]
-  },
-  {
-    card_id: "card_003",
-    card_name: "데일리 리워드 카드",
-    card_company: "SmartPick",
-    annual_fee: 0,
-    minimum_performance: 0,
-    categories: ["Coffee", "Cultural"]
-  }
-];
 
 export default function SelectCardPage() {
   const router = useRouter();
   const { dispatch } = useAppState();
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [cards, setCards] = useState<CardOption[]>(FALLBACK_CARDS);
-  const [isLoading, setIsLoading] = useState(false);
+  const [cards, setCards] = useState<CardOption[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
     const loadCards = async () => {
       setIsLoading(true);
+      setLoadError(false);
       try {
         const response = await fetch(`${API_V1}/cards`, {
           signal: controller.signal,
           headers: buildDefaultHeaders(API_V1)
         });
         if (!response.ok) {
-          setIsLoading(false);
+          setLoadError(true);
           return;
         }
         const data = (await response.json()) as unknown;
         const normalized = extractCardsResponse(data);
         if (normalized && normalized.length > 0) {
           setCards(normalized);
+        } else {
+          setLoadError(true);
         }
-      } catch {
-        // keep fallback cards on error
+      } catch (e: any) {
+        if (e?.name !== "AbortError") setLoadError(true);
       } finally {
         setIsLoading(false);
       }
@@ -130,11 +108,16 @@ export default function SelectCardPage() {
         </header>
 
         <div className="mt-8 grid gap-4">
-          {isLoading ? (
+          {isLoading && (
             <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-6 text-slate-500">
               카드 목록을 불러오는 중입니다.
             </div>
-          ) : null}
+          )}
+          {loadError && (
+            <div className="rounded-2xl border border-red-100 bg-red-50 p-4 text-sm text-red-500">
+              카드 목록을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.
+            </div>
+          )}
           <div className="rounded-2xl border border-slate-200 bg-slate-50 px-6 py-5 text-slate-900 shadow-sm">
             <label
               htmlFor="card-select"
@@ -187,7 +170,7 @@ export default function SelectCardPage() {
           <button
             type="button"
             onClick={handleNext}
-            disabled={!selected}
+            disabled={!selected || isLoading || loadError}
             className="rounded-full bg-slate-900 px-8 py-3 text-base font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-300"
           >
             다음
