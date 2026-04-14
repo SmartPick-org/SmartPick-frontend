@@ -25,10 +25,10 @@
 ### P2. 결과/질의 기능 연결 (핵심 가치)
 - [v] 추천 결과 API 연결 (/cards/recommend)
 - [v] Step5: 추천 카드 상세 영역(카테고리별 혜택 리스트) 연결
-- [ ] Step5: COMPARE 모드 "연간 차액" 계산 로직 적용
-- [ ] Step5 (To-Do): 기존 카드와 새로운 카드의 좌우 3열 배치 비교 레이아웃 개선 (차액 변화량 시각화 처리)
+- [v] Step5: COMPARE 모드 "연간 차액" 및 전역 500원 반올림 로직 적용
+- [v] Step5: 기존 카드와 새로운 카드의 4열 배치 비교 레이아웃 완성 (차액 변화량 시각화)
 - [v] Side Sheet: 질문 칩 데이터 연결 (Advisor API 기반)
-- [v] Side Sheet: QA API 연결 (/cards/advisor)
+- [v] Side Sheet: QA API 연결 (/cards/advisor) 및 UI 양식 통일 (박스형 안내)
 
 ### P3. UI 디테일 보완 (기획 대비 미적용 보완)
 - [ ] Step1: Entry 화면 마이크로 카피 정리 (CTA/보조 설명)
@@ -54,18 +54,35 @@
   - [ ] 이미지/아이콘 최적화
 
 ### P5. UI/UX 디자인 고도화 (전문가 피드백 반영)
-- [ ] **1순위: 정보 계층 구조 및 시각적 대비**
-  - [ ] 카드 상품명 폰트 가중치(Bold) 강화 및 상하 여백 확보
-  - [ ] 핵심 금액 대비 보조 텍스트 가독성 개선 (12-13px 이상, 명도 대비 향상)
-  - [ ] 1~3순위 카드 타이틀 수직 시작점(Baseline) 통일
-- [ ] **2순위: 레이아웃 정렬 및 영역 침범 (UI 부채)**
-  - [ ] 좌측 카테고리 태그와 카드 간 간격 조정 (margin-right 40px 이상)
-  - [ ] '더 물어보기' 버튼을 카드 컴포넌트 내부(연회비 아래)로 이동
-  - [ ] 하단 맞춤 큐레이션 박스 내 여백(Padding) 균등 배분 (40px)
-- [ ] **3순위: 타이포그래피 및 세부 스타일링**
-  - [ ] 큐레이션 텍스트 행간(Line-height) 1.5-1.6배로 조정
-  - [ ] 금액 숫자에 `font-variant-numeric: tabular-nums` 적용
-  - [ ] '더 물어보기' 버튼 폰트 크기 확대 및 스타일링(그림자 효과 등) 개선
+- [v] **1순위: 정보 계층 구조 및 시각적 대비**
+  - [v] 카드 상품명 폰트 가중치(Bold) 강화 및 상하 여백 확보
+  - [v] 핵심 금액 대비 보조 텍스트 가독성 개선 (12-13px 이상, 명도 대비 향상)
+  - [v] 1~3순위 카드 타이틀 수직 시작점(Baseline) 통일
+- [v] **2순위: 레이아웃 정렬 및 영역 침범 (UI 부채)**
+  - [v] 좌측 카테고리 태그와 카드 간 간격 조정 (margin-right 40px 이상)
+  - [v] '더 물어보기' 버튼을 카드 컴포넌트 내부(연회비 아래)로 이동
+  - [v] 하단 맞춤 큐레이션 박스 내 여백(Padding) 균등 배분 (40px)
+- [v] **3순위: 타이포그래피 및 세부 스타일링**
+  - [v] 큐레이션 텍스트 행간(Line-height) 1.5-1.6배로 조정
+  - [v] 금액 숫자에 `font-variant-numeric: tabular-nums` 적용
+  - [v] '더 물어보기' 버튼 폰트 크기 확대 및 스타일링(그림자 효과 등) 개선
+
+### P6. 혜택 영수증 (Benefit Receipt) 고도화
+- [ ] **[Infra] API 및 데이터 모델 최신화**
+  - [ ] `src/state/api.ts`: `BenefitReceiptItem` 인터페이스 추가 및 `RecommendRequest` 내 `excluded_benefit_ids` 반영
+  - [ ] `src/state/apiService.ts`: `fetchRecommendations` 및 `fetchComparison` 호출 시 `excluded_benefit_ids` 전달 로직 구현
+- [ ] **[Component] 영수증 모달 UI/UX 구현**
+  - [ ] `src/components/results/BenefitReceipt.tsx` 컴포넌트 설계 (지그재그 테두리 스타일)
+  - [ ] 카드 섹션 내 '혜택 영수증 (🧾)' 진입점 추가 및 3D Flip/Slide 애니메이션 적용
+  - [ ] `white-space: pre-line` 기반의 카드 상세 설명(`explanation`) 렌더링 최적화
+- [ ] **[Logic] 체크박스 필터링 및 실시간 인터랙션**
+  - [ ] `benefit_receipt` 데이터를 활용한 개별 혜택 라인(금액, 조건, 경고문) 렌더링
+  - [ ] 체크박스 선택/해제 상태 관리 및 하단 합계 금액 실시간 Preview 연동
+  - [ ] `roundTo500` 규칙을 영수증 내 모든 개별 혜택 금액(`amount_krw`)에 적용
+- [ ] **[Feature] 최적화 재추천(Re-rank) 엔진 연결**
+  - [ ] '선택한 혜택으로 다시 추천받기' 버튼 클릭 시 해제된 `benefit_id` 수집 및 API 재호출
+  - [ ] 재호출 결과에 따른 전체 카드 순위 재정렬 및 맞춤 큐레이션 자동 갱신
+  - [ ] 모든 혜택 해제 시(`expected_monthly_benefit` = 0)의 예외 UI 처리
 
 ### 완료된 항목 (참고)
 #### 기획/설계

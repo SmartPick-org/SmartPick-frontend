@@ -30,8 +30,16 @@ export function transformStateToRecommendRequest(state: AppState): RecommendRequ
     };
 }
 
-export async function fetchRecommendations(state: AppState): Promise<RecommendResponse> {
-    const payload = transformStateToRecommendRequest(state);
+export async function fetchRecommendations(
+    state: AppState,
+    excluded_benefit_ids?: string[] | null,
+    top_n?: number
+): Promise<RecommendResponse> {
+    const payload: RecommendRequest = {
+        ...transformStateToRecommendRequest(state),
+        excluded_benefit_ids,
+        top_n
+    };
 
     console.log("🚀 API Request Payload:", JSON.stringify(payload, null, 2));
 
@@ -82,7 +90,11 @@ export async function askQuestion(recommendJson: string, question: string): Prom
     return response.json();
 }
 
-export async function fetchComparison(state: AppState): Promise<CompareResponse> {
+export async function fetchComparison(
+    state: AppState,
+    excluded_benefit_ids?: string[] | null,
+    top_n?: number
+): Promise<CompareResponse> {
     if (!state.selectedCurrentCard?.id) {
         throw new Error("선택된 카드가 없습니다.");
     }
@@ -90,6 +102,8 @@ export async function fetchComparison(state: AppState): Promise<CompareResponse>
     const payload: CompareRequest = {
         ...base,
         current_card_id: state.selectedCurrentCard.id,
+        excluded_benefit_ids,
+        top_n
     };
 
     console.log("🚀 Compare Request Payload:", JSON.stringify(payload, null, 2));

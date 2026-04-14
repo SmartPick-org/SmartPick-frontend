@@ -7,6 +7,15 @@ export interface CategoryBreakdown {
     warnings?: string[] | null;
 }
 
+export interface BenefitReceiptItem {
+    benefit_id: string;
+    content: string;
+    category: string;
+    sub_category: string | null;
+    amount_krw: number;
+    warnings: string[];
+}
+
 export interface RecommendCard {
     card_name: string;
     card_company: string;
@@ -16,6 +25,7 @@ export interface RecommendCard {
     expected_monthly_benefit: number;
     category_breakdown: CategoryBreakdown[];
     explanation: string;
+    benefit_receipt?: BenefitReceiptItem[];
 }
 
 export interface RecommendResponse {
@@ -26,6 +36,8 @@ export interface RecommendResponse {
 export interface RecommendRequest {
     total_budget: number;
     category_spending: Record<string, number | { total: number;[key: string]: number | string }>;
+    excluded_benefit_ids?: string[] | null;
+    top_n?: number;
 }
 
 export interface QARequest {
@@ -53,26 +65,28 @@ export interface AdvisorRequest {
 export type AdvisorResponse = QAResponse;
 
 export interface CompareRequest {
-  total_budget: number;
-  category_spending: Record<string, number | { total: number; [key: string]: number | string }>;
-  current_card_id: string;
+    total_budget: number;
+    category_spending: Record<string, number | { total: number;[key: string]: number | string }>;
+    current_card_id: string;
+    excluded_benefit_ids?: string[] | null;
+    top_n?: number;
 }
 
 export interface CategoryComparison {
-  category: string;
-  current_discount: number;
-  recommended_discount: number;
-  diff: number;
+    category: string;
+    current_discount: number;
+    recommended_discount: number;
+    diff: number;
 }
 
 export interface CompareResponse {
-  current_card: RecommendCard;
-  /** 백엔드 신규 형태: 여러 추천 카드 (혜택 내림차순) */
-  recommended_cards?: RecommendCard[];
-  /** 백엔드 구 형태: 단일 추천 카드 (하위호환) */
-  recommended_card: RecommendCard;
-  monthly_diff: number;
-  yearly_diff: number;
-  category_comparison: CategoryComparison[];
-  explanation: string;
+    current_card: RecommendCard;
+    /** 백엔드 신규 형태: 여러 추천 카드 (혜택 내림차순) */
+    recommended_cards?: RecommendCard[];
+    /** 백엔드 구 형태: 단일 추천 카드 (하위호환) */
+    recommended_card: RecommendCard;
+    monthly_diff: number;
+    yearly_diff: number;
+    category_comparison: CategoryComparison[];
+    explanation: string;
 }

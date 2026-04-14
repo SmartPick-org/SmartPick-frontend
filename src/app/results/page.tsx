@@ -2,9 +2,18 @@
 
 import React, { useEffect, useState, useMemo, Fragment } from "react";
 import { useAppState } from "@/state/appState";
+import BenefitReceipt from "@/components/results/BenefitReceipt";
 import { fetchRecommendations, fetchComparison, fetchAdvisorAnswer } from "@/state/apiService";
-import type { AdvisorQueryType } from "@/state/api";
+import {
+  RecommendCard,
+  RecommendResponse,
+  CompareResponse,
+  CategoryComparison,
+  AdvisorQueryType
+} from "@/state/api";
 import { UI_CONSTANTS } from "@/constants/ui";
+import { roundTo500, calcYearlyNetBenefit, formatKoreanAmount } from "@/utils/finance";
+import { CATEGORY_KEY_TO_LABEL, CategoryKey } from "@/state/categories";
 
 // 마크다운 렌더러 (외부 라이브러리 불필요)
 function renderInline(text: string): React.ReactNode[] {
@@ -91,8 +100,7 @@ const ADVISOR_QUERIES: { type: AdvisorQueryType; label: string }[] = [
   { type: "late_payment", label: "연체 및 이자 유의사항" },
   { type: "revolving", label: "리볼빙(결제이월) 정보" }
 ];
-import { RecommendCard, RecommendResponse, CompareResponse, CategoryComparison } from "@/state/api";
-import { CATEGORY_KEY_TO_LABEL, CategoryKey } from "@/state/categories";
+// API imports moved to the top
 
 const LoadingSkeleton = () => (
   <div className="mx-auto max-w-7xl animate-pulse">
@@ -111,27 +119,7 @@ const LoadingSkeleton = () => (
   </div>
 );
 
-const formatKoreanAmount = (amount: number) => {
-  const rounded = Math.round(amount / 5000) * 5000;
-  if (rounded === 0) return "0원";
-  const man = Math.floor(rounded / 10000);
-  const chun = Math.floor((rounded % 10000) / 1000);
-  let result = "";
-  if (man > 0) result += `${man}만`;
-  if (chun > 0) {
-    if (man > 0) result += ` ${chun}천`;
-    else result += `${chun}천`;
-  }
-  return result + "원";
-};
-
-const roundTo500 = (val: number) => Math.round(val / 500) * 500;
-
-const calcYearlyNetBenefit = (card: RecommendCard) => {
-  const monthly = roundTo500(card.expected_monthly_benefit);
-  const annual = monthly * 12 - card.annual_fee;
-  return roundTo500(Math.max(0, annual));
-};
+// Finance utilities moved to src/utils/finance.ts
 
 // ─── Compare View ──────────────────────────────────────────────────────────────
 const COMPARE_ROW_H = 56;
@@ -177,11 +165,13 @@ function CompareView({
   userName,
   userCategories,
   onAskCard,
+  onShowReceipt,
 }: {
   data: CompareResponse;
   userName?: string;
   userCategories: string[];
   onAskCard: (card: RecommendCard) => void;
+  onShowReceipt: (card: RecommendCard) => void;
 }) {
   // [디버깅용 로그] 현재 카드 및 전체 데이터 계산 내역을 브라우저 콘솔에 먼저 출력합니다.
   useEffect(() => {
@@ -349,13 +339,23 @@ function CompareView({
                     <p>연회비 : <span className="tabular-nums">{current_card.annual_fee.toLocaleString()}원</span></p>
                     <p>전월실적 : <span className="tabular-nums">{current_card.minimum_performance.toLocaleString()}원</span></p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => onAskCard(current_card)}
-                    className="mt-[24px] flex h-[52px] w-full items-center justify-center rounded-[12px] text-[16px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] bg-[#1e69ff] text-white shadow-md shadow-blue-500/10"
-                  >
-                    더 물어보기
-                  </button>
+                  <div className="mt-[24px] flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => onAskCard(current_card)}
+                      className="flex-[4] flex h-[52px] items-center justify-center rounded-[12px] text-[16px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] bg-[#1e69ff] text-white shadow-md shadow-blue-500/10"
+                    >
+                      더 물어보기
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onShowReceipt(current_card)}
+                      className="flex-1 flex h-[52px] items-center justify-center rounded-[12px] bg-slate-100 text-[20px] transition-all hover:bg-slate-200"
+                      title="혜택 영수증 보기"
+                    >
+                      🧾
+                    </button>
+                  </div>
                 </footer>
               </div>
             </div>
@@ -503,13 +503,23 @@ function CompareView({
                     <p>연회비 : <span className="tabular-nums">{selectedCard.annual_fee.toLocaleString()}원</span></p>
                     <p>전월실적 : <span className="tabular-nums">{selectedCard.minimum_performance.toLocaleString()}원</span></p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => onAskCard(selectedCard)}
-                    className="mt-[24px] flex h-[52px] w-full items-center justify-center rounded-[12px] text-[16px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] bg-[#625BF5] text-white shadow-md shadow-[#625BF5]/20"
-                  >
-                    더 물어보기
-                  </button>
+                  <div className="mt-[24px] flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => onAskCard(selectedCard)}
+                      className="flex-[4] flex h-[52px] items-center justify-center rounded-[12px] text-[16px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] bg-[#625BF5] text-white shadow-md shadow-[#625BF5]/20"
+                    >
+                      더 물어보기
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onShowReceipt(selectedCard)}
+                      className="flex-1 flex h-[52px] items-center justify-center rounded-[12px] bg-slate-100 text-[20px] transition-all hover:bg-slate-200"
+                      title="혜택 영수증 보기"
+                    >
+                      🧾
+                    </button>
+                  </div>
                 </footer>
               </div>
             </div>
@@ -538,14 +548,33 @@ export default function ResultsPage() {
   const { state } = useAppState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const isCompareMode = state.comparisonMode === "COMPARE";
   const [data, setData] = useState<RecommendResponse | null>(null);
   const [compareData, setCompareData] = useState<CompareResponse | null>(null);
+  const [receiptCard, setReceiptCard] = useState<RecommendCard | null>(null);
+  const [isRecommending, setIsRecommending] = useState(false);
+
+  const handleReRecommend = async (excludedIds: string[]) => {
+    try {
+      setIsRecommending(true);
+      if (isCompareMode) {
+        const res = await fetchComparison(state, excludedIds);
+        setCompareData(res);
+      } else {
+        const res = await fetchRecommendations(state, excludedIds);
+        setData(res);
+      }
+      setReceiptCard(null);
+    } catch (err: any) {
+      alert(err.message || "재추천 중 오류가 발생했습니다.");
+    } finally {
+      setIsRecommending(false);
+    }
+  };
 
   const [activeCard, setActiveCard] = useState<RecommendCard | null>(null);
   const [qaLoading, setQaLoading] = useState(false);
   const [chat, setChat] = useState<{ q: string; a: string }[]>([]);
-
-  const isCompareMode = state.comparisonMode === "COMPARE";
 
   useEffect(() => {
     // spendingData가 아직 없으면 hydration 대기
@@ -627,6 +656,7 @@ export default function ResultsPage() {
           userName={state.userName}
           userCategories={categories}
           onAskCard={(card) => { setActiveCard(card); setChat([]); }}
+          onShowReceipt={(card) => setReceiptCard(card)}
         />
         {/* Side Sheet (공용) */}
         {activeCard && (
@@ -778,13 +808,23 @@ export default function ResultsPage() {
                             <p>연회비 : <span className="tabular-nums">{card.annual_fee.toLocaleString()}원</span></p>
                             <p>전월실적 : <span className="tabular-nums">{card.minimum_performance.toLocaleString()}원</span></p>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => { setActiveCard(card); setChat([]); }}
-                            className={`mt-[24px] flex h-[52px] w-full items-center justify-center rounded-[12px] text-[16px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] ${isBest ? "bg-[#625BF5] text-white shadow-md shadow-[#625BF5]/20" : "bg-[#1e69ff] text-white shadow-md shadow-blue-500/10"}`}
-                          >
-                            더 물어보기
-                          </button>
+                          <div className="mt-[24px] flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => { setActiveCard(card); setChat([]); }}
+                              className={`flex-[4] flex h-[52px] items-center justify-center rounded-[12px] text-[16px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] ${isBest ? "bg-[#625BF5] text-white shadow-md shadow-[#625BF5]/20" : "bg-[#1e69ff] text-white shadow-md shadow-blue-500/10"}`}
+                            >
+                              더 물어보기
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setReceiptCard(card)}
+                              className="flex-1 flex h-[52px] items-center justify-center rounded-[12px] bg-slate-100 text-[20px] transition-all hover:bg-slate-200"
+                              title="혜택 영수증 보기"
+                            >
+                              🧾
+                            </button>
+                          </div>
                         </footer>
                       </div>
                     </div>
@@ -862,6 +902,15 @@ export default function ResultsPage() {
           </aside>
         </div>
       ) : null}
+      {/* Benefit Receipt Modal */}
+      {receiptCard && (
+        <BenefitReceipt
+          card={receiptCard}
+          onClose={() => setReceiptCard(null)}
+          onReRecommend={handleReRecommend}
+          isLoading={isRecommending}
+        />
+      )}
     </main>
   );
 }

@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1775788891832,
+  "lastScanned": 1776046063002,
   "projectRoot": "/Users/ayeon/Documents/workspace/smartpick_re/SmartPick-frontend",
   "techStack": {
     "languages": [
@@ -38,11 +38,6 @@
         "category": "frontend"
       },
       {
-        "name": "@playwright/test",
-        "version": "1.58.2",
-        "category": "testing"
-      },
-      {
         "name": "vitest",
         "version": "4.1.2",
         "category": "testing"
@@ -63,9 +58,7 @@
       "lint": "eslint",
       "test": "vitest run",
       "test:watch": "vitest",
-      "test:ui": "vitest --ui",
-      "test:e2e": "playwright test",
-      "test:e2e:ui": "playwright test --ui"
+      "test:ui": "vitest --ui"
     }
   },
   "conventions": {
@@ -93,7 +86,7 @@
       "path": "docs",
       "purpose": "Documentation",
       "fileCount": 5,
-      "lastAccessed": 1775788891774,
+      "lastAccessed": 1776046062891,
       "keyFiles": [
         "FRONTEND_DATA_IO_SPEC.md",
         "FRONTEND_PRD.md",
@@ -106,7 +99,7 @@
       "path": "public",
       "purpose": "Public files",
       "fileCount": 5,
-      "lastAccessed": 1775788891776,
+      "lastAccessed": 1776046062896,
       "keyFiles": [
         "file.svg",
         "globe.svg",
@@ -119,14 +112,14 @@
       "path": "src",
       "purpose": "Source code",
       "fileCount": 0,
-      "lastAccessed": 1775788891784,
+      "lastAccessed": 1776046062897,
       "keyFiles": []
     },
     "worklog": {
       "path": "worklog",
       "purpose": null,
-      "fileCount": 16,
-      "lastAccessed": 1775788891787,
+      "fileCount": 18,
+      "lastAccessed": 1776046062898,
       "keyFiles": [
         "001-entry-screen-visual-polish.md",
         "002-select-card-ui-polish.md",
@@ -139,7 +132,7 @@
       "path": "src/app",
       "purpose": "Application code",
       "fileCount": 5,
-      "lastAccessed": 1775788891788,
+      "lastAccessed": 1776046062898,
       "keyFiles": [
         "favicon.ico",
         "globals.css",
@@ -150,13 +143,68 @@
       "path": "src/test",
       "purpose": "Test files",
       "fileCount": 2,
-      "lastAccessed": 1775788891789,
+      "lastAccessed": 1776046062899,
       "keyFiles": [
         "render.tsx",
         "setup.ts"
       ]
     }
   },
-  "hotPaths": [],
+  "hotPaths": [
+    {
+      "path": "src/app/results/page.tsx",
+      "accessCount": 33,
+      "lastAccessed": 1776065123263,
+      "type": "file"
+    },
+    {
+      "path": "src/state/api.ts",
+      "accessCount": 2,
+      "lastAccessed": 1776046421008,
+      "type": "file"
+    },
+    {
+      "path": "",
+      "accessCount": 2,
+      "lastAccessed": 1776133277304,
+      "type": "directory"
+    },
+    {
+      "path": ".env",
+      "accessCount": 2,
+      "lastAccessed": 1776133578859,
+      "type": "file"
+    },
+    {
+      "path": "src/state/apiService.ts",
+      "accessCount": 1,
+      "lastAccessed": 1776046773967,
+      "type": "file"
+    },
+    {
+      "path": "docs/TODO.md",
+      "accessCount": 1,
+      "lastAccessed": 1776129113758,
+      "type": "directory"
+    },
+    {
+      "path": "src/state/config.ts",
+      "accessCount": 1,
+      "lastAccessed": 1776133272972,
+      "type": "file"
+    },
+    {
+      "path": "src",
+      "accessCount": 1,
+      "lastAccessed": 1776133340557,
+      "type": "directory"
+    },
+    {
+      "path": "src/app/select-card/page.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776133343584,
+      "type": "file"
+    }
+  ],
   "userDirectives": []
 }
