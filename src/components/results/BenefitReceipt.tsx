@@ -10,16 +10,27 @@ interface Props {
     onClose: () => void;
     onReRecommend: (excludedIds: string[]) => void;
     isLoading?: boolean;
+    initialExcludedIds?: string[];
 }
 
-export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading }: Props) {
-    // 체크된 혜택 ID 세트 (기본값: 전체 체크)
+export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading, initialExcludedIds = [] }: Props) {
     const initialIds = useMemo(() =>
         card.benefit_receipt?.map(b => b.benefit_id) || [],
         [card.benefit_receipt]
     );
 
-    const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set(initialIds));
+    // 이전에 해제한 항목은 비활성 상태로 초기화
+    const [checkedIds, setCheckedIds] = useState<Set<string>>(
+        new Set(initialIds.filter(id => !initialExcludedIds.includes(id)))
+    );
+
+    // 열릴 때 기준으로 정렬 고정 (활성 → 비활성 순, 세션 내 위치 안 바뀜)
+    const sortedItems = useMemo(() => {
+        const items = card.benefit_receipt ?? [];
+        const active = items.filter(b => !initialExcludedIds.includes(b.benefit_id));
+        const inactive = items.filter(b => initialExcludedIds.includes(b.benefit_id));
+        return [...active, ...inactive];
+    }, [card.benefit_receipt, initialExcludedIds]);
 
     const toggleBenefit = (id: string) => {
         const next = new Set(checkedIds);
@@ -71,8 +82,8 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                         <div className="space-y-4">
                             <p className="text-[12px] font-bold text-slate-400 uppercase tracking-widest border-b pb-2">Benefits Breakdown</p>
 
-                            {card.benefit_receipt && card.benefit_receipt.length > 0 ? (
-                                card.benefit_receipt.map((item) => (
+                            {sortedItems.length > 0 ? (
+                                sortedItems.map((item) => (
                                     <div key={item.benefit_id} className="flex items-start gap-4 group cursor-pointer" onClick={() => toggleBenefit(item.benefit_id)}>
                                         <div className="pt-0.5">
                                             <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${checkedIds.has(item.benefit_id)

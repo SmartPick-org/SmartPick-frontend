@@ -553,8 +553,13 @@ export default function ResultsPage() {
   const [compareData, setCompareData] = useState<CompareResponse | null>(null);
   const [receiptCard, setReceiptCard] = useState<RecommendCard | null>(null);
   const [isRecommending, setIsRecommending] = useState(false);
+  // 카드별 해제된 혜택 ID 누적 저장 (card_id → excluded benefit_ids)
+  const [cardExclusions, setCardExclusions] = useState<Record<string, string[]>>({});
 
   const handleReRecommend = async (excludedIds: string[]) => {
+    if (!receiptCard) return;
+    // 현재 체크 상태를 카드별로 저장 (누적)
+    setCardExclusions(prev => ({ ...prev, [receiptCard.card_id]: excludedIds }));
     try {
       setIsRecommending(true);
       if (isCompareMode) {
@@ -909,6 +914,7 @@ export default function ResultsPage() {
           onClose={() => setReceiptCard(null)}
           onReRecommend={handleReRecommend}
           isLoading={isRecommending}
+          initialExcludedIds={cardExclusions[receiptCard.card_id] ?? []}
         />
       )}
     </main>
