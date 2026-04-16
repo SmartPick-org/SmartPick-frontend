@@ -17,6 +17,8 @@ export interface BenefitReceiptItem {
 export interface BenefitTraceItem {
     benefit_id: string;
     content: string;
+    category: string; // 추가: 빌드 에러 해결
+    sub_category: string | null; // 추가
     applied_budget: number;
     yielded_discount: number;
     user_choice: boolean;
