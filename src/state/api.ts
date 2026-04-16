@@ -1,10 +1,8 @@
-import { CategoryKey } from "./categories";
-
 export interface CategoryBreakdown {
     category: string;
     monthly_discount_krw: number;
     discount_info: Record<string, number>;
-    warnings?: string[] | null;
+    warnings: string[] | null; // 백엔드 optional 대응
 }
 
 export interface BenefitReceiptItem {
@@ -16,6 +14,15 @@ export interface BenefitReceiptItem {
     warnings: string[];
 }
 
+export interface BenefitTraceItem {
+    benefit_id: string;
+    content: string;
+    applied_budget: number;
+    yielded_discount: number;
+    user_choice: boolean;
+    warnings: string[] | null;
+}
+
 export interface RecommendCard {
     card_name: string;
     card_company: string;
@@ -24,8 +31,8 @@ export interface RecommendCard {
     minimum_performance: number;
     expected_monthly_benefit: number;
     category_breakdown: CategoryBreakdown[];
-    explanation: string;
-    benefit_receipt?: BenefitReceiptItem[];
+    applied_benefits_trace: BenefitTraceItem[];
+    explanation?: string;
 }
 
 export interface RecommendResponse {
@@ -35,8 +42,7 @@ export interface RecommendResponse {
 
 export interface RecommendRequest {
     total_budget: number;
-    category_spending: Record<string, number | { total: number;[key: string]: number | string }>;
-    excluded_benefit_ids?: string[] | null;
+    category_spending: Record<string, any>;
     top_n?: number;
 }
 
@@ -62,31 +68,43 @@ export interface AdvisorRequest {
     query_type: AdvisorQueryType;
 }
 
-export type AdvisorResponse = QAResponse;
+export interface AdvisorResponse {
+    answer: string;
+    query_used: string; // 백엔드 실제 필드 추가
+}
 
 export interface CompareRequest {
     total_budget: number;
     category_spending: Record<string, number | { total: number;[key: string]: number | string }>;
     current_card_id: string;
-    excluded_benefit_ids?: string[] | null;
-    top_n?: number;
 }
 
 export interface CategoryComparison {
     category: string;
-    current_discount: number;
-    recommended_discount: number;
+    current_benefit: number;   // current_discount -> current_benefit
+    recommended_benefit: number; // recommended_discount -> recommended_benefit
     diff: number;
 }
 
 export interface CompareResponse {
     current_card: RecommendCard;
-    /** 백엔드 신규 형태: 여러 추천 카드 (혜택 내림차순) */
-    recommended_cards?: RecommendCard[];
-    /** 백엔드 구 형태: 단일 추천 카드 (하위호환) */
+    /** 백엔드 신규 형태: 여러 추천 카드 */
+    recommended_cards: RecommendCard[];
+    /** 백엔드 구 형태: 단일 추천 카드 */
     recommended_card: RecommendCard;
     monthly_diff: number;
     yearly_diff: number;
     category_comparison: CategoryComparison[];
     explanation: string;
+}
+
+export interface RecalculateRequest {
+    total_budget?: number | null;
+    category_spending?: Record<string, any> | null;
+    recommended_cards: RecommendCard[];
+    excluded_benefit_ids: string[];
+}
+
+export interface RecalculateResponse {
+    recommended_cards: RecommendCard[];
 }

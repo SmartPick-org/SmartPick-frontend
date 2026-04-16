@@ -156,7 +156,7 @@ function calcCategoryComparison(
     const recRaw = recommended.category_breakdown.find((c) => c.category === cat)?.monthly_discount_krw ?? 0;
     const curr = roundTo500(currRaw);
     const rec = roundTo500(recRaw);
-    return { category: cat, current_discount: curr, recommended_discount: rec, diff: rec - curr };
+    return { category: cat, current_benefit: curr, recommended_benefit: rec, diff: rec - curr };
   });
 }
 
@@ -319,7 +319,7 @@ function CompareView({
                 <div className="flex flex-col w-full">
                   {allCategories.map((catKey) => {
                     const b = activeCategoryComparison.find(item => item.category === catKey);
-                    const val = b?.current_discount ?? 0;
+                    const val = b?.current_benefit ?? 0;
                     const isNot = val <= 0;
                     return (
                       <div key={catKey} className="flex items-center justify-between box-border border-b last:border-0 border-slate-50" style={{ height: UI_CONSTANTS.RESULTS.ROW_HEIGHT }}>
@@ -483,7 +483,7 @@ function CompareView({
                 <div className="flex flex-col w-full">
                   {allCategories.map((catKey) => {
                     const b = activeCategoryComparison.find(item => item.category === catKey);
-                    const val = b?.recommended_discount ?? 0;
+                    const val = b?.recommended_benefit ?? 0;
                     const isNot = val <= 0;
                     return (
                       <div key={catKey} className="flex items-center justify-between box-border border-b last:border-0 border-indigo-100/50" style={{ height: UI_CONSTANTS.RESULTS.ROW_HEIGHT }}>
@@ -716,6 +716,17 @@ export default function ResultsPage() {
               </div>
             </aside>
           </div>
+        )}
+
+        {/* 혜택 영수증 (공용) */}
+        {receiptCard && (
+          <BenefitReceipt
+            card={receiptCard}
+            onClose={() => setReceiptCard(null)}
+            onReRecommend={handleReRecommend}
+            isLoading={isRecommending}
+            initialExcludedIds={cardExclusions[receiptCard.card_id] ?? []}
+          />
         )}
       </>
     );

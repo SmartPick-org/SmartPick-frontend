@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1776046063002,
+  "lastScanned": 1776149442258,
   "projectRoot": "/Users/ayeon/Documents/workspace/smartpick_re/SmartPick-frontend",
   "techStack": {
     "languages": [
@@ -65,7 +65,7 @@
     "namingStyle": null,
     "importStyle": null,
     "testPattern": null,
-    "fileOrganization": null
+    "fileOrganization": "type-based"
   },
   "structure": {
     "isMonorepo": false,
@@ -85,21 +85,21 @@
     "docs": {
       "path": "docs",
       "purpose": "Documentation",
-      "fileCount": 5,
-      "lastAccessed": 1776046062891,
+      "fileCount": 7,
+      "lastAccessed": 1776149442206,
       "keyFiles": [
         "FRONTEND_DATA_IO_SPEC.md",
         "FRONTEND_PRD.md",
         "FRONTEND_TDD_GUIDE.md",
         "PLAN.md",
-        "TODO.md"
+        "REFACTOR_PLAN.md"
       ]
     },
     "public": {
       "path": "public",
       "purpose": "Public files",
       "fileCount": 5,
-      "lastAccessed": 1776046062896,
+      "lastAccessed": 1776149442211,
       "keyFiles": [
         "file.svg",
         "globe.svg",
@@ -112,14 +112,14 @@
       "path": "src",
       "purpose": "Source code",
       "fileCount": 0,
-      "lastAccessed": 1776046062897,
+      "lastAccessed": 1776149442212,
       "keyFiles": []
     },
     "worklog": {
       "path": "worklog",
       "purpose": null,
       "fileCount": 18,
-      "lastAccessed": 1776046062898,
+      "lastAccessed": 1776149442212,
       "keyFiles": [
         "001-entry-screen-visual-polish.md",
         "002-select-card-ui-polish.md",
@@ -132,77 +132,69 @@
       "path": "src/app",
       "purpose": "Application code",
       "fileCount": 5,
-      "lastAccessed": 1776046062898,
+      "lastAccessed": 1776149442213,
       "keyFiles": [
         "favicon.ico",
         "globals.css",
         "layout.tsx"
       ]
     },
+    "src/components": {
+      "path": "src/components",
+      "purpose": "UI components",
+      "fileCount": 0,
+      "lastAccessed": 1776149442213,
+      "keyFiles": []
+    },
     "src/test": {
       "path": "src/test",
       "purpose": "Test files",
       "fileCount": 2,
-      "lastAccessed": 1776046062899,
+      "lastAccessed": 1776149442213,
       "keyFiles": [
         "render.tsx",
         "setup.ts"
+      ]
+    },
+    "src/utils": {
+      "path": "src/utils",
+      "purpose": "Utility functions",
+      "fileCount": 1,
+      "lastAccessed": 1776149442213,
+      "keyFiles": [
+        "finance.ts"
       ]
     }
   },
   "hotPaths": [
     {
       "path": "src/app/results/page.tsx",
-      "accessCount": 33,
-      "lastAccessed": 1776065123263,
+      "accessCount": 16,
+      "lastAccessed": 1776238720630,
+      "type": "file"
+    },
+    {
+      "path": "src/components/results/BenefitReceipt.tsx",
+      "accessCount": 11,
+      "lastAccessed": 1776238695945,
       "type": "file"
     },
     {
       "path": "src/state/api.ts",
       "accessCount": 2,
-      "lastAccessed": 1776046421008,
-      "type": "file"
-    },
-    {
-      "path": "",
-      "accessCount": 2,
-      "lastAccessed": 1776133277304,
-      "type": "directory"
-    },
-    {
-      "path": ".env",
-      "accessCount": 2,
-      "lastAccessed": 1776133578859,
-      "type": "file"
-    },
-    {
-      "path": "src/state/apiService.ts",
-      "accessCount": 1,
-      "lastAccessed": 1776046773967,
+      "lastAccessed": 1776232299691,
       "type": "file"
     },
     {
       "path": "docs/TODO.md",
       "accessCount": 1,
-      "lastAccessed": 1776129113758,
-      "type": "directory"
-    },
-    {
-      "path": "src/state/config.ts",
-      "accessCount": 1,
-      "lastAccessed": 1776133272972,
+      "lastAccessed": 1776153887553,
       "type": "file"
     },
     {
-      "path": "src",
+      "path": "src/state/categories.ts",
       "accessCount": 1,
-      "lastAccessed": 1776133340557,
-      "type": "directory"
-    },
-    {
-      "path": "src/app/select-card/page.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1776133343584,
+      "lastAccessed": 1776153922910,
       "type": "file"
     }
   ],

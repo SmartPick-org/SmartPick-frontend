@@ -1,5 +1,5 @@
 import { AppState } from "./appState";
-import { RecommendRequest, RecommendResponse, QARequest, QAResponse, AdvisorRequest, AdvisorResponse, CompareRequest, CompareResponse } from "./api";
+import { RecommendRequest, RecommendResponse, QARequest, QAResponse, AdvisorRequest, AdvisorResponse, CompareRequest, CompareResponse, RecalculateRequest, RecalculateResponse } from "./api";
 import { SUB_CATEGORY_KEY_MAP } from "./categories";
 
 import { API_V1, buildDefaultHeaders } from "./config";
@@ -8,20 +8,20 @@ export function transformStateToRecommendRequest(state: AppState): RecommendRequ
     const category_spending: RecommendRequest["category_spending"] = {};
 
     Object.entries(state.spendingData).forEach(([top, total]) => {
-        // [수정] 금액이 0원 이하인 카테고리는 서버 연산 오류(Division by zero 등) 방지를 위해 제외합니다.
         if (total <= 0) return;
 
         const subs = state.subCategoryRatios[top];
+        const subObj: { total: number } & Record<string, number | string> = { total };
+
         if (subs && Object.keys(subs).length > 0) {
-            const subObj: { total: number } & Record<string, number | string> = { total };
             Object.entries(subs).forEach(([subName, ratio]) => {
                 const englishKey = SUB_CATEGORY_KEY_MAP[subName] || subName;
                 subObj[englishKey] = `${ratio}%`;
             });
-            category_spending[top] = subObj;
-        } else {
-            category_spending[top] = total;
         }
+
+        // [수정] Recommend API는 항상 객체 형태(CategoryBreakdown)를 기대합니다.
+        category_spending[top] = subObj;
     });
 
     return {
@@ -37,7 +37,6 @@ export async function fetchRecommendations(
 ): Promise<RecommendResponse> {
     const payload: RecommendRequest = {
         ...transformStateToRecommendRequest(state),
-        excluded_benefit_ids,
         top_n
     };
 
@@ -92,19 +91,21 @@ export async function askQuestion(recommendJson: string, question: string): Prom
 
 export async function fetchComparison(
     state: AppState,
-    excluded_benefit_ids?: string[] | null,
-    top_n?: number
+    _excluded_benefit_ids?: string[] | null, // 사용되지 않는 파라미터임을 명시
+    _top_n?: number
 ): Promise<CompareResponse> {
     if (!state.selectedCurrentCard?.id) {
         throw new Error("선택된 카드가 없습니다.");
     }
     const base = transformStateToRecommendRequest(state);
+
     const payload: CompareRequest = {
         ...base,
         current_card_id: state.selectedCurrentCard.id,
-        excluded_benefit_ids,
-        top_n
     };
+
+    // [수정] Compare 명세에는 top_n과 excluded_benefit_ids가 없습니다.
+    // 만약 미래에 지원될 예정이라면 API 문서를 확인 후 추가해야 합니다.
 
     console.log("🚀 Compare Request Payload:", JSON.stringify(payload, null, 2));
 
@@ -142,6 +143,36 @@ export async function fetchAdvisorAnswer(req: AdvisorRequest): Promise<AdvisorRe
 
     if (!response.ok) {
         throw new Error("Failed to get advisor answer");
+    }
+
+    return response.json();
+}
+
+/** [추가] 혜택 토글(체크박스) 시 빠른 재계산을 위한 API */
+export async function fetchRecalculate(
+    state: AppState,
+    recommendedCards: RecalculateRequest["recommended_cards"],
+    excludedBenefitIds: string[]
+): Promise<RecalculateResponse> {
+    const base = transformStateToRecommendRequest(state);
+    const payload: RecalculateRequest = {
+        total_budget: base.total_budget,
+        category_spending: base.category_spending,
+        recommended_cards: recommendedCards,
+        excluded_benefit_ids: excludedBenefitIds,
+    };
+
+    const response = await fetch(`${API_V1}/cards/recalculate`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            ...buildDefaultHeaders(API_V1)
+        },
+        body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+        throw new Error("재계산에 실패했습니다.");
     }
 
     return response.json();

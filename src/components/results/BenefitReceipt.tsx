@@ -15,8 +15,8 @@ interface Props {
 
 export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading, initialExcludedIds = [] }: Props) {
     const initialIds = useMemo(() =>
-        card.benefit_receipt?.map(b => b.benefit_id) || [],
-        [card.benefit_receipt]
+        card.applied_benefits_trace?.map(b => b.benefit_id) || [],
+        [card.applied_benefits_trace]
     );
 
     // 이전에 해제한 항목은 비활성 상태로 초기화
@@ -26,11 +26,11 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
 
     // 열릴 때 기준으로 정렬 고정 (활성 → 비활성 순, 세션 내 위치 안 바뀜)
     const sortedItems = useMemo(() => {
-        const items = card.benefit_receipt ?? [];
+        const items = card.applied_benefits_trace ?? [];
         const active = items.filter(b => !initialExcludedIds.includes(b.benefit_id));
         const inactive = items.filter(b => initialExcludedIds.includes(b.benefit_id));
         return [...active, ...inactive];
-    }, [card.benefit_receipt, initialExcludedIds]);
+    }, [card.applied_benefits_trace, initialExcludedIds]);
 
     const toggleBenefit = (id: string) => {
         const next = new Set(checkedIds);
@@ -40,12 +40,12 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
     };
 
     const currentTotal = useMemo(() => {
-        if (!card.benefit_receipt) return 0;
-        const sum = card.benefit_receipt
+        if (!card.applied_benefits_trace) return 0;
+        const sum = card.applied_benefits_trace
             .filter(b => checkedIds.has(b.benefit_id))
-            .reduce((acc, b) => acc + b.amount_krw, 0);
+            .reduce((acc, b) => acc + b.yielded_discount, 0);
         return roundTo500(sum);
-    }, [card.benefit_receipt, checkedIds]);
+    }, [card.applied_benefits_trace, checkedIds]);
 
     const excludedIds = useMemo(() => {
         return initialIds.filter(id => !checkedIds.has(id));
@@ -101,14 +101,14 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                                                 </span>
                                                 <span className={`tabular-nums font-extrabold text-[15px] transition-colors ${checkedIds.has(item.benefit_id) ? "text-[#625BF5]" : "text-slate-300"
                                                     }`}>
-                                                    {roundTo500(item.amount_krw).toLocaleString()}원
+                                                    {roundTo500(item.yielded_discount).toLocaleString()}원
                                                 </span>
                                             </div>
                                             <p className={`text-[12px] leading-relaxed transition-colors ${checkedIds.has(item.benefit_id) ? "text-slate-500" : "text-slate-300"
                                                 }`}>
                                                 {item.content}
                                             </p>
-                                            {checkedIds.has(item.benefit_id) && item.warnings.map((w, idx) => (
+                                            {checkedIds.has(item.benefit_id) && item.warnings && item.warnings.map((w, idx) => (
                                                 <p key={idx} className="text-[11px] text-indigo-400 font-medium leading-tight">{w}</p>
                                             ))}
                                         </div>
