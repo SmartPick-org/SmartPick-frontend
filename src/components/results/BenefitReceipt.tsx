@@ -110,8 +110,8 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                                                 {item.content}
                                             </p>
                                             {checkedIds.has(item.benefit_id) && filterWarnings(item.warnings).map((w, idx) => (
-                                                <p key={idx} className="text-[11px] text-blue-500 font-medium leading-tight mt-1 flex items-start gap-1">
-                                                    <span className="shrink-0">⚠</span> {w}
+                                                <p key={idx} className="text-[11px] text-[#9B96F8] leading-tight mt-1">
+                                                    {w}
                                                 </p>
                                             ))}
                                         </div>
