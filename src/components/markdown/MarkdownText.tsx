@@ -3,10 +3,11 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 
 // react-markdown + remark-gfm 기반 렌더러.
 // GFM 테이블 / 취소선 / task list / autolink 까지 지원.
-// HTML 원시 태그(<small> 등)는 기본적으로 이스케이프됨(XSS 방지). 필요 시 rehype-raw 추가 검토.
+// rehype-raw로 <small style="color:gray"> 등 인라인 HTML 허용 (백엔드 응답 전용, XSS 위험 없음)
 const MARKDOWN_COMPONENTS: React.ComponentProps<typeof ReactMarkdown>["components"] = {
   h1: ({ children }) => <p className="font-semibold mt-3 mb-1">{children}</p>,
   h2: ({ children }) => <p className="font-semibold mt-3 mb-1">{children}</p>,
@@ -90,7 +91,7 @@ export function MarkdownText({
   if (!children) return null;
   return (
     <div className={className}>
-      <ReactMarkdown remarkPlugins={[remarkGfm]} components={MARKDOWN_COMPONENTS}>
+      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]} components={MARKDOWN_COMPONENTS}>
         {children}
       </ReactMarkdown>
     </div>
