@@ -294,8 +294,8 @@ export default function InputSpendingPage() {
 
   return (
     <main className="min-h-screen bg-slate-50 px-10 py-12">
-      <section className="mx-auto grid max-w-6xl gap-8 md:grid-cols-[0.85fr_1.15fr]">
-        <aside className="sticky top-10 h-fit rounded-[32px] border border-slate-100 bg-white p-8 shadow-sm">
+      <section className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.85fr_1.15fr]">
+        <aside className="lg:sticky lg:top-10 h-fit rounded-[32px] border border-slate-100 bg-white p-8 shadow-sm">
           <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
             <span className="rounded-full border border-slate-200 px-3 py-1">Step 4</span>
             <span>Spending</span>
@@ -404,7 +404,7 @@ export default function InputSpendingPage() {
                   </div>
 
                   <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                    <div className="mb-6 grid gap-4 md:grid-cols-[1fr_180px]">
+                    <div className="mb-6 grid gap-4 sm:grid-cols-[1fr_180px]">
                       <input
                         aria-label={`${label} 슬라이더`}
                         type="range"
