@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { RecommendCard } from "@/state/api";
 import { roundTo500 } from "@/utils/finance";
+import { filterWarnings } from "@/utils/filterWarnings";
 import { CATEGORY_KEY_TO_LABEL } from "@/state/categories";
 
 interface Props {
@@ -108,7 +109,7 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                                                 }`}>
                                                 {item.content}
                                             </p>
-                                            {checkedIds.has(item.benefit_id) && item.warnings && item.warnings.length > 0 && item.warnings.map((w, idx) => (
+                                            {checkedIds.has(item.benefit_id) && filterWarnings(item.warnings).map((w, idx) => (
                                                 <p key={idx} className="text-[11px] text-blue-500 font-medium leading-tight mt-1 flex items-start gap-1">
                                                     <span className="shrink-0">⚠</span> {w}
                                                 </p>
