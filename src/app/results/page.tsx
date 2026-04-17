@@ -558,16 +558,18 @@ export default function ResultsPage() {
 
   const handleReRecommend = async (excludedIds: string[]) => {
     if (!receiptCard) return;
-    // 현재 체크 상태를 카드별로 저장 (누적)
-    setCardExclusions(prev => ({ ...prev, [receiptCard.card_id]: excludedIds }));
+    // 현재 카드 exclusions를 포함한 전체 누적 exclusions 계산
+    const updatedExclusions = { ...cardExclusions, [receiptCard.card_id]: excludedIds };
+    setCardExclusions(updatedExclusions);
+    const allExcludedIds = Object.values(updatedExclusions).flat();
     try {
       setIsRecommending(true);
       if (isCompareMode && compareData) {
         const currentCards = compareData.recommended_cards ?? [compareData.recommended_card];
-        const res = await fetchRecalculate(state, currentCards, excludedIds);
+        const res = await fetchRecalculate(state, currentCards, allExcludedIds);
         setCompareData({ ...compareData, recommended_cards: res.recommended_cards });
       } else if (data) {
-        const res = await fetchRecalculate(state, data.recommended_cards, excludedIds);
+        const res = await fetchRecalculate(state, data.recommended_cards, allExcludedIds);
         setData({ ...data, recommended_cards: res.recommended_cards });
       }
       setReceiptCard(null);
