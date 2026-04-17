@@ -32,6 +32,10 @@ export interface RecommendCard {
     annual_fee: number;
     minimum_performance: number;
     expected_monthly_benefit: number;
+    /**
+     * 1년 예상 혜택(연회비 차감 전). 백엔드 필드 우선 사용.
+     */
+    expected_yearly_benefit: number;
     category_breakdown: CategoryBreakdown[];
     applied_benefits_trace: BenefitTraceItem[];
     explanation?: string;
@@ -101,8 +105,8 @@ export interface CompareResponse {
 }
 
 export interface RecalculateRequest {
-    total_budget?: number | null;
-    category_spending?: Record<string, any> | null;
+    total_budget: number;           // Required (백엔드 명세 변경 반영)
+    category_spending: Record<string, any>; // Required (백엔드 명세 변경 반영)
     recommended_cards: RecommendCard[];
     excluded_benefit_ids: string[];
 }

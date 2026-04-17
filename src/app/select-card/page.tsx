@@ -27,13 +27,39 @@ function extractCardsResponse(data: unknown): CardOption[] | null {
   return null;
 }
 
+const FALLBACK_CARDS: CardOption[] = [
+  {
+    card_id: "card_001",
+    card_name: "스마트 프라임 카드",
+    card_company: "SmartPick",
+    annual_fee: 0,
+    minimum_performance: 0,
+    categories: ["Food", "Traffic"]
+  },
+  {
+    card_id: "card_002",
+    card_name: "알뜰 체크 카드",
+    card_company: "SmartPick",
+    annual_fee: 0,
+    minimum_performance: 0,
+    categories: ["Shopping", "Life"]
+  },
+  {
+    card_id: "card_003",
+    card_name: "데일리 리워드 카드",
+    card_company: "SmartPick",
+    annual_fee: 0,
+    minimum_performance: 0,
+    categories: ["Coffee", "Cultural"]
+  }
+];
 
 export default function SelectCardPage() {
   const router = useRouter();
   const { dispatch } = useAppState();
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [cards, setCards] = useState<CardOption[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [cards, setCards] = useState<CardOption[]>(FALLBACK_CARDS);
+  const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
@@ -170,7 +196,7 @@ export default function SelectCardPage() {
           <button
             type="button"
             onClick={handleNext}
-            disabled={!selected || isLoading || loadError}
+            disabled={!selected}
             className="rounded-full bg-slate-900 px-8 py-3 text-base font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-300"
           >
             다음

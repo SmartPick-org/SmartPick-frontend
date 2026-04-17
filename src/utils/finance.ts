@@ -6,13 +6,14 @@ import { RecommendCard } from "@/state/api";
 export const roundTo500 = (val: number) => Math.round(val / 500) * 500;
 
 /**
- * 1년 예상 순혜택 계산
- * (월 혜택 * 12) - 연회비
+ * 1년 예상 혜택 계산 (연회비 차감 전)
+ * - 백엔드가 내려주는 `expected_yearly_benefit`를 우선 사용합니다.
+ * - 프론트에서 월*12 등으로 재계산하지 않습니다(정의 불일치 방지).
  */
-export const calcYearlyNetBenefit = (card: RecommendCard) => {
-    const monthly = roundTo500(card.expected_monthly_benefit);
-    const annual = monthly * 12 - card.annual_fee;
-    return roundTo500(Math.max(0, annual));
+export const calcExpectedYearlyBenefit = (card: RecommendCard) => {
+    const yearly = card.expected_yearly_benefit;
+    if (typeof yearly !== "number" || Number.isNaN(yearly)) return 0;
+    return roundTo500(Math.max(0, yearly));
 };
 
 /**

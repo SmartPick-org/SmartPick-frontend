@@ -27,6 +27,7 @@ export const CATEGORY_META: CategoryMeta[] = [
   { key: "Travel", label: "여행", helper: "항공, 숙박, 해외 등", subCategories: ["항공", "숙박", "여행사", "해외", "렌터카", "공항 라운지/발레파킹", "로밍"] },
   { key: "Life", label: "생활", helper: "통신, 공과금, 세금 등", subCategories: ["통신", "공과금", "관리비", "생활서비스", "세금/보험/연금"] },
   { key: "EduHealth", label: "교육/건강", helper: "병원, 약국, 피트니스 등", subCategories: ["병원", "약국", "학원/교육", "피트니스(헬스/요가 등)"] },
+  { key: "General", label: "기본/전체", helper: "모든 가맹점 공통 혜택", subCategories: ["국내외 가맹점", "전 가맹점"] },
   { key: "Others", label: "기타", helper: "기타 소비 항목", subCategories: ["기타"] }
 ];
 

@@ -97,7 +97,7 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                                             <div className="flex justify-between items-baseline gap-2">
                                                 <span className={`text-[13px] font-semibold transition-colors ${checkedIds.has(item.benefit_id) ? "text-slate-600" : "text-slate-300 line-through"
                                                     }`}>
-                                                    {CATEGORY_KEY_TO_LABEL.get(item.category as any) || item.category}
+                                                    {CATEGORY_KEY_TO_LABEL.get(item.category as any) || item.category || "기본/전체"}
                                                 </span>
                                                 <span className={`tabular-nums font-extrabold text-[15px] transition-colors ${checkedIds.has(item.benefit_id) ? "text-[#625BF5]" : "text-slate-300"
                                                     }`}>
@@ -108,8 +108,10 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                                                 }`}>
                                                 {item.content}
                                             </p>
-                                            {checkedIds.has(item.benefit_id) && item.warnings && item.warnings.map((w, idx) => (
-                                                <p key={idx} className="text-[11px] text-indigo-400 font-medium leading-tight">{w}</p>
+                                            {checkedIds.has(item.benefit_id) && item.warnings && item.warnings.length > 0 && item.warnings.map((w, idx) => (
+                                                <p key={idx} className="text-[11px] text-blue-500 font-medium leading-tight mt-1 flex items-start gap-1">
+                                                    <span className="shrink-0">⚠</span> {w}
+                                                </p>
                                             ))}
                                         </div>
                                     </div>

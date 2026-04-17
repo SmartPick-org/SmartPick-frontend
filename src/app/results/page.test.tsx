@@ -14,12 +14,14 @@ vi.mock("@/state/apiService", () => ({
         card_name: "모니모카드",
         card_company: "삼성카드",
         expected_monthly_benefit: 30000,
+        expected_yearly_benefit: 360000,
         annual_fee: 10000,
         minimum_performance: 500000,
         category_breakdown: [
           { category: "Food", monthly_discount_krw: 20000 },
           { category: "Traffic", monthly_discount_krw: 10000 }
         ],
+        applied_benefits_trace: [],
         explanation: "테스트용 설명입니다."
       },
       {
@@ -27,20 +29,24 @@ vi.mock("@/state/apiService", () => ({
         card_name: "하나하나카드",
         card_company: "하나카드",
         expected_monthly_benefit: 20000,
+        expected_yearly_benefit: 240000,
         annual_fee: 10000,
         minimum_performance: 500000,
         category_breakdown: [
           { category: "Food", monthly_discount_krw: 15000 }
-        ]
+        ],
+        applied_benefits_trace: []
       },
       {
         card_id: "rec_03",
         card_name: "국민국민카드",
         card_company: "국민카드",
         expected_monthly_benefit: 15000,
+        expected_yearly_benefit: 180000,
         annual_fee: 5000,
         minimum_performance: 300000,
-        category_breakdown: []
+        category_breakdown: [],
+        applied_benefits_trace: []
       }
     ],
     explanation: "전반적인 추천 사유입니다."

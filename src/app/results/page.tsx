@@ -12,7 +12,7 @@ import {
   AdvisorQueryType
 } from "@/state/api";
 import { UI_CONSTANTS } from "@/constants/ui";
-import { roundTo500, calcYearlyNetBenefit, formatKoreanAmount } from "@/utils/finance";
+import { roundTo500, calcExpectedYearlyBenefit, formatKoreanAmount } from "@/utils/finance";
 import { CATEGORY_KEY_TO_LABEL, CategoryKey } from "@/state/categories";
 
 // 마크다운 렌더러 (외부 라이브러리 불필요)
@@ -189,8 +189,12 @@ function CompareView({
   const allRecommended = useMemo(() => {
     const list = data.recommended_cards ?? [data.recommended_card];
     return list
-      .filter((c) => c.expected_monthly_benefit > 0 && c.expected_monthly_benefit > current_card.expected_monthly_benefit)
-      .sort((a, b) => calcYearlyNetBenefit(b) - calcYearlyNetBenefit(a));
+      .filter(
+        (c) =>
+          c.expected_monthly_benefit > 0 &&
+          c.expected_yearly_benefit > current_card.expected_yearly_benefit
+      )
+      .sort((a, b) => calcExpectedYearlyBenefit(b) - calcExpectedYearlyBenefit(a));
   }, [data, current_card]);
 
   const [selectedIdx, setSelectedIdx] = useState(0);
@@ -207,7 +211,7 @@ function CompareView({
     ? selectedCard.expected_monthly_benefit - current_card.expected_monthly_benefit
     : data.monthly_diff;
   const activeYearlyDiff = selectedCard
-    ? calcYearlyNetBenefit(selectedCard) - calcYearlyNetBenefit(current_card)
+    ? calcExpectedYearlyBenefit(selectedCard) - calcExpectedYearlyBenefit(current_card)
     : data.yearly_diff;
 
   // allCategories는 유저가 입력한(선택한) 카테고리를 그대로 사용합니다.
@@ -233,7 +237,7 @@ function CompareView({
           <h2 className="text-2xl font-bold text-slate-900 leading-snug">현재 카드가 최상의 효율입니다!</h2>
           <p className="mt-4 text-slate-500 leading-relaxed">
             분석 결과, 현재 사용 중인 <span className="font-semibold text-slate-700">{current_card.card_name}</span>의 <br />
-            예상 혜택(<span className="font-semibold text-[#625BF5]">{formatKoreanAmount(calcYearlyNetBenefit(current_card))}</span>/연)보다 더 좋은 대안을 찾지 못했습니다. <br />
+            예상 혜택(<span className="font-semibold text-[#625BF5]">{formatKoreanAmount(calcExpectedYearlyBenefit(current_card))}</span>/연)보다 더 좋은 대안을 찾지 못했습니다. <br />
             지금처럼 슬기로운 소비 생활을 계속 유지해 주세요!
           </p>
           <div className="mt-8">
@@ -299,16 +303,16 @@ function CompareView({
                     <div className="mt-1">
                       <p className="text-[13px] font-bold text-slate-900">1년 예상 혜택</p>
                       <div className="leading-tight tabular-nums font-extrabold text-slate-900">
-                        <span className="text-[32px]">{Math.floor(calcYearlyNetBenefit(current_card) / 10000)}</span>
+                        <span className="text-[32px]">{Math.floor(calcExpectedYearlyBenefit(current_card) / 10000)}</span>
                         <span className="text-[18px]">만</span>
-                        {(calcYearlyNetBenefit(current_card) % 10000) >= 1000 && (
+                        {(calcExpectedYearlyBenefit(current_card) % 10000) >= 1000 && (
                           <>
-                            <span className="ml-1 text-[32px]">{Math.floor((calcYearlyNetBenefit(current_card) % 10000) / 1000)}</span>
+                            <span className="ml-1 text-[32px]">{Math.floor((calcExpectedYearlyBenefit(current_card) % 10000) / 1000)}</span>
                             <span className="text-[18px]">천</span>
                           </>
                         )}
-                        {(calcYearlyNetBenefit(current_card) % 1000) > 0 && (
-                          <span className="ml-1 text-[24px]">{calcYearlyNetBenefit(current_card) % 1000}</span>
+                        {(calcExpectedYearlyBenefit(current_card) % 1000) > 0 && (
+                          <span className="ml-1 text-[24px]">{calcExpectedYearlyBenefit(current_card) % 1000}</span>
                         )}
                         <span className="text-[18px]">원</span>
                       </div>
@@ -463,16 +467,16 @@ function CompareView({
                     <div className="mt-1">
                       <p className="text-[13px] font-bold text-[#2D333F]">1년 예상 혜택</p>
                       <div className="leading-tight tabular-nums font-extrabold text-[#2D333F]">
-                        <span className="text-[32px] text-[#625BF5]">{Math.floor(calcYearlyNetBenefit(selectedCard) / 10000)}</span>
+                        <span className="text-[32px] text-[#625BF5]">{Math.floor(calcExpectedYearlyBenefit(selectedCard) / 10000)}</span>
                         <span className="text-[18px]">만</span>
-                        {(calcYearlyNetBenefit(selectedCard) % 10000) >= 1000 && (
+                        {(calcExpectedYearlyBenefit(selectedCard) % 10000) >= 1000 && (
                           <>
-                            <span className="ml-1 text-[32px] text-[#625BF5]">{Math.floor((calcYearlyNetBenefit(selectedCard) % 10000) / 1000)}</span>
+                            <span className="ml-1 text-[32px] text-[#625BF5]">{Math.floor((calcExpectedYearlyBenefit(selectedCard) % 10000) / 1000)}</span>
                             <span className="text-[18px]">천</span>
                           </>
                         )}
-                        {(calcYearlyNetBenefit(selectedCard) % 1000) > 0 && (
-                          <span className="ml-1 text-[24px] text-[#625BF5]">{calcYearlyNetBenefit(selectedCard) % 1000}</span>
+                        {(calcExpectedYearlyBenefit(selectedCard) % 1000) > 0 && (
+                          <span className="ml-1 text-[24px] text-[#625BF5]">{calcExpectedYearlyBenefit(selectedCard) % 1000}</span>
                         )}
                         <span className="text-[18px]">원</span>
                       </div>
@@ -556,6 +560,24 @@ export default function ResultsPage() {
   // 카드별 해제된 혜택 ID 누적 저장 (card_id → excluded benefit_ids)
   const [cardExclusions, setCardExclusions] = useState<Record<string, string[]>>({});
 
+  const warnIfInconsistentYearly = (cards: RecommendCard[]) => {
+    if (process.env.NODE_ENV === "production") return;
+    cards.forEach((card) => {
+      if (typeof card.expected_yearly_benefit !== "number" || Number.isNaN(card.expected_yearly_benefit)) {
+        console.warn("[SmartPick] missing expected_yearly_benefit", { card_id: card.card_id });
+        return;
+      }
+      const computed = roundTo500(Math.max(0, roundTo500(card.expected_monthly_benefit) * 12));
+      const server = roundTo500(Math.max(0, card.expected_yearly_benefit));
+      if (Math.abs(server - computed) >= 5000) {
+        console.warn(
+          "[SmartPick] expected_yearly_benefit mismatch",
+          { card_id: card.card_id, expected_yearly_benefit: card.expected_yearly_benefit, expected_monthly_benefit: card.expected_monthly_benefit }
+        );
+      }
+    });
+  };
+
   // /recalculate는 category_breakdown을 갱신하지 않으므로
   // applied_benefits_trace의 user_choice 기준으로 프론트에서 재계산
   function recomputeCategoryBreakdown(card: RecommendCard): RecommendCard {
@@ -584,9 +606,11 @@ export default function ResultsPage() {
       if (isCompareMode && compareData) {
         const currentCards = compareData.recommended_cards ?? [compareData.recommended_card];
         const res = await fetchRecalculate(state, currentCards, allExcludedIds);
+        warnIfInconsistentYearly(res.recommended_cards);
         setCompareData({ ...compareData, recommended_cards: res.recommended_cards.map(recomputeCategoryBreakdown) });
       } else if (data) {
         const res = await fetchRecalculate(state, data.recommended_cards, allExcludedIds);
+        warnIfInconsistentYearly(res.recommended_cards);
         setData({ ...data, recommended_cards: res.recommended_cards.map(recomputeCategoryBreakdown) });
       }
       setReceiptCard(null);
@@ -618,9 +642,11 @@ export default function ResultsPage() {
             return;
           }
           const res = await fetchComparison(state);
+          warnIfInconsistentYearly([res.current_card, ...(res.recommended_cards ?? [res.recommended_card])]);
           setCompareData(res);
         } else {
           const res = await fetchRecommendations(state);
+          warnIfInconsistentYearly(res.recommended_cards);
           setData(res);
         }
       } catch (err: any) {
@@ -655,7 +681,7 @@ export default function ResultsPage() {
       (data?.recommended_cards || [])
         .filter((c) => c.expected_monthly_benefit > 0)
         .slice()
-        .sort((a, b) => calcYearlyNetBenefit(b) - calcYearlyNetBenefit(a)),
+        .sort((a, b) => calcExpectedYearlyBenefit(b) - calcExpectedYearlyBenefit(a)),
     [data]
   );
 
@@ -804,16 +830,16 @@ export default function ResultsPage() {
                           <div className="mt-1">
                             <p className={`text-[13px] font-bold ${isBest ? "text-[#2D333F]" : "text-slate-900"}`}>1년 예상 혜택</p>
                             <div className={`leading-tight tabular-nums font-extrabold ${isBest ? "text-[#2D333F]" : "text-slate-900"}`}>
-                              <span className={`text-[32px] ${isBest ? "text-[#625BF5]" : ""}`}>{Math.floor(calcYearlyNetBenefit(card) / 10000)}</span>
+                              <span className={`text-[32px] ${isBest ? "text-[#625BF5]" : ""}`}>{Math.floor(calcExpectedYearlyBenefit(card) / 10000)}</span>
                               <span className="text-[18px]">만</span>
-                              {(calcYearlyNetBenefit(card) % 10000) >= 1000 && (
+                              {(calcExpectedYearlyBenefit(card) % 10000) >= 1000 && (
                                 <>
-                                  <span className={`ml-1 text-[32px] ${isBest ? "text-[#625BF5]" : ""}`}>{Math.floor((calcYearlyNetBenefit(card) % 10000) / 1000)}</span>
+                                  <span className={`ml-1 text-[32px] ${isBest ? "text-[#625BF5]" : ""}`}>{Math.floor((calcExpectedYearlyBenefit(card) % 10000) / 1000)}</span>
                                   <span className="text-[18px]">천</span>
                                 </>
                               )}
-                              {(calcYearlyNetBenefit(card) % 1000) > 0 && (
-                                <span className={`ml-1 text-[24px] ${isBest ? "text-[#625BF5]" : ""}`}>{calcYearlyNetBenefit(card) % 1000}</span>
+                              {(calcExpectedYearlyBenefit(card) % 1000) > 0 && (
+                                <span className={`ml-1 text-[24px] ${isBest ? "text-[#625BF5]" : ""}`}>{calcExpectedYearlyBenefit(card) % 1000}</span>
                               )}
                               <span className="text-[18px]">원</span>
                             </div>
