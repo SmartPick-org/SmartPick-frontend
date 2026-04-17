@@ -17,14 +17,26 @@ import { CATEGORY_KEY_TO_LABEL, CategoryKey } from "@/state/categories";
 
 // 마크다운 렌더러 (외부 라이브러리 불필요)
 function renderInline(text: string): React.ReactNode[] {
-  // Split on **bold**, *italic*, [link](url), and bare URLs
-  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\]\([^)]+\)|https?:\/\/[^\s]+)/g);
+  // Split on **bold**, *italic*, `inline code`, [link](url), and bare URLs
+  const parts = text.split(
+    /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[[^\]]+\]\([^)]+\)|https?:\/\/[^\s]+)/g
+  );
   return parts.map((part, i) => {
     if (part.startsWith("**") && part.endsWith("**")) {
       return <strong key={i}>{part.slice(2, -2)}</strong>;
     }
     if (part.startsWith("*") && part.endsWith("*")) {
       return <em key={i}>{part.slice(1, -1)}</em>;
+    }
+    if (part.startsWith("`") && part.endsWith("`")) {
+      return (
+        <code
+          key={i}
+          className="rounded bg-slate-200/60 px-1 py-0.5 font-mono text-[0.95em] text-slate-700"
+        >
+          {part.slice(1, -1)}
+        </code>
+      );
     }
     const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
     if (linkMatch) {
@@ -47,22 +59,101 @@ function renderInline(text: string): React.ReactNode[] {
   });
 }
 
+type MarkdownBlock =
+  | { type: "code"; language?: string; content: string }
+  | { type: "line"; content: string };
+
+function parseMarkdownBlocks(markdown: string): MarkdownBlock[] {
+  const lines = markdown.split("\n");
+  const blocks: MarkdownBlock[] = [];
+  let inCode = false;
+  let codeLang: string | undefined;
+  let codeLines: string[] = [];
+
+  const flushCode = () => {
+    blocks.push({ type: "code", language: codeLang, content: codeLines.join("\n") });
+    inCode = false;
+    codeLang = undefined;
+    codeLines = [];
+  };
+
+  for (const line of lines) {
+    const fence = line.match(/^```(\w+)?\s*$/);
+    if (fence) {
+      if (inCode) {
+        flushCode();
+      } else {
+        inCode = true;
+        codeLang = fence[1];
+      }
+      continue;
+    }
+
+    if (inCode) {
+      codeLines.push(line);
+      continue;
+    }
+
+    blocks.push({ type: "line", content: line });
+  }
+
+  if (inCode) flushCode();
+  return blocks;
+}
+
 function MarkdownText({ children, className }: { children?: string; className?: string }) {
   if (!children) return null;
-  const lines = children.split("\n");
+  const blocks = parseMarkdownBlocks(children);
   return (
     <div className={className}>
-      {lines.map((line, li) => {
-        const trimmed = line.trim();
-        if (trimmed === "") return <div key={li} className="h-2" />;
-
-        // Numbered section header: starts with digit(s) followed by . or ..
-        if (/^\d+\.\.?\s/.test(trimmed)) {
-          const text = trimmed.replace(/^\d+\.\.?\s*/, "");
+      {blocks.map((block, bi) => {
+        if (block.type === "code") {
+          const label = block.language ? `${block.language}` : undefined;
           return (
-            <p key={li} className="font-semibold mt-3 mb-1">
+            <div key={`code-${bi}`} className="my-2">
+              {label ? (
+                <div className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                  {label}
+                </div>
+              ) : null}
+              <pre className="overflow-x-auto rounded-xl bg-slate-900 px-4 py-3 text-[12px] leading-relaxed text-slate-100">
+                <code>{block.content}</code>
+              </pre>
+            </div>
+          );
+        }
+
+        const trimmed = block.content.trim();
+        if (trimmed === "") return <div key={`sp-${bi}`} className="h-2" />;
+
+        // Headings: #, ##, ...
+        const headingMatch = trimmed.match(/^(#{1,6})\s+(.*)$/);
+        if (headingMatch) {
+          return (
+            <p key={`h-${bi}`} className="font-semibold mt-3 mb-1">
+              {renderInline(headingMatch[2])}
+            </p>
+          );
+        }
+
+        // Numbered section header: "1.." 형태만 헤더로 취급
+        if (/^\d+\.\.\s/.test(trimmed)) {
+          const text = trimmed.replace(/^\d+\.\.\s*/, "");
+          return (
+            <p key={`nh-${bi}`} className="font-semibold mt-3 mb-1">
               {renderInline(text)}
             </p>
+          );
+        }
+
+        // Ordered list: "1. item"
+        const orderedMatch = trimmed.match(/^(\d+)\.\s+(.*)$/);
+        if (orderedMatch) {
+          return (
+            <div key={`ol-${bi}`} className="flex gap-1.5 ml-2 my-0.5">
+              <span className="shrink-0 mt-0.5 text-slate-500">{orderedMatch[1]}.</span>
+              <span>{renderInline(orderedMatch[2])}</span>
+            </div>
           );
         }
 
@@ -70,9 +161,22 @@ function MarkdownText({ children, className }: { children?: string; className?: 
         if (trimmed.startsWith("•") || trimmed.startsWith("- ")) {
           const text = trimmed.replace(/^[•-]\s*/, "");
           return (
-            <div key={li} className="flex gap-1.5 ml-2 my-0.5">
+            <div key={`b-${bi}`} className="flex gap-1.5 ml-2 my-0.5">
               <span className="shrink-0 mt-0.5 text-slate-500">•</span>
               <span>{renderInline(text)}</span>
+            </div>
+          );
+        }
+
+        // Blockquote: > ...
+        if (trimmed.startsWith(">")) {
+          const text = trimmed.replace(/^>\s?/, "");
+          return (
+            <div
+              key={`q-${bi}`}
+              className="my-1 border-l-2 border-slate-200 pl-3 text-slate-600"
+            >
+              {renderInline(text)}
             </div>
           );
         }
@@ -80,13 +184,17 @@ function MarkdownText({ children, className }: { children?: string; className?: 
         // Note lines starting with ※
         if (trimmed.startsWith("※")) {
           return (
-            <p key={li} className="text-xs text-slate-500 mt-1">
+            <p key={`n-${bi}`} className="text-xs text-slate-500 mt-1">
               {renderInline(trimmed)}
             </p>
           );
         }
 
-        return <p key={li} className="my-0.5">{renderInline(trimmed)}</p>;
+        return (
+          <p key={`p-${bi}`} className="my-0.5">
+            {renderInline(trimmed)}
+          </p>
+        );
       })}
     </div>
   );
@@ -534,7 +642,7 @@ function CompareView({
         <div className="mt-10 ml-[124px]">
           <header className="mb-4 flex items-center gap-2 text-base font-bold text-[#2D333F]">
             <span className="text-[#625BF5]">✦</span>
-            <span>{userName || "고객"}님을 위한 맞춤 큐레이션</span>
+            <span>1순위 카드 추천 결과</span>
           </header>
           <div className="rounded-[24px] bg-white p-8 shadow-sm ring-1 ring-slate-200">
             <div className="text-[16px] font-medium leading-[1.7] text-slate-600">
@@ -900,7 +1008,7 @@ export default function ResultsPage() {
         <div className="mt-12 ml-[148px]">
           <header className="mb-6 flex items-center gap-2 text-base font-bold text-[#2D333F]">
             <span className="text-[#625BF5]">✦</span>
-            <span>{state.userName || "은정"}님을 위한 맞춤 큐레이션</span>
+            <span>1순위 카드 추천 결과</span>
           </header>
           <div className="rounded-[24px] bg-white p-[32px] shadow-sm ring-1 ring-slate-200">
             <div className="text-[16px] font-medium leading-[1.7] text-slate-600">
