@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { RecommendCard, BenefitReceiptItem } from "@/state/api";
+import { RecommendCard } from "@/state/api";
 import { roundTo500 } from "@/utils/finance";
 import { CATEGORY_KEY_TO_LABEL } from "@/state/categories";
 

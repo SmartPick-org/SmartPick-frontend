@@ -5,15 +5,6 @@ export interface CategoryBreakdown {
     warnings: string[] | null; // 백엔드 optional 대응
 }
 
-export interface BenefitReceiptItem {
-    benefit_id: string;
-    content: string;
-    category: string;
-    sub_category: string | null;
-    amount_krw: number;
-    warnings: string[];
-}
-
 export interface BenefitTraceItem {
     benefit_id: string;
     content: string;
@@ -113,4 +104,5 @@ export interface RecalculateRequest {
 
 export interface RecalculateResponse {
     recommended_cards: RecommendCard[];
+    explanation: string;
 }

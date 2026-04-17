@@ -68,21 +68,42 @@
   - [v] '더 물어보기' 버튼 폰트 크기 확대 및 스타일링(그림자 효과 등) 개선
 
 ### P6. 혜택 영수증 (Benefit Receipt) 고도화
-- [ ] **[Infra] API 및 데이터 모델 최신화**
-  - [ ] `src/state/api.ts`: `BenefitReceiptItem` 인터페이스 추가 및 `RecommendRequest` 내 `excluded_benefit_ids` 반영
-  - [ ] `src/state/apiService.ts`: `fetchRecommendations` 및 `fetchComparison` 호출 시 `excluded_benefit_ids` 전달 로직 구현
-- [ ] **[Component] 영수증 모달 UI/UX 구현**
-  - [ ] `src/components/results/BenefitReceipt.tsx` 컴포넌트 설계 (지그재그 테두리 스타일)
-  - [ ] 카드 섹션 내 '혜택 영수증 (🧾)' 진입점 추가 및 3D Flip/Slide 애니메이션 적용
-  - [ ] `white-space: pre-line` 기반의 카드 상세 설명(`explanation`) 렌더링 최적화
-- [ ] **[Logic] 체크박스 필터링 및 실시간 인터랙션**
-  - [ ] `benefit_receipt` 데이터를 활용한 개별 혜택 라인(금액, 조건, 경고문) 렌더링
-  - [ ] 체크박스 선택/해제 상태 관리 및 하단 합계 금액 실시간 Preview 연동
-  - [ ] `roundTo500` 규칙을 영수증 내 모든 개별 혜택 금액(`amount_krw`)에 적용
-- [ ] **[Feature] 최적화 재추천(Re-rank) 엔진 연결**
-  - [ ] '선택한 혜택으로 다시 추천받기' 버튼 클릭 시 해제된 `benefit_id` 수집 및 API 재호출
-  - [ ] 재호출 결과에 따른 전체 카드 순위 재정렬 및 맞춤 큐레이션 자동 갱신
-  - [ ] 모든 혜택 해제 시(`expected_monthly_benefit` = 0)의 예외 UI 처리
+- [v] **[Infra] API 및 데이터 모델 최신화** (현행 스펙 기준 완료)
+  - [v] `applied_benefits_trace` 기반으로 영수증 렌더링 전환 (`benefit_receipt` → 삭제됨)
+  - [v] `RecalculateResponse`에 `explanation` 필드 추가 반영
+  - ~~`BenefitReceiptItem` 인터페이스 추가~~ ← 현행 스펙에서 삭제된 타입 (§4-❶ 참고)
+  - ~~`excluded_benefit_ids` 반영~~ ← `/recommend` 요청에서 제거된 필드 (§2-1 참고)
+- [v] **[Component] 영수증 모달 UI/UX 구현**
+  - [v] `BenefitReceipt.tsx` 컴포넌트 구현 (지그재그 테두리, 체크박스, 합산 금액)
+  - [v] 카드 섹션 내 '혜택 영수증' 진입점 및 애니메이션
+  - [v] `MarkdownText` 기반 `explanation` 렌더링
+- [v] **[Logic] 체크박스 필터링 및 실시간 인터랙션**
+  - [v] `applied_benefits_trace` + `user_choice` 기반 개별 혜택 렌더링
+  - [v] 체크박스 상태 관리 및 하단 합계 금액 실시간 갱신
+- [v] **[Feature] 최적화 재추천(Re-rank) 엔진 연결**
+  - [v] `POST /cards/recalculate` 연동 및 전체 카드 순위 재정렬
+  - [v] 재추천 후 큐레이션 텍스트(`explanation`) 갱신
+
+### P7. API 변경 반영 정리 (2026-04-17 점검 결과, §4 기준)
+
+> 기능 동작에 영향 없는 코드 정리 항목. 우선순위대로 하나씩 완료 후 v 표시.
+
+- [v] **[P7-1] `recomputeCategoryBreakdown` 제거** ← 가장 중요
+  - 위치: `src/app/results/page.tsx:689-704` (함수 정의) 및 호출부 (`.map(recomputeCategoryBreakdown)` 2곳)
+  - 이유: 백엔드가 이미 `category_breakdown.monthly_discount_krw`를 계산해서 내려줌. 프론트 재계산이 서버 계산 규칙 변경 시 표시값을 덮어씌울 위험 존재.
+  - 조치: 함수 삭제 + `.map(recomputeCategoryBreakdown)` → `res.recommended_cards` 그대로 사용
+
+- [v] **[P7-2] `BenefitReceiptItem` 타입 삭제 및 미사용 import 제거**
+  - 위치: `src/state/api.ts:8-15` (타입 정의), `src/components/results/BenefitReceipt.tsx:4` (import)
+  - 이유: 현행 스펙에서 `benefit_receipt` 필드 삭제됨. 타입과 import 모두 데드 코드.
+  - 조치: 타입 정의 삭제 + import 구문 제거
+
+- [v] **[P7-3] `fetchRecommendations` 데드 파라미터 제거**
+  - 위치: `src/state/apiService.ts:35` 시그니처의 `excluded_benefit_ids?: string[] | null`
+  - 이유: 페이로드에 포함되지 않고(`/recommend` 스펙에서 제거됨), 호출부에서도 인자를 전달하지 않음.
+  - 조치: 시그니처에서 `excluded_benefit_ids` 파라미터 삭제
+
+- [v] **[P7-4] `docs/TODO.md` P6 내 오래된 항목 정리** ← 이 작업 완료됨 (위 P6 섹션 갱신)
 
 ### 완료된 항목 (참고)
 #### 기획/설계

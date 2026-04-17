@@ -686,23 +686,6 @@ export default function ResultsPage() {
     });
   };
 
-  // /recalculate는 category_breakdown을 갱신하지 않으므로
-  // applied_benefits_trace의 user_choice 기준으로 프론트에서 재계산
-  function recomputeCategoryBreakdown(card: RecommendCard): RecommendCard {
-    if (!card.applied_benefits_trace?.length) return card;
-    const catTotals: Record<string, number> = {};
-    card.applied_benefits_trace.forEach(b => {
-      if (b.user_choice) {
-        catTotals[b.category] = (catTotals[b.category] || 0) + b.yielded_discount;
-      }
-    });
-    const updatedBreakdown = card.category_breakdown.map(cb => ({
-      ...cb,
-      monthly_discount_krw: catTotals[cb.category] ?? 0,
-    }));
-    return { ...card, category_breakdown: updatedBreakdown };
-  }
-
   const handleReRecommend = async (excludedIds: string[]) => {
     if (!receiptCard) return;
     // 현재 카드 exclusions를 포함한 전체 누적 exclusions 계산
@@ -715,11 +698,19 @@ export default function ResultsPage() {
         const currentCards = compareData.recommended_cards ?? [compareData.recommended_card];
         const res = await fetchRecalculate(state, currentCards, allExcludedIds);
         warnIfInconsistentYearly(res.recommended_cards);
-        setCompareData({ ...compareData, recommended_cards: res.recommended_cards.map(recomputeCategoryBreakdown) });
+        setCompareData({
+          ...compareData,
+          recommended_cards: res.recommended_cards,
+          ...(res.explanation ? { explanation: res.explanation } : {}),
+        });
       } else if (data) {
         const res = await fetchRecalculate(state, data.recommended_cards, allExcludedIds);
         warnIfInconsistentYearly(res.recommended_cards);
-        setData({ ...data, recommended_cards: res.recommended_cards.map(recomputeCategoryBreakdown) });
+        setData({
+          ...data,
+          recommended_cards: res.recommended_cards,
+          ...(res.explanation ? { explanation: res.explanation } : {}),
+        });
       }
       setReceiptCard(null);
     } catch (err: any) {

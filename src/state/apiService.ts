@@ -32,12 +32,9 @@ export function transformStateToRecommendRequest(state: AppState): RecommendRequ
 
 export async function fetchRecommendations(
     state: AppState,
-    excluded_benefit_ids?: string[] | null,
-    top_n?: number
 ): Promise<RecommendResponse> {
     const payload: RecommendRequest = {
         ...transformStateToRecommendRequest(state),
-        top_n
     };
 
     console.log("🚀 API Request Payload:", JSON.stringify(payload, null, 2));
