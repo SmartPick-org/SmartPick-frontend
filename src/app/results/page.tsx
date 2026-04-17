@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useMemo, Fragment } from "react";
 import { useAppState } from "@/state/appState";
 import BenefitReceipt from "@/components/results/BenefitReceipt";
-import { fetchRecommendations, fetchComparison, fetchAdvisorAnswer } from "@/state/apiService";
+import { fetchRecommendations, fetchComparison, fetchAdvisorAnswer, fetchRecalculate } from "@/state/apiService";
 import {
   RecommendCard,
   RecommendResponse,
@@ -562,12 +562,13 @@ export default function ResultsPage() {
     setCardExclusions(prev => ({ ...prev, [receiptCard.card_id]: excludedIds }));
     try {
       setIsRecommending(true);
-      if (isCompareMode) {
-        const res = await fetchComparison(state, excludedIds);
-        setCompareData(res);
-      } else {
-        const res = await fetchRecommendations(state, excludedIds);
-        setData(res);
+      if (isCompareMode && compareData) {
+        const currentCards = compareData.recommended_cards ?? [compareData.recommended_card];
+        const res = await fetchRecalculate(state, currentCards, excludedIds);
+        setCompareData({ ...compareData, recommended_cards: res.recommended_cards });
+      } else if (data) {
+        const res = await fetchRecalculate(state, data.recommended_cards, excludedIds);
+        setData({ ...data, recommended_cards: res.recommended_cards });
       }
       setReceiptCard(null);
     } catch (err: any) {
