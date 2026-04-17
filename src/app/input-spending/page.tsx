@@ -279,7 +279,7 @@ export default function InputSpendingPage() {
 
     const remaining = Math.max(0, totalBudget - utilized);
     if (remaining > 0) {
-      items.push({ name: "기타 (미배분)", amount: remaining, color: "#e2e8f0" }); // slate-200
+      items.push({ name: "기타", amount: remaining, color: "#e2e8f0" }); // slate-200
     }
 
     // Sort chart items by amount descending for the left sidebar summary
@@ -302,7 +302,7 @@ export default function InputSpendingPage() {
           </div>
           <h2 className="mt-6 text-lg font-semibold text-slate-900">월 소비 예산 요약</h2>
           <p className="mt-2 text-sm text-slate-500">
-            입력하신 예산 총액과 항목별 섭취 비율이 자동 계산됩니다.
+            세부 항목별 비율을 조정하면 입력한 예산에 따라 금액이 자동 계산됩니다.
           </p>
 
           <div className="mt-8 flex items-center justify-center">
