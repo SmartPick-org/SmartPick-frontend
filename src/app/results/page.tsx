@@ -278,7 +278,7 @@ function CompareView({
                     <button
                       type="button"
                       onClick={() => onShowReceipt(current_card)}
-                      className="flex-1 flex h-[44px] items-center justify-center rounded-[12px] border-2 border-slate-300 text-[14px] font-bold text-slate-700 bg-white transition-all hover:bg-slate-50 hover:border-slate-400"
+                      className="flex-1 flex h-[44px] items-center justify-center rounded-[12px] border-2 border-[#1e69ff] text-[14px] font-bold text-[#1e69ff] bg-[#1e69ff]/[0.08] transition-all hover:bg-[#1e69ff]/[0.15]"
                     >
                       예상 혜택 영수증
                     </button>
@@ -441,7 +441,7 @@ function CompareView({
                     <button
                       type="button"
                       onClick={() => onShowReceipt(selectedCard)}
-                      className="flex-1 flex h-[44px] items-center justify-center rounded-[12px] border-2 border-slate-300 text-[14px] font-bold text-slate-700 bg-white transition-all hover:bg-slate-50 hover:border-slate-400"
+                      className="flex-1 flex h-[44px] items-center justify-center rounded-[12px] border border-[#625BF5] text-[14px] font-bold text-[#625BF5] bg-[#625BF5]/10 transition-all hover:bg-[#625BF5]/20"
                     >
                       예상 혜택 영수증
                     </button>
@@ -794,7 +794,7 @@ export default function ResultsPage() {
                             <button
                               type="button"
                               onClick={() => setReceiptCard(card)}
-                              className="flex-1 flex h-[44px] items-center justify-center rounded-[12px] border-2 border-slate-300 text-[14px] font-bold text-slate-700 bg-white transition-all hover:bg-slate-50 hover:border-slate-400"
+                              className={`flex-1 flex h-[44px] items-center justify-center rounded-[12px] text-[14px] font-bold transition-all ${isBest ? "border border-[#625BF5] text-[#625BF5] bg-[#625BF5]/10 hover:bg-[#625BF5]/20" : "border-2 border-[#1e69ff] text-[#1e69ff] bg-[#1e69ff]/[0.08] hover:bg-[#1e69ff]/[0.15]"}`}
                             >
                               예상 혜택 영수증
                             </button>
