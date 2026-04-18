@@ -83,7 +83,7 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                     </div>
 
                     {/* Column labels + Divider (non-scroll) */}
-                    <div className="px-8 pt-4 pb-3">
+                    <div className="px-8 pt-8 pb-3">
                         <div className="flex justify-between items-center mb-3">
                             <p className="text-[11px] font-medium text-slate-400 tracking-wide">상세 혜택</p>
                             <p className="text-[11px] font-medium text-slate-400 tracking-wide">최대 혜택 금액</p>
