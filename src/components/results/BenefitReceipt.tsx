@@ -63,7 +63,7 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
             {/* Modal Container */}
             <div className="relative w-full max-w-[420px] animate-in fade-in zoom-in duration-300">
                 {/* Receipt Paper UI */}
-                <div className="bg-white shadow-2xl flex flex-col max-h-[85vh] overflow-hidden"
+                <div className="bg-white shadow-2xl flex flex-col max-h-[92vh] overflow-hidden"
                     style={{
                         clipPath: "polygon(0 0, 100% 0, 100% 98%, 97% 100%, 94% 98%, 91% 100%, 88% 98%, 85% 100%, 82% 98%, 79% 100%, 76% 98%, 73% 100%, 70% 98%, 67% 100%, 64% 98%, 61% 100%, 58% 98%, 55% 100%, 52% 98%, 49% 100%, 46% 98%, 43% 100%, 40% 98%, 37% 100%, 34% 98%, 31% 100%, 28% 98%, 25% 100%, 22% 98%, 19% 100%, 16% 98%, 13% 100%, 10% 98%, 7% 100%, 4% 98%, 0% 100%)"
                     }}>
@@ -78,11 +78,8 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                             ✕
                         </button>
                         <h3 className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold mb-2">예상 최대 혜택 영수증</h3>
-                        <div className="flex items-baseline justify-center gap-2 flex-wrap">
-                            <h2 className="text-[22px] font-bold text-slate-900 leading-tight tracking-tight">{card.card_name}</h2>
-                            <span className="text-[12px] text-slate-300 font-medium">{card.card_company}</span>
-                        </div>
-                        <p className="text-[11px] text-[#9B96F8] font-semibold mt-3">원하는 혜택만 선택하여 다시 추천받을 수 있어요</p>
+                        <h2 className="text-[22px] font-bold text-slate-900 leading-tight tracking-tight">{card.card_name}</h2>
+                        <p className="text-[11px] text-slate-300 mt-3">원하는 혜택만 선택하여 다시 추천받을 수 있어요</p>
                     </div>
 
                     {/* Column labels + Divider (non-scroll) */}
@@ -95,7 +92,7 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                     </div>
 
                     {/* Body */}
-                    <div className="flex-1 overflow-y-auto px-8 pt-4 pb-6 space-y-4 scrollbar-hide">
+                    <div className="flex-1 overflow-y-auto px-8 pt-4 pb-2 space-y-4 scrollbar-hide">
                         <div className="space-y-4">
 
                             {sortedItems.length > 0 ? (
@@ -149,7 +146,7 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                     </div>
 
                     {/* Action Footer */}
-                    <div className="px-8 pt-2 pb-10 bg-white flex flex-col gap-2">
+                    <div className="px-8 pt-1 pb-10 bg-white flex flex-col gap-2">
                         <button
                             onClick={() => onReRecommend(excludedIds)}
                             disabled={isLoading || checkedIds.size === 0}
