@@ -63,13 +63,13 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
             {/* Modal Container */}
             <div className="relative w-full max-w-[420px] animate-in fade-in zoom-in duration-300">
                 {/* Receipt Paper UI */}
-                <div className="bg-white shadow-2xl flex flex-col max-h-[92vh] overflow-hidden"
+                <div className="bg-white shadow-2xl flex flex-col min-h-[82vh] max-h-[95vh] overflow-hidden"
                     style={{
                         clipPath: "polygon(0 0, 100% 0, 100% 98%, 97% 100%, 94% 98%, 91% 100%, 88% 98%, 85% 100%, 82% 98%, 79% 100%, 76% 98%, 73% 100%, 70% 98%, 67% 100%, 64% 98%, 61% 100%, 58% 98%, 55% 100%, 52% 98%, 49% 100%, 46% 98%, 43% 100%, 40% 98%, 37% 100%, 34% 98%, 31% 100%, 28% 98%, 25% 100%, 22% 98%, 19% 100%, 16% 98%, 13% 100%, 10% 98%, 7% 100%, 4% 98%, 0% 100%)"
                     }}>
 
                     {/* Header */}
-                    <div className="relative px-8 pt-8 pb-4 flex flex-col items-center text-center">
+                    <div className="relative px-8 pt-8 pb-2 flex flex-col items-center text-center">
                         <button
                             aria-label="닫기"
                             onClick={onClose}
@@ -83,7 +83,7 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                     </div>
 
                     {/* Column labels + Divider (non-scroll) */}
-                    <div className="px-8 pb-3">
+                    <div className="px-8 pt-4 pb-3">
                         <div className="flex justify-between items-center mb-3">
                             <p className="text-[11px] font-medium text-slate-400 tracking-wide">상세 혜택</p>
                             <p className="text-[11px] font-medium text-slate-400 tracking-wide">최대 혜택 금액</p>
@@ -92,7 +92,7 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                     </div>
 
                     {/* Body — 혜택 목록만 스크롤 */}
-                    <div className="flex-1 overflow-y-auto px-8 pt-4 pb-2 scrollbar-hide">
+                    <div className="flex-1 overflow-y-auto px-8 pt-2 pb-2 scrollbar-hide">
                         <div className="space-y-4">
                             {sortedItems.length > 0 ? (
                                 sortedItems.map((item) => (
