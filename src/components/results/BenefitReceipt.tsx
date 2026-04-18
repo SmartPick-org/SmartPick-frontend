@@ -88,7 +88,7 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                             <p className="text-[11px] font-medium text-slate-400 tracking-wide">상세 혜택</p>
                             <p className="text-[11px] font-medium text-slate-400 tracking-wide">최대 혜택 금액</p>
                         </div>
-                        <div className="border-b-[3px] border-dashed border-slate-200" />
+                        <div className="border-b-2 border-dashed border-slate-200" />
                     </div>
 
                     {/* Body — 혜택 목록만 스크롤 */}
@@ -102,7 +102,7 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                                                 ? "bg-[#625BF5] border-[#625BF5] text-white"
                                                 : "bg-white border-slate-200"
                                                 }`}>
-                                                {checkedIds.has(item.benefit_id) && <span className="text-[12px] font-black">✓</span>}
+                                                {checkedIds.has(item.benefit_id) && <span className="text-[11px]">✔</span>}
                                             </div>
                                         </div>
                                         <div className="flex-1 space-y-1">
