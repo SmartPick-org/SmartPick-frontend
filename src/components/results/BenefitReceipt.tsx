@@ -91,10 +91,9 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                         <div className="border-b-2 border-dashed border-slate-100" />
                     </div>
 
-                    {/* Body */}
-                    <div className="flex-1 overflow-y-auto px-8 pt-4 pb-2 space-y-4 scrollbar-hide">
+                    {/* Body — 혜택 목록만 스크롤 */}
+                    <div className="flex-1 overflow-y-auto px-8 pt-4 pb-2 scrollbar-hide">
                         <div className="space-y-4">
-
                             {sortedItems.length > 0 ? (
                                 sortedItems.map((item) => (
                                     <div key={item.benefit_id} className="flex items-start gap-4 group cursor-pointer" onClick={() => toggleBenefit(item.benefit_id)}>
@@ -133,20 +132,17 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                                 <div className="py-12 text-center text-slate-400 text-sm">확인 가능한 상세 데이터가 없습니다.</div>
                             )}
                         </div>
-
-                        {/* Subtotal Preview */}
-                        <div className="pt-4">
-                            <div className="flex justify-between items-baseline">
-                                <span className="text-[12px] font-bold text-slate-400 uppercase tracking-wider">Checked Total</span>
-                                <span className="text-[32px] font-extrabold text-slate-900 tabular-nums tracking-tighter">
-                                    {currentTotal.toLocaleString()}원
-                                </span>
-                            </div>
-                        </div>
                     </div>
 
-                    {/* Action Footer */}
-                    <div className="px-8 pt-1 pb-10 bg-white flex flex-col gap-2">
+                    {/* Action Footer — 비스크롤 */}
+                    <div className="px-8 pt-3 pb-8 bg-white flex flex-col gap-2">
+                        {/* Checked Total */}
+                        <div className="flex justify-between items-baseline mb-1">
+                            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Checked Total</span>
+                            <span className="text-[28px] font-extrabold text-slate-900 tabular-nums tracking-tighter">
+                                {currentTotal.toLocaleString()}원
+                            </span>
+                        </div>
                         <button
                             onClick={() => onReRecommend(excludedIds)}
                             disabled={isLoading || checkedIds.size === 0}
@@ -154,10 +150,9 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                         >
                             {isLoading ? "분석 중..." : "선택한 혜택으로 다시 추천받기"}
                         </button>
-                        <div className="text-center mt-1">
-                            <p className="text-[9px] text-slate-400 leading-relaxed">입력하신 소비 예산 기반으로 계산된 최대 혜택입니다.</p>
-                            <p className="text-[9px] text-slate-400 leading-relaxed">실제 소비액에 따라 달라질 수 있습니다.</p>
-                        </div>
+                        <p className="text-[8px] text-slate-300 text-right leading-snug mt-0.5">
+                            입력하신 소비 예산 기반으로 계산된 최대 혜택입니다. 실제 소비액에 따라 달라질 수 있습니다.
+                        </p>
                     </div>
                 </div>
             </div>
