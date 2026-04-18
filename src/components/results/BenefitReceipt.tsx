@@ -79,7 +79,7 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                         </button>
                         <h3 className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold mb-2">예상 최대 혜택 영수증</h3>
                         <h2 className="text-[22px] font-bold text-slate-900 leading-tight tracking-tight">{card.card_name}</h2>
-                        <p className="text-[11px] text-slate-300 mt-3">원하는 혜택만 선택하여 다시 추천받을 수 있어요</p>
+                        <p className="text-[11px] text-slate-400 mt-3">원하는 혜택만 선택하여 다시 추천받을 수 있어요</p>
                     </div>
 
                     {/* Column labels + Divider (non-scroll) */}
@@ -121,7 +121,7 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                                                 {item.content}
                                             </p>
                                             {checkedIds.has(item.benefit_id) && filterWarnings(item.warnings).map((w, idx) => (
-                                                <p key={idx} className="text-[11px] text-[#9B96F8] leading-tight mt-1">
+                                                <p key={idx} className="text-[10px] text-[#9B96F8] leading-[1.3] mt-0.5">
                                                     {w}
                                                 </p>
                                             ))}
@@ -150,7 +150,7 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                         >
                             {isLoading ? "분석 중..." : "선택한 혜택으로 다시 추천받기"}
                         </button>
-                        <p className="text-[8px] text-slate-300 text-right leading-snug mt-0.5">
+                        <p className="text-[8px] text-slate-400 text-right leading-snug mt-0.5">
                             입력하신 소비 예산 기반으로 계산된 최대 혜택입니다. 실제 소비액에 따라 달라질 수 있습니다.
                         </p>
                     </div>
