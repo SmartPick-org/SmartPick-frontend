@@ -78,23 +78,25 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                             ✕
                         </button>
                         <h3 className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold mb-2">예상 최대 혜택 영수증</h3>
-                        <h2 className="text-[22px] font-bold text-slate-900 leading-tight tracking-tight">{card.card_name}</h2>
-                        <p className="text-[14px] font-medium text-slate-500 mt-1">{card.card_company}</p>
+                        <div className="flex items-baseline justify-center gap-2 flex-wrap">
+                            <h2 className="text-[22px] font-bold text-slate-900 leading-tight tracking-tight">{card.card_name}</h2>
+                            <span className="text-[12px] text-slate-300 font-medium">{card.card_company}</span>
+                        </div>
+                        <p className="text-[11px] text-[#9B96F8] font-semibold mt-3">원하는 혜택만 선택하여 다시 추천받을 수 있어요</p>
                     </div>
 
-                    {/* Hint + Divider (non-scroll) */}
+                    {/* Column labels + Divider (non-scroll) */}
                     <div className="px-8 pb-3">
-                        <p className="text-[11px] text-[#9B96F8] mb-3">원하는 혜택만 선택하여 다시 추천받을 수 있어요</p>
+                        <div className="flex justify-between items-center mb-3">
+                            <p className="text-[11px] font-medium text-slate-400 tracking-wide">상세 혜택</p>
+                            <p className="text-[11px] font-medium text-slate-400 tracking-wide">최대 혜택 금액</p>
+                        </div>
                         <div className="border-b-2 border-dashed border-slate-100" />
                     </div>
 
                     {/* Body */}
                     <div className="flex-1 overflow-y-auto px-8 pt-4 pb-6 space-y-4 scrollbar-hide">
                         <div className="space-y-4">
-                            <div className="flex justify-between items-center">
-                                <p className="text-[11px] font-medium text-slate-400 tracking-wide">상세 혜택</p>
-                                <p className="text-[11px] font-medium text-slate-400 tracking-wide">최대혜택금액</p>
-                            </div>
 
                             {sortedItems.length > 0 ? (
                                 sortedItems.map((item) => (
@@ -156,7 +158,7 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                             {isLoading ? "분석 중..." : "선택한 혜택으로 다시 추천받기"}
                         </button>
                         <div className="text-center mt-1">
-                            <p className="text-[9px] text-slate-400 leading-relaxed">입력하신 소비 예산 기반으로 계산된 최대 혜택입니다</p>
+                            <p className="text-[9px] text-slate-400 leading-relaxed">입력하신 소비 예산 기반으로 계산된 최대 혜택입니다.</p>
                             <p className="text-[9px] text-slate-400 leading-relaxed">실제 소비액에 따라 달라질 수 있습니다.</p>
                         </div>
                     </div>
