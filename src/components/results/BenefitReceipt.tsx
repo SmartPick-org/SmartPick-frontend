@@ -69,18 +69,30 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                     }}>
 
                     {/* Header */}
-                    <div className="p-8 border-b-2 border-dashed border-slate-100 flex flex-col items-center text-center">
-                        <h3 className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold mb-2">SmartPick Receipt</h3>
+                    <div className="relative px-8 pt-8 pb-4 border-b-2 border-dashed border-slate-100 flex flex-col items-center text-center">
+                        {/* P8-6: 우상단 X 닫기 버튼 */}
+                        <button
+                            aria-label="닫기"
+                            onClick={onClose}
+                            className="absolute top-4 right-4 w-7 h-7 flex items-center justify-center rounded-full text-slate-300 hover:text-slate-500 hover:bg-slate-100 transition-colors text-[16px]"
+                        >
+                            ✕
+                        </button>
+                        {/* P8-1: 레이블 */}
+                        <h3 className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold mb-2">예상 최대 혜택 영수증</h3>
                         <h2 className="text-[22px] font-bold text-slate-900 leading-tight tracking-tight">{card.card_name}</h2>
                         <p className="text-[14px] font-medium text-slate-500 mt-1">{card.card_company}</p>
-                        <div className="mt-5 text-[11px] text-slate-300 font-mono tracking-tighter">
-                            {new Date().toISOString().replace('T', ' ').slice(0, 19)} #0042
+                        {/* P8-2: 안내 문구 (왼쪽 하단 정렬) */}
+                        <div className="mt-4 self-start text-left">
+                            <p className="text-[10px] text-slate-300 leading-relaxed">입력하신 소비 예산 기반으로 계산된 최대 혜택입니다</p>
+                            <p className="text-[10px] text-slate-300 leading-relaxed">실제 소비액에 따라 달라질 수 있습니다.</p>
                         </div>
                     </div>
 
                     {/* Body */}
                     <div className="flex-1 overflow-y-auto p-8 space-y-6 scrollbar-hide">
                         <div className="space-y-4">
+                            <p className="text-[11px] text-[#9B96F8] mb-1">원하는 혜택만 선택하여 다시 추천받을 수 있어요</p>
                             <p className="text-[12px] font-bold text-slate-400 uppercase tracking-widest border-b pb-2">Benefits Breakdown</p>
 
                             {sortedItems.length > 0 ? (
@@ -138,15 +150,9 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                         <button
                             onClick={() => onReRecommend(excludedIds)}
                             disabled={isLoading || checkedIds.size === 0}
-                            className="w-full h-14 rounded-2xl bg-[#625BF5] text-white font-bold text-[16px] shadow-xl shadow-[#625BF5]/20 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-30 flex items-center justify-center gap-2"
+                            className="w-full h-11 rounded-2xl bg-[#625BF5] text-white font-bold text-[16px] shadow-xl shadow-[#625BF5]/20 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-30 flex items-center justify-center gap-2"
                         >
-                            {isLoading ? "분석 중..." : "선택한 혜택 기반 재추천"}
-                        </button>
-                        <button
-                            onClick={onClose}
-                            className="w-full h-12 text-slate-400 font-bold text-[14px] transition-colors hover:text-slate-600"
-                        >
-                            닫기
+                            {isLoading ? "분석 중..." : "선택한 혜택으로 다시 추천받기"}
                         </button>
                     </div>
                 </div>

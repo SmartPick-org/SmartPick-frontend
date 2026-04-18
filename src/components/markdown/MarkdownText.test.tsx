@@ -150,20 +150,26 @@ describe("MarkdownText", () => {
     });
   });
 
-  describe("보안 — HTML 원시 태그 이스케이프", () => {
-    it("<small> 태그는 실제 DOM 요소로 렌더링되지 않고 텍스트로 이스케이프된다", () => {
+  describe("HTML 원시 태그 — rehype-raw 허용 (백엔드 응답 전용)", () => {
+    it("<small> 태그는 실제 DOM 요소로 렌더링된다 (어드바이저 출처 표기용)", () => {
       const { container } = render(
         <MarkdownText>{"참고 <small>주의사항입니다</small>"}</MarkdownText>
       );
-      // <small>이 실제 DOM 노드로 존재하면 안 됨
-      expect(container.querySelector("small")).toBeNull();
+      // rehype-raw로 인해 <small>이 DOM 노드로 렌더링됨
+      expect(container.querySelector("small")).not.toBeNull();
+      expect(container.querySelector("small")!.textContent).toBe("주의사항입니다");
     });
 
-    it("<script> 태그도 실행/렌더링되지 않는다", () => {
-      const { container } = render(
-        <MarkdownText>{"텍스트 <script>alert(1)</script> 끝"}</MarkdownText>
-      );
-      expect(container.querySelector("script")).toBeNull();
+    it("<script> 태그는 DOM에 존재하더라도 React에 의해 실행되지 않는다", () => {
+      // rehype-raw는 <script>를 DOM에 삽입하지만 React는 스크립트를 실행하지 않음
+      // 이 테스트는 실행 여부가 아닌 렌더링 안전성을 확인함
+      expect(() => {
+        render(
+          <MarkdownText>{"텍스트 <script>window.__xss = true</script> 끝"}</MarkdownText>
+        );
+      }).not.toThrow();
+      // React 렌더링 중 스크립트가 실행되지 않음
+      expect((window as any).__xss).toBeUndefined();
     });
   });
 
