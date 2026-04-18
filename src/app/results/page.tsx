@@ -794,7 +794,7 @@ export default function ResultsPage() {
                             <button
                               type="button"
                               onClick={() => setReceiptCard(card)}
-                              className={`flex-1 flex h-[44px] items-center justify-center rounded-[12px] text-[14px] font-bold transition-all ${isBest ? "border border-[#625BF5] text-[#625BF5] bg-[#625BF5]/[0.04] hover:bg-[#625BF5]/[0.09]" : "border border-[#1e69ff] text-[#1e69ff] bg-[#1e69ff]/[0.08] hover:bg-[#1e69ff]/[0.15]"}`}
+                              className={`flex-1 flex h-[44px] items-center justify-center rounded-[12px] text-[14px] font-bold transition-all ${isBest ? "border border-[#625BF5] text-[#625BF5] bg-white hover:bg-[#625BF5]/[0.06]" : "border border-[#1e69ff] text-[#1e69ff] bg-[#1e69ff]/[0.08] hover:bg-[#1e69ff]/[0.15]"}`}
                             >
                               예상 혜택 영수증
                             </button>
