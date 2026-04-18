@@ -271,14 +271,14 @@ function CompareView({
                     <button
                       type="button"
                       onClick={() => onAskCard(current_card)}
-                      className="flex-1 flex h-[52px] items-center justify-center rounded-[12px] text-[16px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] bg-[#1e69ff] text-white shadow-md shadow-blue-500/10"
+                      className="flex-1 flex h-[44px] items-center justify-center rounded-[12px] text-[14px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] bg-[#1e69ff] text-white shadow-md shadow-blue-500/10"
                     >
                       더 물어보기
                     </button>
                     <button
                       type="button"
                       onClick={() => onShowReceipt(current_card)}
-                      className="flex-1 flex h-[52px] items-center justify-center rounded-[12px] bg-slate-100 text-[13px] font-semibold text-slate-600 transition-all hover:bg-slate-200"
+                      className="flex-1 flex h-[44px] items-center justify-center rounded-[12px] border-2 border-slate-300 text-[14px] font-bold text-slate-700 bg-white transition-all hover:bg-slate-50 hover:border-slate-400"
                     >
                       예상 혜택 영수증
                     </button>
@@ -434,14 +434,14 @@ function CompareView({
                     <button
                       type="button"
                       onClick={() => onAskCard(selectedCard)}
-                      className="flex-1 flex h-[52px] items-center justify-center rounded-[12px] text-[16px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] bg-[#625BF5] text-white shadow-md shadow-[#625BF5]/20"
+                      className="flex-1 flex h-[44px] items-center justify-center rounded-[12px] text-[14px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] bg-[#625BF5] text-white shadow-md shadow-[#625BF5]/20"
                     >
                       더 물어보기
                     </button>
                     <button
                       type="button"
                       onClick={() => onShowReceipt(selectedCard)}
-                      className="flex-1 flex h-[52px] items-center justify-center rounded-[12px] bg-slate-100 text-[13px] font-semibold text-slate-600 transition-all hover:bg-slate-200"
+                      className="flex-1 flex h-[44px] items-center justify-center rounded-[12px] border-2 border-slate-300 text-[14px] font-bold text-slate-700 bg-white transition-all hover:bg-slate-50 hover:border-slate-400"
                     >
                       예상 혜택 영수증
                     </button>
@@ -787,14 +787,14 @@ export default function ResultsPage() {
                             <button
                               type="button"
                               onClick={() => { setActiveCard(card); setChat([]); }}
-                              className={`flex-1 flex h-[52px] items-center justify-center rounded-[12px] text-[16px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] ${isBest ? "bg-[#625BF5] text-white shadow-md shadow-[#625BF5]/20" : "bg-[#1e69ff] text-white shadow-md shadow-blue-500/10"}`}
+                              className={`flex-1 flex h-[44px] items-center justify-center rounded-[12px] text-[14px] font-bold transition-all hover:scale-[1.02] active:scale-[0.98] ${isBest ? "bg-[#625BF5] text-white shadow-md shadow-[#625BF5]/20" : "bg-[#1e69ff] text-white shadow-md shadow-blue-500/10"}`}
                             >
                               더 물어보기
                             </button>
                             <button
                               type="button"
                               onClick={() => setReceiptCard(card)}
-                              className="flex-1 flex h-[52px] items-center justify-center rounded-[12px] bg-slate-100 text-[13px] font-semibold text-slate-600 transition-all hover:bg-slate-200"
+                              className="flex-1 flex h-[44px] items-center justify-center rounded-[12px] border-2 border-slate-300 text-[14px] font-bold text-slate-700 bg-white transition-all hover:bg-slate-50 hover:border-slate-400"
                             >
                               예상 혜택 영수증
                             </button>
