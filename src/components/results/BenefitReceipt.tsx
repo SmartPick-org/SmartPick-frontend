@@ -102,7 +102,11 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                                                 ? "bg-[#625BF5] border-[#625BF5] text-white"
                                                 : "bg-white border-slate-200"
                                                 }`}>
-                                                {checkedIds.has(item.benefit_id) && <span className="text-[11px]">✔</span>}
+                                                {checkedIds.has(item.benefit_id) && (
+                                                    <svg width="11" height="9" viewBox="0 0 11 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M1 4L4 7.5L10 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                                    </svg>
+                                                )}
                                             </div>
                                         </div>
                                         <div className="flex-1 space-y-1">
