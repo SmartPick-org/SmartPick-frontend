@@ -46,9 +46,9 @@ const noop = () => {};
 
 describe("BenefitReceipt", () => {
     describe("P8-1: 상단 레이블 텍스트", () => {
-        it('"예상 최대 혜택 영수증" 텍스트가 표시된다', () => {
+        it('"예상 혜택 영수증" 텍스트가 표시된다', () => {
             render(<BenefitReceipt card={mockCard} onClose={noop} onReRecommend={noop} />);
-            expect(screen.getByText("예상 최대 혜택 영수증")).toBeInTheDocument();
+            expect(screen.getByText("예상 혜택 영수증")).toBeInTheDocument();
         });
 
         it('"SMARTPICK RECEIPT" 텍스트가 표시되지 않는다', () => {

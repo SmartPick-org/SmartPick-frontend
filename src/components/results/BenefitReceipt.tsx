@@ -77,7 +77,7 @@ export default function BenefitReceipt({ card, onClose, onReRecommend, isLoading
                         >
                             ✕
                         </button>
-                        <h3 className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold mb-2">예상 최대 혜택 영수증</h3>
+                        <h3 className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold mb-2">예상 혜택 영수증</h3>
                         <h2 className="text-[22px] font-bold text-slate-900 leading-tight tracking-tight">{card.card_name}</h2>
                         <p className="text-[11px] text-slate-400 mt-3">원하는 혜택만 선택하여 다시 추천받을 수 있어요</p>
                     </div>
