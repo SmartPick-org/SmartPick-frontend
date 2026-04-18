@@ -175,8 +175,8 @@ function CompareView({
   }
 
   return (
-    <main className="min-h-screen bg-white px-6 py-12 md:px-12">
-      <section className="mx-auto max-w-7xl">
+    <main className="min-h-screen bg-white px-6 pt-6 pb-12 md:px-12">
+      <section className="w-full">
 
         {/* ── 4단 비교 레이아웃 ── */}
         <div className="flex justify-start items-start gap-3 lg:gap-5 pb-12 overflow-x-auto min-w-[max-content]">
@@ -693,8 +693,8 @@ export default function ResultsPage() {
 
   // ── NEW 모드 (기존 추천 UI) ──
   return (
-    <main className="min-h-screen bg-white px-6 py-12 md:px-12">
-      <section className="mx-auto max-w-7xl">
+    <main className="min-h-screen bg-white px-6 pt-6 pb-12 md:px-12">
+      <section className="w-full">
         <div className="flex items-start gap-12">
           {/* [A] Category Indicators */}
           <div
@@ -715,7 +715,7 @@ export default function ResultsPage() {
 
           {/* [B] Horizontal Recommendation Scroll */}
           <div className="flex-1 overflow-x-auto pb-24 scrollbar-hide scroll-smooth -mx-6 px-6 lg:mx-0 lg:px-0">
-            <div className="flex gap-10 min-w-max pr-12 pt-10">
+            <div className="flex gap-10 min-w-max pr-12 pt-4">
               {recommendations
                 .map((card, idx) => {
                   const isBest = idx === 0;
