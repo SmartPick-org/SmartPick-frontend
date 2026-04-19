@@ -179,8 +179,8 @@ function CompareView({
       <section className="w-full">
 
         {/* ── 4단 비교 레이아웃 ── */}
-        <div className="flex justify-center overflow-x-auto px-8 lg:px-16">
-        <div className="flex items-start gap-8 lg:gap-14 pb-12 min-w-max">
+        <div className="flex justify-center overflow-x-auto">
+        <div className="flex items-start gap-10 lg:gap-16 pb-12 min-w-max px-12 lg:px-24">
 
           {/* 카테고리 라벨 컬럼 */}
           <div className="flex flex-col w-[110px] shrink-0">
