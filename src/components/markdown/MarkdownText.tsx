@@ -41,6 +41,7 @@ const MARKDOWN_COMPONENTS: React.ComponentProps<typeof ReactMarkdown>["component
   strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
   em: ({ children }) => <em>{children}</em>,
   del: ({ children }) => <span>{children}</span>,
+  s: ({ children }) => <span>{children}</span>,
   hr: () => <hr className="my-3 border-slate-200" />,
   pre: ({ children }) => (
     <pre className="my-2 overflow-x-auto rounded-xl bg-slate-900 px-4 py-3 text-[12px] leading-relaxed text-slate-100">

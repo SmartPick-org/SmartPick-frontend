@@ -147,6 +147,18 @@ describe("MarkdownText", () => {
       expect(container.querySelector("del")).toBeNull();
       expect(container.textContent).toContain("취소");
     });
+
+    it("<del> raw HTML이 취소선 없이 일반 텍스트로 렌더링된다", () => {
+      const { container } = render(<MarkdownText>{"이건 <del>취소</del>됩니다"}</MarkdownText>);
+      expect(container.querySelector("del")).toBeNull();
+      expect(container.textContent).toContain("취소");
+    });
+
+    it("<s> raw HTML이 취소선 없이 일반 텍스트로 렌더링된다", () => {
+      const { container } = render(<MarkdownText>{"이건 <s>취소</s>됩니다"}</MarkdownText>);
+      expect(container.querySelector("s")).toBeNull();
+      expect(container.textContent).toContain("취소");
+    });
   });
 
   describe("HTML 원시 태그 — rehype-raw 허용 (백엔드 응답 전용)", () => {
