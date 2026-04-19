@@ -141,12 +141,11 @@ describe("MarkdownText", () => {
     });
   });
 
-  describe("GFM — 취소선 (신규 지원)", () => {
-    it("~~취소선~~ 문법이 <del>로 렌더링된다", () => {
+  describe("GFM — 취소선", () => {
+    it("~~취소선~~ 문법이 취소선 없이 일반 텍스트로 렌더링된다 (LLM 오용 방지)", () => {
       const { container } = render(<MarkdownText>{"이건 ~~취소~~됩니다"}</MarkdownText>);
-      const del = container.querySelector("del");
-      expect(del).not.toBeNull();
-      expect(del!.textContent).toBe("취소");
+      expect(container.querySelector("del")).toBeNull();
+      expect(container.textContent).toContain("취소");
     });
   });
 
