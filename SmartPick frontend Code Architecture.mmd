@@ -1,0 +1,58 @@
+---
+config:
+  theme: mc
+---
+graph TD
+    USER([사용자])
+
+    subgraph PAGES ["Pages — Next.js App Router"]
+        PG1["/ 홈<br/>모드 선택 COMPARE · NEW"]
+        PG2["/select-card<br/>기존 카드 선택"]
+        PG3["/categories<br/>카테고리 선택<br/>3D 플립 카드 UI"]
+        PG4["/input-spending<br/>소비 금액 입력<br/>세그먼트 슬라이더"]
+        PG5["/results<br/>추천 결과 화면"]
+    end
+
+    subgraph COMPONENTS ["Components"]
+        CM1["RecommendView<br/>카드 추천 그리드"]
+        CM2["CompareView<br/>기존 vs 추천 비교"]
+        CM3["BenefitReceipt<br/>혜택 영수증 + 체크박스 토글"]
+        CM4["AdvisorSection<br/>더 물어보기 Q&A 패널"]
+        CM5["MarkdownText<br/>LLM 답변 마크다운 렌더링"]
+    end
+
+    subgraph STATE ["State Layer"]
+        ST1["AppState Context<br/>useReducer + sessionStorage"]
+        ST2["categories.ts<br/>카테고리 메타데이터<br/>한영 키 매핑"]
+        ST3["utils/finance.ts<br/>금액 반올림 · 포맷"]
+    end
+
+    subgraph API_LAYER ["API Layer"]
+        AP1["apiService.ts<br/>fetchRecommendations<br/>fetchComparison<br/>fetchRecalculate<br/>fetchAdvisorAnswer"]
+        AP2["api.ts<br/>TypeScript 타입 정의"]
+        AP3["config.ts<br/>API_BASE_URL<br/>공통 헤더"]
+    end
+
+    subgraph BACKEND ["Backend API"]
+        BE1["POST /cards/recommend"]
+        BE2["POST /cards/compare"]
+        BE3["POST /cards/recalculate"]
+        BE4["POST /advisor/ask"]
+    end
+
+    USER --> PG1
+    PG1 --> PG2 & PG3
+    PG2 --> PG3
+    PG3 --> PG4 --> PG5
+
+    PG5 --> CM1 & CM2 & CM3 & CM4
+    CM3 & CM4 --> CM5
+
+    PAGES --> ST1
+    COMPONENTS --> ST1
+    ST1 --> ST2 & ST3
+
+    CM1 & CM2 & CM3 & CM4 --> AP1
+    AP1 --> AP2 & AP3
+
+    AP1 --> BE1 & BE2 & BE3 & BE4
